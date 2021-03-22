@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import multiprocessing as mp
 import sys
@@ -64,22 +66,33 @@ def parallel_run_planet(input_file, cores,quiet,email):
     else:
         ReCreateCP(checkpoint_file,input_file,quiet,sims)
 
-    #get logfile name
-    path_vpl = os.path.join(sims[0],'vpl.in')
-    with open(path_vpl, 'r') as vpl:
-        content = [line.strip().split() for line in vpl.readlines()]
+    #get system and the body names
+    body_names = []
 
-        for line in content:
-            if line:
-                if line[0] == 'sSystemName':
-                    system_name = line[1]
-
-    logfile = system_name + ".log"
+    for file in infiles:
+        #gets path to infile
+        full_path = os.path.join(sims[0],file)
+        #if the infile is the vpl.in, then get the system name
+        if "vpl.in" in file:
+            with open(full_path, 'r') as vpl:
+                content = [line.strip().split() for line in vpl.readlines()]
+                for line in content:
+                    if line:
+                        if line[0] == 'sSystemName':
+                            system_name = line[1]
+            logfile = system_name + ".log"
+        else:
+            with open(full_path, 'r') as infile:
+                content = [line.strip().split() for line in infile.readlines()]
+                for line in content:
+                    if line:
+                        if line[0] == 'sName':
+                            body_names.append(line[1])
 
     lock = mp.Lock()
     workers = []
     for i in range(cores):
-        workers.append(mp.Process(target=par_worker, args=(checkpoint_file,infiles,system_name,logfile,quiet,lock)))
+        workers.append(mp.Process(target=par_worker, args=(checkpoint_file,system_name,body_names, logfile,quiet,lock)))
     for w in workers:
         w.start()
     for w in workers:
@@ -177,11 +190,14 @@ def ProcessLogFile(logfile, data):
                 var = i[:i.find('[')].strip()
                 units = i[i.find('[') + 1:]
 
+                #print("V: <", var, "> U: <", units, ">")
+
                 if not units:
                     units = 'nd'
 
                 if var == '':
                     continue
+
                 out_params.append([var, units])
 
                 key_name_forward = body + '_' + var + '_forward'
@@ -250,15 +266,12 @@ def ProcessForwardfile(forwardfile, data, body, OutputOrder):
     for i in OutputOrder:
         header.append([i][0][0])
 
-    with open(forwardfile, 'r') as f:
-        content = [line.strip().split() for line in f.readlines()]
+    sorted = np.loadtxt(forwardfile, unpack=True, dtype=str,encoding=None)
 
-        for row in content:
-             sorted = [[content[j][i] for j in range(len(content))] for i in range(len(content[0]))]
+    for i,row in enumerate(sorted):
+        key_name = body + '_' + header[i] + '_forward'
+        data[key_name].append(row)
 
-        for i,row in enumerate(sorted):
-            key_name = body + '_' + header[i] + '_forward'
-            data[key_name].append(row)
 
     return data
 
@@ -269,16 +282,11 @@ def ProcessClimatefile(climatefile, data, body, GridOutputOrder):
     for i in GridOutputOrder:
         header.append([i][0][0])
 
+    sorted = np.loadtxt(climatefile, unpack=True, dtype=str,encoding=None)
 
-    with open(climatefile, 'r') as f:
-        content = [line.strip().split() for line in f.readlines()]
-
-        for row in content:
-             sorted = [[content[j][i] for j in range(len(content))] for i in range(len(content[0]))]
-
-        for i,row in enumerate(sorted):
-            key_name = body + '_' + header[i] + '_climate'
-            data[key_name].append(row)
+    for i,row in enumerate(sorted):
+        key_name = body + '_' + header[i] + '_climate'
+        data[key_name].append(row)
 
     return data
 
@@ -305,38 +313,35 @@ def ProcessSeasonalClimatefile(prefix, data, body, name):
 
     return data
 
-def CreateHDF5(data, system_name, infiles, logfile, quiet, h5filename):
+def CreateHDF5(data, system_name, body_names, logfile, quiet, h5filename):
     """
     ....
     """
     if quiet == False:
         print('Creating',h5filename)
+        sys.stdout.flush()
 
     data = ProcessLogFile(logfile, data)
-    for file in infiles:
-        if file == 'vpl.in':
-            continue
-        else:
-            body = file.split('.')[0]
-            outputorder = body + "_OutputOrder"
-            gridoutputorder = body + "_GridOutputOrder"
+    for body in body_names:
+        outputorder = body + "_OutputOrder"
+        gridoutputorder = body + "_GridOutputOrder"
 
-            if outputorder in data:
-                OutputOrder = data[outputorder]
-                forward_name = system_name + '.' + body + '.forward'
-                data = ProcessForwardfile(forward_name, data, body, OutputOrder)
+        if outputorder in data:
+            OutputOrder = data[outputorder]
+            forward_name = system_name + '.' + body + '.forward'
+            data = ProcessForwardfile(forward_name, data, body, OutputOrder)
 
 
-            if gridoutputorder in data:
-                GridOutputOrder = data[gridoutputorder]
-                climate_name = system_name + '.' + body + '.Climate'
-                data = ProcessClimatefile(climate_name, data, body, GridOutputOrder)
-                prefix = system_name + '.' + body
-                name = ['DailyInsol','PlanckB','SeasonalDivF','SeasonalFIn',
-                        'SeasonalFMerid','SeasonalFOut','SeasonalIceBalance',
-                        'SeasonalTemp']
-                for i in range(len(name)):
-                    data = ProcessSeasonalClimatefile(prefix,data,body,name[i])
+        if gridoutputorder in data:
+            GridOutputOrder = data[gridoutputorder]
+            climate_name = system_name + '.' + body + '.Climate'
+            data = ProcessClimatefile(climate_name, data, body, GridOutputOrder)
+            prefix = system_name + '.' + body
+            name = ['DailyInsol','PlanckB','SeasonalDivF','SeasonalFIn',
+                    'SeasonalFMerid','SeasonalFOut','SeasonalIceBalance',
+                    'SeasonalTemp']
+            for i in range(len(name)):
+                data = ProcessSeasonalClimatefile(prefix,data,body,name[i])
 
     with h5py.File(h5filename, 'w') as h:
         for k, v in data.items():
@@ -350,8 +355,9 @@ def CreateHDF5(data, system_name, infiles, logfile, quiet, h5filename):
                 v_value = v[0]
                 v_attr = ''
             #print("Units:",v_attr)
+            #print("Value:",v_value)
             #print()
-            h.create_dataset(k, data=np.array(v_value,dtype='S'),compression = 'gzip')
+            h.create_dataset(k, data=np.array(v_value, dtype='S'),compression = 'gzip')
             h[k].attrs['Units'] = v_attr
 
 def merge_data(data_list):
@@ -406,7 +412,7 @@ def save(filename, data):
             f.create_dataset(key, data[key].shape, dtype=data[key].dtype,compression='gzip')[...] = data[key]
 
 ## parallel worker to run vplanet ##
-def par_worker(checkpoint_file,infiles,system_name,logfile,quiet,lock):
+def par_worker(checkpoint_file,system_name,body_names,logfile,quiet,lock):
 
     while True:
 
@@ -450,7 +456,7 @@ def par_worker(checkpoint_file,infiles,system_name,logfile,quiet,lock):
 
         if os.path.isfile(HDF5_File) == False:
 
-            CreateHDF5(data, system_name, infiles, logfile, quiet, HDF5_File)
+            CreateHDF5(data, system_name, body_names, logfile, quiet, HDF5_File)
             for l in datalist:
                 if l[0] == folder:
                     l[1] = '1'
@@ -478,6 +484,18 @@ def CreateMasterHDF5(folder_name, sims):
         HDF5_File = single_folder + '.hdf5'
         HDF5_path = i + '/' + HDF5_File
         filelist.append(HDF5_path)
+
+    #
+    # d_struct = {}
+    # for i in filelist:
+    #     f = h5py.File(i,"r+")
+    #     d_struct[i] = f.keys()
+    #     f.close()
+    #
+    # for i in filelist:
+    #     for j in d_struct[i]:
+    #         sub.call('h5copy','-i',i,'-o',master_file, '-s', j, '-d', j)
+    #
 
     data = OrderedDict()
 

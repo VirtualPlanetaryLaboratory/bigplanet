@@ -68,7 +68,7 @@ setup(name = 'bigplanet',
       },
       install_requires = [
                           'numpy',
-                          'h5py',
+                          'h5py>=3.2',
                           'argparse',
                           'pandas',
                           'scipy'
