@@ -13,4 +13,5 @@ __version__ = "1.0"
 __author__ = "Caitlyn Wilhelm (cwilhelm@uw.edu)"
 __copyright__ = "Copyright 2020  Caitlyn Wilhelm"
 
+from .bigplanet_module import *
 from .bigplanet import *
