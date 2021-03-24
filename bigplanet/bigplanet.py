@@ -127,14 +127,16 @@ def ReCreateCP(checkpoint_file,input_file,quiet,sims):
 
     with open(checkpoint_file, 'r') as f:
         for newline in f:
-            datalist.append(newline.strip().split())
-            for l in datalist:
-                if l[1] == '0':
-                    l[1] = '-1'
+            if newline:
+                datalist.append(newline.strip().split())
+                for l in datalist:
+                    if l[1] == '0':
+                        l[1] = '-1'
 
     with open(checkpoint_file, 'w') as f:
         for newline in datalist:
             f.writelines(' '.join(newline)+'\n')
+
 
 
 def ProcessLogFile(logfile, data):

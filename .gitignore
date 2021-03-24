@@ -58,15 +58,6 @@ gcov/*
 *.valgrind
 *.cache
 
-# Documentation
-docs/.build
-docs/src
-docs/src.rst
-docs/examples
-docs/examples.rst
-docs/help.rst
-
-
 # Module-specific
 bigplanet/bigplanet/vabc.py
 bigplanet/bigplanet/big_ml.py

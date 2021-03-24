@@ -1,20 +1,16 @@
-.. bigplanet documentation master file, created by
-   sphinx-quickstart on Sat Mar 20 19:49:17 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Bigplanet Documentation
+=======================
 
-Welcome to bigplanet's documentation!
-=====================================
+A suite of data analysis and extraction routines for ``VPLanet`` designed to be used
+with `vspace <../vspace>`_ and `multi-planet <../multi-planet>`_ scripts. It can also
+generate files for use with the `VR Ulysses virtual reality data explorer
+<https://www.vrulysses.com>`_.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   install
+   quickstart
+   help
+   examples
+   GitHub <https://github.com/VirtualPlanetaryLaboratory/bigplanet>
