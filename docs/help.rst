@@ -55,7 +55,7 @@ where *HDF5_File* is the name of the HDF5 file, which is used like so:
 
 
 **ExtractColumn**
-------------------
+-----------------
 
 ExtractColumn is a function that returns all of values of a particular column in the
 HDF5 file. It takes the following arguments:
@@ -76,7 +76,6 @@ See the `Understanding Keys`_ Section for an indepth look at the types of key op
 
 **ExtractUnits**
 ----------------
-
 ExtractUnits is a function that returns the units of a particular column in the
 HDF5 file. It takes the following arguments:
 
@@ -95,8 +94,7 @@ See the `Understanding Keys`_ Section for an indepth look at the types of key op
 
 
 **ExtractUniqueValues**
-----------------------
-
+-----------------------
 ExtractUniqueValues is a function that returns a list of unique values in a key provided.
 It takes the following arguments:
 
@@ -110,8 +108,9 @@ where:
 
 *Key* is the name of the particular variable you are extracting the units from.
 
-**CreateHDF5File**
 
+**CreateHDF5File**
+------------------
 CreateHDF5File is a function that creates an HDF5 file from the input file that is passed
 to the function. This is mainly used if you forgot to run bigplanet or want to run all
 the code for bigplanet in module format
@@ -127,7 +126,6 @@ where:
 
 **CreateMatrix**
 ----------------
-
 CreateMatrix is a function that returns the zaxis for a 3D matrix. This is useful
 for plotting Contour Plots of the data extracted. CreateMatrix takes the following
 arguments:
@@ -151,7 +149,6 @@ goes counter clockwise in 90 degree interments. The default is 1, or bottom left
 
 **WriteOutput**
 ---------------
-
 WriteOutput is a function that writes the list of columns to an output file. Headers
 are optional. WriteOutput takes the following arguments:
 
