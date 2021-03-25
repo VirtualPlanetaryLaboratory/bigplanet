@@ -3,7 +3,6 @@
 
 <p align="center">
   <a href="https://VirtualPlanetaryLaboratory.github.io/bigplanet/"><img src="https://img.shields.io/badge/read-the_docs-blue.svg?style=flat"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-purple.svg"/></a>
-  <a href="examples"><img src="https://img.shields.io/badge/examples-34-darkblue.svg"/></a>
-  <img src = "https://img.shields.io/badge/platform-Linux_|%20macOS_|%20Windows10-darkgreen.svg?style=flat"><br>
 </p>
+
+A suite of data analysis and extraction routines for VPLanet designed to be used with vspace and multi-planet scripts. It can also generate files for use with the VR Ulysses virtual reality data explorer.
