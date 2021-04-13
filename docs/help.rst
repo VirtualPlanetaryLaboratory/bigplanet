@@ -24,7 +24,7 @@ import BigPlanet as a module:
     import bigplanet as bp
 
 This allows you to use the various functions that are outlined in detail below, such as
-print all the names of the variables (the "keys") in the HDF5 file (PrintKeys), extract a particular
+print all the names of the variables (the "keys") in the bpl file (PrintKeys), extract a particular
 variable from its key (ExtractColumn), extract the units of a particular key value
 (ExtractUnits), extract unique values in a particular key (ExtractUniqueValues),
 create a matrix based on two keys (CreateMatrix), and write out a list of keys
@@ -44,13 +44,13 @@ are the names of various variables that can be extracted. It takes in the follow
 
 .. code-block:: python
 
-    PrintKeys(HDF5_File)
+    PrintKeys(bpl_File)
 
-where *HDF5_File* is the name of the HDF5 file, which is used like so:
+where *bpl_File* is the name of the bpl file, which is used like so:
 
 .. code-block:: python
 
-    HDF5_File = h5py.File(filename, 'r')
+    bpl_File = h5py.File(filename, 'r')
 
 
 
@@ -58,15 +58,15 @@ where *HDF5_File* is the name of the HDF5 file, which is used like so:
 -----------------
 
 ExtractColumn is a function that returns all of values of a particular column in the
-HDF5 file. It takes the following arguments:
+bpl file. It takes the following arguments:
 
 .. code-block:: python
 
-    ExtractColumn(HDF5_File,Key)
+    ExtractColumn(bpl_File,Key)
 
 where:
 
-*HDF5_File* is the name of the HDF5 file
+*bpl_File* is the name of the bpl file
 
 *Key* is the name of the particular variable you are extracting the units from.
 
@@ -77,15 +77,15 @@ See the `Understanding Keys`_ Section for an indepth look at the types of key op
 **ExtractUnits**
 ----------------
 ExtractUnits is a function that returns the units of a particular column in the
-HDF5 file. It takes the following arguments:
+bpl file. It takes the following arguments:
 
 .. code-block:: python
 
-    ExtractUnits(HDF5_File,Key)
+    ExtractUnits(bpl_File,Key)
 
 where:
 
-*HDF5_File* is the name of the HDF5 file
+*bpl_File* is the name of the bpl file
 
 *Key* is the name of the particular variable you are extracting the units from.
 
@@ -100,24 +100,24 @@ It takes the following arguments:
 
 .. code-block:: python
 
-    ExtractUniqueValues(HDF5_File,Key)
+    ExtractUniqueValues(bpl_File,Key)
 
 where:
 
-*HDF5_File* is the name of the HDF5 file
+*bpl_File* is the name of the bpl file
 
 *Key* is the name of the particular variable you are extracting the units from.
 
 
-**CreateHDF5File**
+**CreatebplFile**
 ------------------
-CreateHDF5File is a function that creates an HDF5 file from the input file that is passed
+CreatebplFile is a function that creates an bpl file from the input file that is passed
 to the function. This is mainly used if you forgot to run bigplanet or want to run all
 the code for bigplanet in module format
 
 .. code-block:: python
 
-    CreateHDF5File(inputfile)
+    CreatebplFile(inputfile)
 
 where:
 
@@ -158,7 +158,7 @@ are optional. WriteOutput takes the following arguments:
 
 where:
 
-*inputfile* is the name of the HDF5 file
+*inputfile* is the name of the bpl file
 
 *columns* is the list of keys you are extracting (Use the same format as ExtractColumn, ExtractUnits and
 ExtractUniqueValues)

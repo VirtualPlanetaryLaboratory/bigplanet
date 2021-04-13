@@ -8,22 +8,18 @@ import mmap
 import argparse
 import h5py
 import numpy as np
-from collections import OrderedDict
 import csv
 import pandas as pd
 from scipy import stats
 
 
 
-"""
-Code for command line call of bigplanet
-"""
-
-def GetDir(input_file):
+def GetDir(vspace_file):
     """ Give it input file and returns name of folder where simulations are located. """
+
     infiles = []
     # gets the folder name with all the sims
-    with open(input_file, 'r') as vpl:
+    with open(vspace_file, 'r') as vpl:
         content = [line.strip().split() for line in vpl.readlines()]
         for line in content:
             if line:
@@ -49,27 +45,11 @@ def GetSims(folder_name):
     sims = sorted([f.path for f in os.scandir(folder_name) if f.is_dir()])
     return sims
 
-def parallel_run_planet(input_file, cores,quiet,email):
-    # gets the folder name with all the sims
-    folder_name, infiles = GetDir(input_file)
-    #gets the list of sims
-    sims = GetSims(folder_name)
-    #initalizes the checkpoint file
-    checkpoint_file = os.getcwd() + '/' + '.' + folder_name + '_hdf5'
-
-    #checks if the files doesn't exist and if so then it creates it
-    if os.path.isfile(checkpoint_file) == False:
-        CreateCP(checkpoint_file,input_file,quiet,sims)
-
-    #if it does exist, it checks for any 0's (sims that didn't complete) and
-    #changes them to -1 to be re-ran
-    else:
-        ReCreateCP(checkpoint_file,input_file,quiet,sims)
-
+def GetSNames(in_files,sims):
     #get system and the body names
     body_names = []
 
-    for file in infiles:
+    for file in in_files:
         #gets path to infile
         full_path = os.path.join(sims[0],file)
         #if the infile is the vpl.in, then get the system name
@@ -80,7 +60,6 @@ def parallel_run_planet(input_file, cores,quiet,email):
                     if line:
                         if line[0] == 'sSystemName':
                             system_name = line[1]
-            logfile = system_name + ".log"
         else:
             with open(full_path, 'r') as infile:
                 content = [line.strip().split() for line in infile.readlines()]
@@ -89,53 +68,7 @@ def parallel_run_planet(input_file, cores,quiet,email):
                         if line[0] == 'sName':
                             body_names.append(line[1])
 
-    lock = mp.Lock()
-    workers = []
-    for i in range(cores):
-        workers.append(mp.Process(target=par_worker, args=(checkpoint_file,system_name,body_names, logfile,quiet,lock)))
-    for w in workers:
-        w.start()
-    for w in workers:
-        w.join()
-
-    CreateMasterHDF5(folder_name,sims)
-
-    if email is not None:
-        SendMail(email, folder_name)
-
-def SendMail(email,destfolder):
-    Title = "Bigplanet has finished for " + destfolder
-    Body = "Please log into your computer to verify the results. This is an auto-generated message."
-    message = "echo " + Body + " | " + 'mail -s ' + '"'+ Title + '" ' + email
-    sub.Popen(message , shell=True)
-
-def CreateCP(checkpoint_file,input_file,quiet,sims):
-    with open(checkpoint_file,'w') as cp:
-        cp.write('Vspace File: ' + os.getcwd() + '/' + input_file + '\n')
-        cp.write('Total Number of Simulations: '+ str(len(sims)) + '\n')
-        for f in range(len(sims)):
-            cp.write(sims[f] + " " + "-1 \n")
-        cp.write('THE END \n')
-
-
-def ReCreateCP(checkpoint_file,input_file,quiet,sims):
-    if quiet == False:
-        print('WARNING: multi-planet checkpoint file already exists!')
-        print('Checking if checkpoint file is corrupt...')
-
-    datalist = []
-
-    with open(checkpoint_file, 'r') as f:
-        for newline in f:
-            if newline:
-                datalist.append(newline.strip().split())
-                for l in datalist:
-                    if l[1] == '0':
-                        l[1] = '-1'
-
-    with open(checkpoint_file, 'w') as f:
-        for newline in datalist:
-            f.writelines(' '.join(newline)+'\n')
+    return system_name,body_names
 
 
 
@@ -192,8 +125,6 @@ def ProcessLogFile(logfile, data):
                 var = i[:i.find('[')].strip()
                 units = i[i.find('[') + 1:]
 
-                #print("V: <", var, "> U: <", units, ">")
-
                 if not units:
                     units = 'nd'
 
@@ -238,56 +169,17 @@ def ProcessLogFile(logfile, data):
 
     return data
 
-def ProcessInfile(infile, file, data):
-    with open(infile, 'r') as inf:
-        content = [line.strip() for line in inf.readlines()]
-        cont = False
-
-        for line in content:
-
-            if len(line) == 0 or line.startswith('#'):
-                continue
-
-            tmp_line = line[:line.find('#')].strip()
-
-            if cont:
-                fv_value = fv_value.append(tmp_line.split())
-                cont = False
-                continue
-
-            fv_param = tmp_line.split()[0]
-            fv_value = tmp_line.split()[1:]
-
-            if (fv_param == 'saOutputOrder' or fv_param == 'saGridOutput') and fv_value[-1] == '$':
-                cont = True
-
-def ProcessForwardfile(forwardfile, data, body, OutputOrder):
+def ProcessOutputfile(climatefile, data, body, Output, prefix):
 
     header = []
 
-    for i in OutputOrder:
-        header.append([i][0][0])
-
-    sorted = np.loadtxt(forwardfile, unpack=True, dtype=str,encoding=None)
-
-    for i,row in enumerate(sorted):
-        key_name = body + '_' + header[i] + '_forward'
-        data[key_name].append(row)
-
-
-    return data
-
-def ProcessClimatefile(climatefile, data, body, GridOutputOrder):
-
-    header = []
-
-    for i in GridOutputOrder:
+    for i in Output:
         header.append([i][0][0])
 
     sorted = np.loadtxt(climatefile, unpack=True, dtype=str,encoding=None)
 
     for i,row in enumerate(sorted):
-        key_name = body + '_' + header[i] + '_climate'
+        key_name = body + '_' + header[i] + prefix
         data[key_name].append(row)
 
     return data
@@ -315,29 +207,77 @@ def ProcessSeasonalClimatefile(prefix, data, body, name):
 
     return data
 
-def CreateHDF5(data, system_name, body_names, logfile, quiet, h5filename):
+def ProcessInputfile(data,in_file):
+
+    #set the body name equal to the infile name
+    body = in_file.partition('.')[0]
+
+    #open the input file and read it into an array
+    with open(in_file,"r") as infile:
+
+        content = [line.strip() for line in infile.readlines()]
+
+    # for every line in the array check if the line is blank
+    # or if the line starts with a #
+    for line in content:
+        if len(line) == 0:
+            continue
+
+        if line.startswith('#'):
+            continue
+
+        #if theres a comment in the line we don't want that, so partision the
+        #string and use everything before it
+        if '#' in line:
+            tmp_line = line.partition('#')[0]
+            tmp_line = tmp_line.split()
+            key = tmp_line[0]
+            value = tmp_line[1:]
+        else:
+            line = line.split()
+            key = line[0]
+            value = line[1:]
+
+
+    units = 'nd'
+    key_name = body + key + '_option'
+
+    print("Key:",key_name)
+    print("Value:",value)
+
+    if key_name in data:
+        data[key_name].append(value)
+
+    else:
+        data[key_name] = [units, value]
+
+    return data
+
+
+
+def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files, h5_file):
     """
     ....
     """
-    if quiet == False:
-        print('Creating',h5filename)
-        sys.stdout.flush()
-
+    # first process the log file
     data = ProcessLogFile(logfile, data)
+    # for each of the body names in the body_list
+    # check and see if they have a grid
+    # if so, then process those particular files
     for body in body_names:
         outputorder = body + "_OutputOrder"
         gridoutputorder = body + "_GridOutputOrder"
-
+        # if output order from the log file isn't empty process it
         if outputorder in data:
             OutputOrder = data[outputorder]
             forward_name = system_name + '.' + body + '.forward'
-            data = ProcessForwardfile(forward_name, data, body, OutputOrder)
+            data = ProcessOutputfile(forward_name, data, body, OutputOrder,'_forward')
 
-
+        #now process the grid output order (if it exists)
         if gridoutputorder in data:
             GridOutputOrder = data[gridoutputorder]
             climate_name = system_name + '.' + body + '.Climate'
-            data = ProcessClimatefile(climate_name, data, body, GridOutputOrder)
+            data = ProcessOutputfile(climate_name, data, body, GridOutputOrder,'_climate')
             prefix = system_name + '.' + body
             name = ['DailyInsol','PlanckB','SeasonalDivF','SeasonalFIn',
                     'SeasonalFMerid','SeasonalFOut','SeasonalIceBalance',
@@ -345,76 +285,121 @@ def CreateHDF5(data, system_name, body_names, logfile, quiet, h5filename):
             for i in range(len(name)):
                 data = ProcessSeasonalClimatefile(prefix,data,body,name[i])
 
-    with h5py.File(h5filename, 'w') as h:
-        for k, v in data.items():
-            #print("Key:",k)
-            #print("Length of Value:",len(v))
-            if len(v) == 2:
-                v_attr = v[0]
-                v_value = [v[1]]
+    #for each of the infiles, process the data
+    #for infile in in_files:
+        #data = ProcessInputfile(data,infile)
 
-            else:
-                v_value = v[0]
-                v_attr = ''
-            #print("Units:",v_attr)
-            #print("Value:",v_value)
-            #print()
-            h.create_dataset(k, data=np.array(v_value, dtype='S'),compression = 'gzip')
-            h[k].attrs['Units'] = v_attr
-
-def merge_data(data_list):
-
-    """Merge dictionaries with data.
-
-    Keyword arguments:
-    data_list -- the dictionary with data dictionaries
-    """
-
-    data = None
-
-    for f in data_list:
-        if not data:
-            data = data_list[f]
+    # now create the group where the data is stored in the HDF5 file
+    for k, v in data.items():
+        if len(v) == 2:
+            v_attr = v[0]
+            v_value = [v[1]]
         else:
-            for key in data_list[f]:
-                data[key] = np.append(data[key], data_list[f][key], axis=0)
+            v_value = v[0]
+            v_attr = ''
+
+        dataset_name = group_name + '/'+ k
 
 
-    return data
+        h5_file.create_dataset(dataset_name, data=np.array(v_value, dtype='S'), compression = 'gzip')
+        h5_file[dataset_name].attrs['Units'] = v_attr
 
-def load(filename):
+def CreateCP(checkpoint_file,input_file,sims):
+    with open(checkpoint_file,'w') as cp:
+        cp.write('Vspace File: ' + os.getcwd() + '/' + input_file + '\n')
+        cp.write('Total Number of Simulations: '+ str(len(sims)) + '\n')
+        for f in range(len(sims)):
+            cp.write(sims[f] + " " + "-1 \n")
+        cp.write('THE END \n')
 
-    """Load hdf5 file to data dictionary and return it.
+def ReCreateCP(checkpoint_file,input_file,quiet,sims,folder_name,email):
 
-    Keyword arguments:
-    filename -- the full path to hdf5 file
-    """
+    datalist = []
 
-    with h5py.File(filename, 'r') as f:
+    with open(checkpoint_file, 'r') as f:
+        for newline in f:
+            if newline:
+                datalist.append(newline.strip().split())
+                for l in datalist:
+                    if l[1] == '0':
+                        l[1] = '-1'
 
-        data = {}
+    with open(checkpoint_file, 'w') as f:
+        for newline in datalist:
+            f.writelines(' '.join(newline)+'\n')
 
-        for key in f:
-            data[key] = f[key][...]
+    if all(l[1] == '1' for l in datalist[2:-2]) == True:
+        print("All Groups in BPL file exist")
 
-    return data
+        if email is not None:
+             SendMail(email, folder_name)
+        exit()
 
-def save(filename, data):
+    else:
+        if not quiet:
+            print('Continuing from Checkpoint...')
 
-    """Create hdf5 file with given data.
 
-    Keyword arguments:
-    filename -- the full path to hdf5 file
-    data -- dictionary with data
-    """
 
-    with h5py.File(filename, 'w') as f:
+def Main(vspace_file,cores,quiet,email,parallel):
+    # Get the directory and list of  from the vspace file
+    dest_folder, infile_list = GetDir(vspace_file)
 
-        for key in data:
-            f.create_dataset(key, data[key].shape, dtype=data[key].dtype,compression='gzip')[...] = data[key]
+    # Get the list of simulation (trial) names in a List
+    sim_list = GetSims(dest_folder)
 
-## parallel worker to run vplanet ##
-def par_worker(checkpoint_file,system_name,body_names,logfile,quiet,lock):
+    # Get the SNames (sName and sSystemName) for the simuations
+    # Save the name of the log file
+    system_name, body_list = GetSNames(infile_list,sim_list)
+    log_file = system_name + ".log"
+
+    #creates the chepoint file name
+    checkpoint_file = os.getcwd() + '/' + '.' + dest_folder + '_BPL'
+
+    # Create the checkpoint file to be used to keep track of the groups
+    if os.path.isfile(checkpoint_file) == False:
+        CreateCP(checkpoint_file,vspace_file,sim_list)
+
+    #if it does exist, it checks for any 0's (sims that didn't complete) and
+    #changes them to -1 to be re-ran
+    else:
+        ReCreateCP(checkpoint_file,vspace_file,quiet,sim_list,dest_folder,email)
+
+    # now that we have everything we need
+    # we save the name of the Master HDF5 file
+    master_hdf5_file = dest_folder + '.bpl'
+
+
+    if parallel:
+        #creates the lock and workers for the parallel processes
+        lock = mp.Lock()
+        workers = []
+
+        #for each core, create a process that adds a group to the hdf5 file and adds that to the Master HDF5 file
+        with h5py.File(master_hdf5_file, 'w') as Master:
+            for i in range(cores):
+                workers.append(mp.Process(target=par_worker,
+                               args=(checkpoint_file, system_name, body_list, log_file, infile_list, quiet, lock, Master)))
+            for w in workers:
+                w.start()
+            for w in workers:
+                w.join()
+
+        sub.run(['rm',checkpoint_file])
+
+    else:
+        # loop over every trial in the list of simulations
+        # for each trial we need to create a group that hold the various files we
+        # want to populate the HDF5 file with
+        with h5py.File(master_hdf5_file, 'w') as Master:
+            for trial in sim_list:
+                data = {}
+                group_name = trial.split('/')[-1]
+                os.chdir(trial)
+                CreateHDF5Group(data, system_name, body_list, log_file, group_name,infile_list, Master)
+                os.chdir('../../')
+
+def par_worker(checkpoint_file,system_name,body_list,log_file,in_files,quiet,lock,h5_file):
 
     while True:
 
@@ -453,12 +438,10 @@ def par_worker(checkpoint_file,system_name,body_names,logfile,quiet,lock):
             for newline in f:
                 datalist.append(newline.strip().split())
 
-        single_folder = folder.split('/')[-1]
-        HDF5_File = single_folder + '.hdf5'
+        group_name = folder.split('/')[-1]
 
-        if os.path.isfile(HDF5_File) == False:
-
-            CreateHDF5(data, system_name, body_names, logfile, quiet, HDF5_File)
+        if group_name not in h5_file:
+            CreateHDF5Group(data, system_name, body_list, log_file, group_name,in_files, h5_file)
             for l in datalist:
                 if l[0] == folder:
                     l[1] = '1'
@@ -478,58 +461,16 @@ def par_worker(checkpoint_file,system_name,body_names,logfile,quiet,lock):
 
         os.chdir("../../")
 
-def CreateMasterHDF5(folder_name, sims):
-    master_file = folder_name + '.hdf5'
-    filelist = []
-    for i in sims:
-        single_folder = i.split('/')[-1]
-        HDF5_File = single_folder + '.hdf5'
-        HDF5_path = i + '/' + HDF5_File
-        filelist.append(HDF5_path)
 
-    #
-    # d_struct = {}
-    # for i in filelist:
-    #     f = h5py.File(i,"r+")
-    #     d_struct[i] = f.keys()
-    #     f.close()
-    #
-    # for i in filelist:
-    #     for j in d_struct[i]:
-    #         sub.call('h5copy','-i',i,'-o',master_file, '-s', j, '-d', j)
-    #
-
-    data = OrderedDict()
-
-    for f in filelist:
-        data[f] = load(f)
-
-    save(master_file, merge_data(data))
-
-    i = filelist[0]
-
-    with h5py.File(i,'r') as filename:
-        with h5py.File(master_file,'r+') as master_W:
-            for k in filename.keys():
-                units = filename[k].attrs.get('Units')
-                master_W[k].attrs['Units'] = units
-
-    for i in filelist:
-        sub.run(['rm', i])
-    sub.run(['rm','.' + folder_name + '_hdf5'])
-
-def main():
+if __name__ == "__main__":
     max_cores = mp.cpu_count()
     parser = argparse.ArgumentParser(description="Extract data from Vplanet simulations")
-    parser.add_argument("InputFile", help="Name of the vspace input file")
+    parser.add_argument("vspace_file", help="Name of the vspace input file")
     parser.add_argument("-c","--cores", type=int, default=max_cores, help="Number of processors used")
     parser.add_argument("-q","--quiet", action="store_true", help="no output for bigplanet")
     parser.add_argument("-m","--email",type=str, help="Mails user when bigplanet is complete")
+    parser.add_argument("-p","--parallel",action="store_true", help="parallel run of bigplanet")
 
     args = parser.parse_args()
 
-    parallel_run_planet(args.InputFile, args.cores, args.quiet,args.email)
-
-if __name__ == "__main__":
-
-    main()
+    Main(args.vspace_file,args.cores,args.quiet,args.email,args.parallel)
