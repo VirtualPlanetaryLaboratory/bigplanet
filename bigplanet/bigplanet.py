@@ -2,16 +2,11 @@
 
 import os
 import multiprocessing as mp
-import sys
 import subprocess as sub
-import mmap
 import argparse
 import h5py
 import numpy as np
 import csv
-import pandas as pd
-from scipy import stats
-
 
 
 def GetDir(vspace_file):
@@ -69,6 +64,32 @@ def GetSNames(in_files,sims):
                             body_names.append(line[1])
 
     return system_name,body_names
+
+def GetVplanetHelp():
+    #run vplanet -H and maybe format it to be saved as a dict?
+    #that would be faster to search through for later
+    vplanet_dict = {}
+
+    with open('vplanet_help.txt','r+') as f:
+        sub.call(['vplanet', '-H'],stdout = f)
+        input = f.readlines()[43:]
+
+
+    for line in input:
+
+        if line.startswith('b') or line.startswith('d') or line.startswith('i') or line.startswith('s'):
+            continue
+
+
+        #we don't care about the dividers either
+        if '=' in line:
+            continue
+
+
+
+        # we don't need any of the Output options so when we find it we gtfo
+        if 'Output Parameters' in line:
+            break
 
 
 
@@ -219,31 +240,37 @@ def ProcessInputfile(data,in_file):
 
     # for every line in the array check if the line is blank
     # or if the line starts with a #
-    for line in content:
-        if len(line) == 0:
+    next = False
+    for num,line in enumerate(content):
+        if len(line) == 0 or line.startswith('#'):
             continue
 
-        if line.startswith('#'):
-            continue
-
-        #if theres a comment in the line we don't want that, so partision the
+        #if theres a comment in the line we don't want that, so partition the
         #string and use everything before it
         if '#' in line:
-            tmp_line = line.partition('#')[0]
-            tmp_line = tmp_line.split()
-            key = tmp_line[0]
-            value = tmp_line[1:]
-        else:
-            line = line.split()
-            key = line[0]
-            value = line[1:]
+            line = line.partition('#')[0]
+        if next == True:
+                next = False
+                continue
+        # if there's a $ we need to get the next line and append it
+        if '$' in line:
+            next = True
+            line = line.partition('$')[0]
+            line += content[num + 1]
+            if '-' in line:
+                 line = line.replace('-', '')
 
+        line = line.split()
+        #print(line)
+        key = line[0]
+        value = line[1:]
 
-    units = 'nd'
-    key_name = body + key + '_option'
+        key_name = body + '_' + key + '_option'
+        units = ''
+        #units = ProcessOptionUnits(key,value,vplanet_help)
 
-    print("Key:",key_name)
-    print("Value:",value)
+        #print("Key:",key_name)
+        #print("Value:",value)
 
     if key_name in data:
         data[key_name].append(value)
@@ -253,12 +280,23 @@ def ProcessInputfile(data,in_file):
 
     return data
 
+def ProcessInfileUnits(name,value,vpl_file,vplanet_help):
+    # find the table in vplanet -h with the name we want
+    #if there is a minus sign check and see what the custom units are
+    #if not a minus, check the vpl file to see if the user set any particular units
+    #if thats not true, then use the default i guess
+    print()
 
 
 def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files, h5_file):
     """
     ....
     """
+
+    #for each of the infiles, process the data
+    for infile in in_files:
+        data = ProcessInputfile(data,infile)
+
     # first process the log file
     data = ProcessLogFile(logfile, data)
     # for each of the body names in the body_list
@@ -284,10 +322,6 @@ def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files
                     'SeasonalTemp']
             for i in range(len(name)):
                 data = ProcessSeasonalClimatefile(prefix,data,body,name[i])
-
-    #for each of the infiles, process the data
-    #for infile in in_files:
-        #data = ProcessInputfile(data,infile)
 
     # now create the group where the data is stored in the HDF5 file
     for k, v in data.items():
@@ -461,8 +495,7 @@ def par_worker(checkpoint_file,system_name,body_list,log_file,in_files,quiet,loc
 
         os.chdir("../../")
 
-
-if __name__ == "__main__":
+def Arguments():
     max_cores = mp.cpu_count()
     parser = argparse.ArgumentParser(description="Extract data from Vplanet simulations")
     parser.add_argument("vspace_file", help="Name of the vspace input file")
@@ -474,3 +507,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     Main(args.vspace_file,args.cores,args.quiet,args.email,args.parallel)
+
+
+if __name__ == "__main__":
+    Arguments()

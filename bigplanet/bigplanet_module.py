@@ -4,13 +4,9 @@ import os
 import multiprocessing as mp
 import sys
 import subprocess as sub
-import mmap
-import argparse
 import h5py
 import numpy as np
-from collections import OrderedDict
 import csv
-import pandas as pd
 from scipy import stats
 
 
@@ -18,24 +14,45 @@ from scipy import stats
 Code for Bigplanet Module
 """
 
-def HDF5File(hf):
-    return h5py.File(hf,'r')
+def BPLFile(hf):
+    return h5py.File(hf,'r+')
 
-def PrintKeys(hf):
+
+def PrintGroups(hf):
     """
-    Print all the keys names in the HDF5 file
+    Print all the Group names (trial folder names) in the BPL file
 
     Parameters
     ----------
     hf : File
-        The HDF5 where the data is stored.
+        The BPL where the data is stored.
         Example:
-            HDF5_File = h5py.File(filename, 'r')
+            BPL_File = BPLFile(hf)
+
+    """
+    #with h5py.File(hf,'r') as h:
+    for k in hf.keys():
+        print("Group:", k)
+
+def PrintDatasets(hf):
+    """
+    Print all the keys names in the BPL file
+
+    Parameters
+    ----------
+    hf : File
+        The BPL where the data is stored.
+        Example:
+            BPL_File = BPLFile(hf)
 
     """
 
-    for k in hf.keys():
-        print("Key:", k)
+    name = list(hf.keys())[0]
+    key = hf[name]
+
+    for k in list(key):
+
+        print("Dataset:", k)
 
         body = k.split("_")[0]
         variable = k.split("_")[1]
@@ -43,15 +60,16 @@ def PrintKeys(hf):
         if variable == "OutputOrder" or variable == "GridOutputOrder":
             continue
         else:
-            aggregation = k.split("_")[2]
+            aggregation = k.split("_")[-1]
 
             if aggregation == 'forward' or aggregation =='climate':
-                print("Key: " + body + '_'+ variable + '_min')
-                print("Key: " + body + '_'+ variable + '_max')
-                print("Key: " + body + '_'+ variable + '_mean')
-                print("Key: " + body + '_'+ variable + '_mode')
-                print("Key: " + body + '_'+ variable + '_geomean')
-                print("Key: " + body + '_'+ variable + '_stddev')
+                print("Dataset: " + body + '_'+ variable + '_min')
+                print("Dataset: " + body + '_'+ variable + '_max')
+                print("Dataset: " + body + '_'+ variable + '_mean')
+                print("Dataset: " + body + '_'+ variable + '_mode')
+                print("Dataset: " + body + '_'+ variable + '_geomean')
+                print("Dataset: " + body + '_'+ variable + '_stddev')
+
 
 def ExtractColumn(hf,k):
     """
@@ -84,56 +102,63 @@ def ExtractColumn(hf,k):
 
 
     """
+    data = []
+
+    key_list = list(hf.keys())
 
     body = k.split("_")[0]
     var = k.split("_")[1]
 
     if var == 'OutputOrder' or var == 'GridOutputOrder':
-        d = hf.get(k)
-        data = [v.decode() for d in hf[k] for v in d]
-        shape = hf[k].shape
-        data = np.reshape(data,(shape))
+        for key in key_list:
+            dataset = hf[key + '/' + k]
+            for d in dataset:
+                data.append(d.decode())
+
     else:
         aggreg = k.split("_")[2]
 
         if aggreg == 'forward':
-            d = hf.get(k)
-            data = HFD5Decoder(hf,k)
+            for key in key_list:
+                dataset = hf[key + '/' + k]
+                data.append(HFD5Decoder(hf,dataset))
 
         elif aggreg == 'mean':
-            data = ArgumentParser(hf,k)
-            data = np.mean(data, axis=1)
+            data = ArgumentParser(hf,k,key_list)
+            data = np.mean(data)
 
         elif aggreg == 'stddev':
-            data = ArgumentParser(hf,k)
-            data = np.std(data, axis=1)
+            data = ArgumentParser(hf,k,key_list)
+            data = np.std(data)
 
         elif aggreg == 'min':
-            data = ArgumentParser(hf,k)
-            data = np.amin(data,axis=1)
+            data = ArgumentParser(hf,k,key_list)
+            data = np.amin(data)
 
         elif aggreg == 'max':
-            data = ArgumentParser(hf,k)
-            data = np.amax(data,axis=1)
+            data = ArgumentParser(hf,k,key_list)
+            data = np.amax(data)
 
         elif aggreg == 'mode':
-            data = ArgumentParser(hf,k)
+            data = ArgumentParser(hf,k,key_list)
             data = stats.mode(data)
             data = data[0]
 
-
         elif aggreg == 'geomean':
-            data = ArgumentParser(hf,k)
-            data = stats.gmean(data, axis=1)
-
+            data = ArgumentParser(hf,k,key_list)
+            data = stats.gmean(data)
 
         elif aggreg == 'rms':
-            data = ArgumentParser(hf,k)
+            data = ArgumentParser(hf,k,key_list)
             #Calculate root mean squared here?
 
-        elif aggreg == 'initial' or aggreg == 'final':
-            data = [d.decode() for d in hf[k]]
-            data = [float(i) for i in data]
+        elif aggreg == 'initial' or aggreg == 'final' or aggreg == 'option':
+            for key in key_list:
+                dataset = hf[key + '/' + k]
+                for d in dataset:
+                    data.append(float(d.decode()))
+
+            #data = [float(d.decode()) for d in dataset]
 
         else:
             print('ERROR: Uknown aggregation option: ', aggreg)
@@ -173,15 +198,32 @@ def ExtractUnits(hf,k):
 
     return hf[k].attrs.get('Units')
 
-def ArgumentParser(hf,k):
-    forward = k.rpartition('_')[0] + '_forward'
-    data = HFD5Decoder(hf,forward)
-    return(data)
 
-def HFD5Decoder(hf,k):
-    data = [float(v.decode()) for d in hf[k] for v in d]
-    shape = hf[k].shape
+def ArgumentParser(hf,k,key_list):
+    data = []
+    forward = k.rpartition('_')[0] + '_forward'
+    for key in key_list:
+        dataset = hf[key + '/' + forward]
+        data.append(HFD5Decoder(hf,dataset))
+
+    return data
+
+def HFD5Decoder(hf,dataset):
+    #because the data is saved as a UTF-8 string, we need to decode it and
+    #turn it into a float
+    data = []
+    print(dataset)
+    for d in dataset:
+        if "forward" in dataset.name:
+            for value in d:
+                data.append(float(value.decode()))
+
+        else:
+            data.append(float(d.decode()))
+    #and now we reshape it the same shape as the original dataset
+    shape = dataset.shape
     data = np.reshape(data,(shape))
+
     return data
 
 def ExtractUniqueValues(hf,k):
@@ -207,14 +249,17 @@ def ExtractUniqueValues(hf,k):
 
 
     """
+    key_list = list(hf.keys())
+    data = []
 
-    if len(hf[k].shape) != 1:
-        data = HFD5Decoder(hf,k)
-        data.flatten()
-    else:
-        data = [d.decode() for d in hf[k]]
-        del data[0]
-        data = [float(i) for i in data]
+    for key in key_list:
+        dataset = hf[key + '/' + k]
+        if len(dataset.shape) != 1:
+            data = HFD5Decoder(hf,dataset)
+            data.flatten()
+        else:
+            for d in dataset:
+                data.append(float(d.decode()))
 
     unique = np.unique(data)
     return unique
@@ -252,12 +297,12 @@ def CreateMatrix(xaxis,yaxis,zarray, orientation=1):
         print("ERROR: Cannot reshape",zarray,"into shape("+xnum+","+ynum+")")
 
     zmatrix = np.reshape(zarray, (ynum, xnum))
-    zmatrix = np.flipud(zmatrix)
-
-    for i in range(0,orientation):
-        zmatrix = rotate90Clockwise(zmatrix)
-
-    zmatrix = np.flipud(zmatrix)
+    # zmatrix = np.flipud(zmatrix)
+    #
+    # for i in range(0,orientation):
+    #     zmatrix = rotate90Clockwise(zmatrix)
+    #
+    # zmatrix = np.flipud(zmatrix)
 
     return zmatrix
 
@@ -345,6 +390,6 @@ def WriteOutput(inputfile, columns,file="bigplanet.out",delim=" ",header=False,u
                     f.write(delim)
             f.write("\n")
 
-def CreateHDF5File(InputFile):
+def CreateBPLFile(InputFile):
     max_cores = mp.cpu_count()
     parallel_run_planet(InputFile,max_cores)
