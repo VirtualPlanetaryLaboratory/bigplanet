@@ -106,7 +106,7 @@ def GetVplanetHelp():
                     num = count
                 else:
                     num += 1
-            print()
+            #print()
         if "Output Parameters" in line:
             break
 

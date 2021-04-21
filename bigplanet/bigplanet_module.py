@@ -195,8 +195,9 @@ def ExtractUnits(hf,k):
     units : string
         A string value of the units
     """
-
-    return hf[k].attrs.get('Units')
+    key_list = list(hf.keys())
+    dataset = hf[key_list[0] + '/' + k]
+    return dataset.attrs.get('Units')
 
 
 def ArgumentParser(hf,k,key_list):
