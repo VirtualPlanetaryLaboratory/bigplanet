@@ -287,10 +287,6 @@ def ProcessInputfile(data,in_file, infile_list, vplanet_help):
 
         units = ProcessInfileUnits(key,value,infile_list, in_file, vplanet_help)
 
-        print("Key:",key)
-        print("Value:",value)
-        print('Unit:',units)
-        print()
 
         if key_name in data:
             data[key_name].append(value)
@@ -410,7 +406,7 @@ def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files
             v_attr = v[0]
             v_value = [v[1]]
         else:
-            v_value = v[0]
+            v_value = v
             v_attr = ''
 
         dataset_name = group_name + '/'+ k

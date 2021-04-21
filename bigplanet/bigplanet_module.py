@@ -110,10 +110,10 @@ def ExtractColumn(hf,k):
     var = k.split("_")[1]
 
     if var == 'OutputOrder' or var == 'GridOutputOrder':
-        for key in key_list:
-            dataset = hf[key + '/' + k]
-            for d in dataset:
-                data.append(d.decode())
+        dataset = hf[key_list[0] + '/' + k]
+        for d in dataset:
+            for value in d:
+                data.append(value.decode())
 
     else:
         aggreg = k.split("_")[2]
@@ -156,7 +156,7 @@ def ExtractColumn(hf,k):
             for key in key_list:
                 dataset = hf[key + '/' + k]
                 for d in dataset:
-                    data.append(float(d.decode()))
+                    data.append(float(np.char.decode(d)))
 
             #data = [float(d.decode()) for d in dataset]
 
@@ -212,17 +212,15 @@ def HFD5Decoder(hf,dataset):
     #because the data is saved as a UTF-8 string, we need to decode it and
     #turn it into a float
     data = []
-    print(dataset)
     for d in dataset:
         if "forward" in dataset.name:
             for value in d:
                 data.append(float(value.decode()))
-
         else:
             data.append(float(d.decode()))
     #and now we reshape it the same shape as the original dataset
     shape = dataset.shape
-    data = np.reshape(data,(shape))
+    data = np.reshape(data,shape)
 
     return data
 
