@@ -18,7 +18,7 @@ except ImportError:
 
 # Get the long description from the README
 def readme():
-  with open('README.rst') as f:
+  with open('README.md') as f:
     return f.read()
 
 # Read, version funcs taken from:
@@ -62,7 +62,7 @@ setup(name = 'bigplanet',
       packages = ['bigplanet'],
       entry_points = {
           'console_scripts': [
-               'bigplanet = bigplanet.bigplanet:main',
+               'bigplanet = bigplanet.bigplanet:Arguments',
                'bpstatus = bigplanet.bpstatus:main'
           ],
       },
