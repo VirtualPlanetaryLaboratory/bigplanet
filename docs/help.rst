@@ -24,7 +24,7 @@ import BigPlanet as a module:
     import bigplanet as bp
 
 This allows you to use the various functions that are outlined in detail below, such as
-print all the names of the variables (the "keys") in the bpl file (PrintKeys), extract a particular
+print all the names of the variables (the "keys") in the bpl file (PrintGroups and PrintDatasets), extract a particular
 variable from its key (ExtractColumn), extract the units of a particular key value
 (ExtractUnits), extract unique values in a particular key (ExtractUniqueValues),
 create a matrix based on two keys (CreateMatrix), and write out a list of keys
@@ -36,15 +36,26 @@ to a file (WriteOutput).
     Keys using the following format for naming: body_variable_aggregation
 
 
-**PrintKeys**
--------------
+**PrintGroups and PrintDatasets**
+---------------------------------
 
-PrintKeys, as the name suggests, simply that prints all available keys. Keys, as mentioned above,
-are the names of various variables that can be extracted. It takes in the following arguments:
+PrintGroups, as the name suggests, simply that prints all of the group names in the BPL file (ie test_rand_123)
+Groups are the names of various simulation folders (called trials) that can be extracted.
+
+PrintDatasets is identical except it prints the dataset names (ie 'earth_Obliquity_final')
+datasets are where the actual data is stored in the BPL file.
+
+PrintGroups takes in the following arguments:
 
 .. code-block:: python
 
-    PrintKeys(bpl_File)
+    PrintGroups(bpl_File)
+
+PrintDatasets takes in the following arguments:
+
+.. code-block:: python
+
+    PrintDatasets(bpl_File)
 
 where *bpl_File* is the name of the bpl file, which is used like so:
 
@@ -176,8 +187,8 @@ ExtractUniqueValues)
 Understanding Keys
 ==================
 Keys are the bread and butter of BigPlanet. The keys, as briefly mentioned above,
-are the names of the various variables that BigPlanet has extracted from the forward file
-and the log file that are generated when VPLanet finishes compiling.
+are the names of the various variables that BigPlanet has extracted from the forward file,
+the option files, and the log file that are generated when VPLanet finishes compiling.
 
 
 .. note::
@@ -196,24 +207,32 @@ Below is a table of all the various aggregations available at this time:
      - Usage
    * - Initial
      - returns a list of the *initial* values of the particular parameter for
-       every simulation
+       every simulation. This data is from the log file.
      - body_variable_initial
    * - Final
      - returns a list of the *final* values of the particular parameter for
-       every simulation
+       every simulation. This data is from the log file.
      - body_variable_final
    * - Output Order
-     - returns a list of the names and units of the forward file values
-     - body_variable_forward
+     - returns a list of the names and units of the forward file values. This data is from the log file.
+     - body_OutputOrder
    * - Forward
      - returns a nested list of the *forward* values of the particular
-       parameter for every simulation
+       parameter for every simulation. This data is from the forward file.
      - body_variable_forward
+   * - Grid Output Order
+     - if the Poise Module was used in the simulations,returns a list of the
+       names and units of the climate file values. This data is from the log file.
+     - body_GridOutputOrder
    * - Climate
      - if the Poise Module was used in the simulations, the climate options
        returns a nested list of the *climate* values of the particular
-       parameter for every simulation
+       parameter for every simulation. This data is from the climate files.
      - body_variable_climate
+   * - Option
+     - the option options returns a  list of the *option* values of the particular
+       parameter for every simulation. This data is from the option files.
+     - body_variable_option
 
 
 .. warning::
