@@ -66,31 +66,51 @@ def GetSNames(in_files,sims):
     return system_name,body_names
 
 def GetVplanetHelp():
-    #run vplanet -H and maybe format it to be saved as a dict?
-    #that would be faster to search through for later
+    proc = sub.Popen(['vplanet', '-H'], stdout=sub.PIPE,
+                            stderr=sub.PIPE)
+    output = str(proc.stdout.read())
+    output = output.split("\\n")[48:-1]
+
     vplanet_dict = {}
 
-    with open('vplanet_help.txt','r+') as f:
-        sub.call(['vplanet', '-H'],stdout = f)
-        input = f.readlines()[43:]
+    for count, line in enumerate(output):
 
+        if ((line.startswith('b') or line.startswith('d') or line.startswith('i') or line.startswith('s')) and len(line.split()) == 1 and
+         line[1].isupper() ==  True):
+            option = line
+            #print(option)
+            vplanet_dict[option] = {}
+            num = count + 2
+            while num != count:
+                if "**Custom unit**" in output[num]:
+                    custom_unit = output[num]
+                    custom_unit = custom_unit.rpartition('**')[-1].strip()
+                    #print("Custom Unit:",custom_unit)
+                    vplanet_dict[option]['Custom Unit'] = custom_unit
 
-    for line in input:
-
-        if line.startswith('b') or line.startswith('d') or line.startswith('i') or line.startswith('s'):
-            continue
-
-
-        #we don't care about the dividers either
-        if '=' in line:
-            continue
-
-
-
-        # we don't need any of the Output options so when we find it we gtfo
-        if 'Output Parameters' in line:
+                    num += 1
+                elif "**Dimension(s)** " in output[num]:
+                    dim = output[num]
+                    dim = dim.rpartition('**')[-1].strip()
+                    #print("Dim:",dim)
+                    vplanet_dict[option]['Dimension'] = dim
+                    #print(vplanet_dict.get(option,{}).get('Dimension'))
+                    num += 1
+                elif "**Default value** " in output[num]:
+                    default = output[num]
+                    default = default.rpartition('**')[-1].strip()
+                    #print("Default:",default)
+                    vplanet_dict[option]['Default value'] = default
+                    num += 1
+                elif "==============" in output[num]:
+                    num = count
+                else:
+                    num += 1
+            print()
+        if "Output Parameters" in line:
             break
 
+    return vplanet_dict
 
 
 def ProcessLogFile(logfile, data):
@@ -228,7 +248,7 @@ def ProcessSeasonalClimatefile(prefix, data, body, name):
 
     return data
 
-def ProcessInputfile(data,in_file):
+def ProcessInputfile(data,in_file, infile_list, vplanet_help):
 
     #set the body name equal to the infile name
     body = in_file.partition('.')[0]
@@ -257,8 +277,6 @@ def ProcessInputfile(data,in_file):
             next = True
             line = line.partition('$')[0]
             line += content[num + 1]
-            if '-' in line:
-                 line = line.replace('-', '')
 
         line = line.split()
         #print(line)
@@ -266,36 +284,99 @@ def ProcessInputfile(data,in_file):
         value = line[1:]
 
         key_name = body + '_' + key + '_option'
-        units = ''
-        #units = ProcessOptionUnits(key,value,vplanet_help)
 
-        #print("Key:",key_name)
-        #print("Value:",value)
+        units = ProcessInfileUnits(key,value,infile_list, in_file, vplanet_help)
 
-    if key_name in data:
-        data[key_name].append(value)
+        print("Key:",key)
+        print("Value:",value)
+        print('Unit:',units)
+        print()
 
-    else:
-        data[key_name] = [units, value]
+        if key_name in data:
+            data[key_name].append(value)
+
+        else:
+            data[key_name] = [units, value]
 
     return data
 
-def ProcessInfileUnits(name,value,vpl_file,vplanet_help):
-    # find the table in vplanet -h with the name we want
-    #if there is a minus sign check and see what the custom units are
-    #if not a minus, check the vpl file to see if the user set any particular units
-    #if thats not true, then use the default i guess
-    print()
+def ProcessInfileUnits(name,value,infile_list,in_file, vplanet_help):
+    # check if the value is negative and has a negative option
+    custom_unit = vplanet_help.get(name,{}).get('Custom Units')
+    if '-' in value and custom_unit != None:
+        unit = custom_unit
+        return unit
+    else:
+        dim = vplanet_help.get(name,{}).get('Dimension')
+
+        #since pressure and energy arent sUnits, we have to replace them with the dims for each
+        if dim == None or dim == 'nd':
+            unit = 'nd'
+            return unit
+
+        if 'pressure' in dim:
+            dim = dim.replace('pressure','(mass*length^-1*time^-2)')
+        if 'energy' in dim:
+            dim = dim.replace('energy','(mass*length^2*time^-2)')
+
+        #check the options file the value was in and see if the Dimension is there
+        with open(in_file, 'r+') as infile:
+            infile_lines = infile.readlines()
+
+        for infile_line in infile_lines:
+            if 'sUnitLength' in infile_line and 'length' in dim:
+                dim = dim.replace('length',infile_line.split()[1])
+            if 'sUnitAngle' in infile_line and 'angle' in dim:
+                dim = dim.replace('angle',infile_line.split()[1])
+            if 'sUnitTemp' in infile_line and 'temperature' in dim:
+                dim = dim.replace('temperature',infile_line.split()[1])
+            if 'sUnitMass' in infile_line and 'mass' in dim:
+                dim = dim.replace('mass',infile_line.split()[1])
+            if 'sUnitTime' in infile_line and 'time' in dim:
+                dim = dim.replace('time',infile_line.split()[1])
+
+            if infile_line == infile_lines[-1]:
+#if its not in the options file, it might be in in the vpl.in file
+                with open('vpl.in', 'r+') as vplfile:
+                    vpl_lines = vplfile.readlines()
+
+                for vpl_line in vpl_lines:
+                    if 'sUnitLength' in vpl_line and 'length' in dim:
+                        dim = dim.replace('length',vpl_line.split()[1])
+                    if 'sUnitAngle' in vpl_line and 'angle' in dim:
+                        dim = dim.replace('angle',vpl_line.split()[1])
+                    if 'sUnitTemp' in vpl_line and 'temperature' in dim:
+                        dim = dim.replace('temperature',vpl_line.split()[1])
+                    if 'sUnitMass' in vpl_line and 'mass' in dim:
+                        dim = dim.replace('mass',vpl_line.split()[1])
+                    if 'sUnitTime' in vpl_line and 'time' in dim:
+                        dim = dim.replace('time',vpl_line.split()[1])
+
+#the only place left is the default of sUnit of the Dimension
+                    if vpl_line == vpl_lines[-1]:
+                        if 'length' in dim:
+                            dim = dim.replace('length',vplanet_help['sUnitLength']['Default value'])
+                        if 'angle' in dim:
+                            dim = dim.replace('angle',vplanet_help['sUnitAngle']['Default value'])
+                        if 'temperature' in dim:
+                            dim = dim.replace('temperature',vplanet_help['sUnitTemp']['Default value'])
+                        if 'mass' in dim:
+                            dim = dim.replace('mass',vplanet_help['sUnitMass']['Default value'])
+                        if 'time' in dim:
+                            dim = dim.replace('time',vplanet_help['sUnitTime']['Default value'])
+        unit = dim
+    return unit
 
 
-def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files, h5_file):
+
+def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files, vplanet_help, h5_file):
     """
     ....
     """
 
     #for each of the infiles, process the data
     for infile in in_files:
-        data = ProcessInputfile(data,infile)
+        data = ProcessInputfile(data,infile,in_files,vplanet_help)
 
     # first process the log file
     data = ProcessLogFile(logfile, data)
@@ -387,6 +468,8 @@ def Main(vspace_file,cores,quiet,email,parallel):
     system_name, body_list = GetSNames(infile_list,sim_list)
     log_file = system_name + ".log"
 
+
+    vplanet_help = GetVplanetHelp()
     #creates the chepoint file name
     checkpoint_file = os.getcwd() + '/' + '.' + dest_folder + '_BPL'
 
@@ -413,7 +496,7 @@ def Main(vspace_file,cores,quiet,email,parallel):
         with h5py.File(master_hdf5_file, 'w') as Master:
             for i in range(cores):
                 workers.append(mp.Process(target=par_worker,
-                               args=(checkpoint_file, system_name, body_list, log_file, infile_list, quiet, lock, Master)))
+                               args=(checkpoint_file, system_name, body_list, log_file, infile_list, quiet, lock, vplanet_help, Master)))
             for w in workers:
                 w.start()
             for w in workers:
@@ -430,10 +513,10 @@ def Main(vspace_file,cores,quiet,email,parallel):
                 data = {}
                 group_name = trial.split('/')[-1]
                 os.chdir(trial)
-                CreateHDF5Group(data, system_name, body_list, log_file, group_name,infile_list, Master)
+                CreateHDF5Group(data, system_name, body_list, log_file, group_name,infile_list, vplanet_help, Master)
                 os.chdir('../../')
 
-def par_worker(checkpoint_file,system_name,body_list,log_file,in_files,quiet,lock,h5_file):
+def par_worker(checkpoint_file,system_name,body_list,log_file,in_files,quiet,lock,vplanet_help, h5_file):
 
     while True:
 
@@ -475,7 +558,7 @@ def par_worker(checkpoint_file,system_name,body_list,log_file,in_files,quiet,loc
         group_name = folder.split('/')[-1]
 
         if group_name not in h5_file:
-            CreateHDF5Group(data, system_name, body_list, log_file, group_name,in_files, h5_file)
+            CreateHDF5Group(data, system_name, body_list, log_file, group_name, in_files, vplanet_help, h5_file)
             for l in datalist:
                 if l[0] == folder:
                     l[1] = '1'
