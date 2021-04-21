@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Command Line Usage &mdash; bigplanet 2020 documentation</title>
+  <title>Command Line Usage &mdash; Bigplanet 2020 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="bigplanet 2020 documentation" href="index.html"/>
+    <link rel="top" title="Bigplanet 2020 documentation" href="index.html"/>
         <link rel="next" title="Examples Using BigPlanet" href="examples.html"/>
         <link rel="prev" title="Quickstart Guide" href="quickstart.html"/> 
 
@@ -53,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> bigplanet
+            <a href="index.html" class="icon icon-home"> Bigplanet
           
 
           
@@ -85,11 +85,11 @@
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Command Line Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#module-usage">Module Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#printkeys"><strong>PrintKeys</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#printgroups-and-printdatasets"><strong>PrintGroups and PrintDatasets</strong></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extractcolumn"><strong>ExtractColumn</strong></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extractunits"><strong>ExtractUnits</strong></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extractuniquevalues"><strong>ExtractUniqueValues</strong></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#createhdf5file"><strong>CreateHDF5File</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#createbplfile"><strong>CreatebplFile</strong></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#creatematrix"><strong>CreateMatrix</strong></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#writeoutput"><strong>WriteOutput</strong></a></li>
 </ul>
@@ -110,7 +110,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">bigplanet</a>
+        <a href="index.html">Bigplanet</a>
       </nav>
 
 
@@ -163,7 +163,7 @@ import BigPlanet as a module:</p>
 </pre></div>
 </div>
 <p>This allows you to use the various functions that are outlined in detail below, such as
-print all the names of the variables (the “keys”) in the HDF5 file (PrintKeys), extract a particular
+print all the names of the variables (the “keys”) in the bpl file (PrintGroups and PrintDatasets), extract a particular
 variable from its key (ExtractColumn), extract the units of a particular key value
 (ExtractUnits), extract unique values in a particular key (ExtractUniqueValues),
 create a matrix based on two keys (CreateMatrix), and write out a list of keys
@@ -172,39 +172,46 @@ to a file (WriteOutput).</p>
 <p class="admonition-title">Note</p>
 <p>Keys using the following format for naming: body_variable_aggregation</p>
 </div>
-<div class="section" id="printkeys">
-<h2><strong>PrintKeys</strong><a class="headerlink" href="#printkeys" title="Permalink to this headline">¶</a></h2>
-<p>PrintKeys, as the name suggests, simply that prints all available keys. Keys, as mentioned above,
-are the names of various variables that can be extracted. It takes in the following arguments:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PrintKeys</span><span class="p">(</span><span class="n">HDF5_File</span><span class="p">)</span>
+<div class="section" id="printgroups-and-printdatasets">
+<h2><strong>PrintGroups and PrintDatasets</strong><a class="headerlink" href="#printgroups-and-printdatasets" title="Permalink to this headline">¶</a></h2>
+<p>PrintGroups, as the name suggests, simply that prints all of the group names in the BPL file (ie test_rand_123)
+Groups are the names of various simulation folders (called trials) that can be extracted.</p>
+<p>PrintDatasets is identical except it prints the dataset names (ie ‘earth_Obliquity_final’)
+datasets are where the actual data is stored in the BPL file.</p>
+<p>PrintGroups takes in the following arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PrintGroups</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>where <em>HDF5_File</em> is the name of the HDF5 file, which is used like so:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">HDF5_File</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<p>PrintDatasets takes in the following arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PrintDatasets</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <em>bpl_File</em> is the name of the bpl file, which is used like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bpl_File</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="extractcolumn">
 <h2><strong>ExtractColumn</strong><a class="headerlink" href="#extractcolumn" title="Permalink to this headline">¶</a></h2>
 <p>ExtractColumn is a function that returns all of values of a particular column in the
-HDF5 file. It takes the following arguments:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractColumn</span><span class="p">(</span><span class="n">HDF5_File</span><span class="p">,</span><span class="n">Key</span><span class="p">)</span>
+bpl file. It takes the following arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractColumn</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">,</span><span class="n">Key</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where:</p>
-<p><em>HDF5_File</em> is the name of the HDF5 file</p>
+<p><em>bpl_File</em> is the name of the bpl file</p>
 <p><em>Key</em> is the name of the particular variable you are extracting the units from.</p>
 <p>See the <a class="reference internal" href="#understanding-keys">Understanding Keys</a> Section for an indepth look at the types of key options available.</p>
 </div>
 <div class="section" id="extractunits">
 <h2><strong>ExtractUnits</strong><a class="headerlink" href="#extractunits" title="Permalink to this headline">¶</a></h2>
 <p>ExtractUnits is a function that returns the units of a particular column in the
-HDF5 file. It takes the following arguments:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractUnits</span><span class="p">(</span><span class="n">HDF5_File</span><span class="p">,</span><span class="n">Key</span><span class="p">)</span>
+bpl file. It takes the following arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractUnits</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">,</span><span class="n">Key</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where:</p>
-<p><em>HDF5_File</em> is the name of the HDF5 file</p>
+<p><em>bpl_File</em> is the name of the bpl file</p>
 <p><em>Key</em> is the name of the particular variable you are extracting the units from.</p>
 <p>See the <a class="reference internal" href="#understanding-keys">Understanding Keys</a> Section for an indepth look at the types of key options available.</p>
 </div>
@@ -212,19 +219,19 @@ HDF5 file. It takes the following arguments:</p>
 <h2><strong>ExtractUniqueValues</strong><a class="headerlink" href="#extractuniquevalues" title="Permalink to this headline">¶</a></h2>
 <p>ExtractUniqueValues is a function that returns a list of unique values in a key provided.
 It takes the following arguments:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractUniqueValues</span><span class="p">(</span><span class="n">HDF5_File</span><span class="p">,</span><span class="n">Key</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractUniqueValues</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">,</span><span class="n">Key</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where:</p>
-<p><em>HDF5_File</em> is the name of the HDF5 file</p>
+<p><em>bpl_File</em> is the name of the bpl file</p>
 <p><em>Key</em> is the name of the particular variable you are extracting the units from.</p>
 </div>
-<div class="section" id="createhdf5file">
-<h2><strong>CreateHDF5File</strong><a class="headerlink" href="#createhdf5file" title="Permalink to this headline">¶</a></h2>
-<p>CreateHDF5File is a function that creates an HDF5 file from the input file that is passed
+<div class="section" id="createbplfile">
+<h2><strong>CreatebplFile</strong><a class="headerlink" href="#createbplfile" title="Permalink to this headline">¶</a></h2>
+<p>CreatebplFile is a function that creates an bpl file from the input file that is passed
 to the function. This is mainly used if you forgot to run bigplanet or want to run all
 the code for bigplanet in module format</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CreateHDF5File</span><span class="p">(</span><span class="n">inputfile</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CreatebplFile</span><span class="p">(</span><span class="n">inputfile</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where:</p>
@@ -253,7 +260,7 @@ are optional. WriteOutput takes the following arguments:</p>
 </pre></div>
 </div>
 <p>where:</p>
-<p><em>inputfile</em> is the name of the HDF5 file</p>
+<p><em>inputfile</em> is the name of the bpl file</p>
 <p><em>columns</em> is the list of keys you are extracting (Use the same format as ExtractColumn, ExtractUnits and
 ExtractUniqueValues)</p>
 <p><em>File</em> is the name of the output file</p>
@@ -265,8 +272,8 @@ ExtractUniqueValues)</p>
 <div class="section" id="understanding-keys">
 <h1>Understanding Keys<a class="headerlink" href="#understanding-keys" title="Permalink to this headline">¶</a></h1>
 <p>Keys are the bread and butter of BigPlanet. The keys, as briefly mentioned above,
-are the names of the various variables that BigPlanet has extracted from the forward file
-and the log file that are generated when VPLanet finishes compiling.</p>
+are the names of the various variables that BigPlanet has extracted from the forward file,
+the option files, and the log file that are generated when VPLanet finishes compiling.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Keys using the following format for naming: body_variable_aggregation</p>
@@ -282,28 +289,38 @@ and the log file that are generated when VPLanet finishes compiling.</p>
 <tbody>
 <tr class="row-even"><td><p>Initial</p></td>
 <td><p>returns a list of the <em>initial</em> values of the particular parameter for
-every simulation</p></td>
+every simulation. This data is from the log file.</p></td>
 <td><p>body_variable_initial</p></td>
 </tr>
 <tr class="row-odd"><td><p>Final</p></td>
 <td><p>returns a list of the <em>final</em> values of the particular parameter for
-every simulation</p></td>
+every simulation. This data is from the log file.</p></td>
 <td><p>body_variable_final</p></td>
 </tr>
 <tr class="row-even"><td><p>Output Order</p></td>
-<td><p>returns a list of the names and units of the forward file values</p></td>
-<td><p>body_variable_forward</p></td>
+<td><p>returns a list of the names and units of the forward file values. This data is from the log file.</p></td>
+<td><p>body_OutputOrder</p></td>
 </tr>
 <tr class="row-odd"><td><p>Forward</p></td>
 <td><p>returns a nested list of the <em>forward</em> values of the particular
-parameter for every simulation</p></td>
+parameter for every simulation. This data is from the forward file.</p></td>
 <td><p>body_variable_forward</p></td>
 </tr>
-<tr class="row-even"><td><p>Climate</p></td>
+<tr class="row-even"><td><p>Grid Output Order</p></td>
+<td><p>if the Poise Module was used in the simulations,returns a list of the
+names and units of the climate file values. This data is from the log file.</p></td>
+<td><p>body_GridOutputOrder</p></td>
+</tr>
+<tr class="row-odd"><td><p>Climate</p></td>
 <td><p>if the Poise Module was used in the simulations, the climate options
 returns a nested list of the <em>climate</em> values of the particular
-parameter for every simulation</p></td>
+parameter for every simulation. This data is from the climate files.</p></td>
 <td><p>body_variable_climate</p></td>
+</tr>
+<tr class="row-even"><td><p>Option</p></td>
+<td><p>the option options returns a  list of the <em>option</em> values of the particular
+parameter for every simulation. This data is from the option files.</p></td>
+<td><p>body_variable_option</p></td>
 </tr>
 </tbody>
 </table>
