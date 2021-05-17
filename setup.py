@@ -72,7 +72,7 @@ setup(
             "bpstatus = bigplanet.bpstatus:main",
         ],
     },
-    install_requires=["numpy", "h5py>=3.2", "argparse", "pandas", "scipy"],
+    install_requires=["numpy", "h5py", "argparse", "pandas", "scipy"],
     include_package_data=True,
     zip_safe=False,
 )
