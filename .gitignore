@@ -64,3 +64,6 @@ bigplanet/bigplanet/bootstrap_utils.py
 bigplanet.egg-info/
 dist/
 build/
+
+# SCM VERSION
+bigplanet/bigplanet_version.py
