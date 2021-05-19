@@ -59,8 +59,8 @@ jobs:
           files: junit/test-*.xml
           comment_mode: update last
 
-      - name: Publish coverage
-        uses: codecov/codecov-actions@v1
+      - name: CodeCov
+        uses: codecov/codecov-actions@v1.5.0
         if: steps.install.outcome == 'success'
         with:
           files: junit/tests-*.xml
