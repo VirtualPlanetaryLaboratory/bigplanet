@@ -1,4 +1,4 @@
-import subprocess as sub
+import subprocess
 import numpy as np
 import os
 import warnings
