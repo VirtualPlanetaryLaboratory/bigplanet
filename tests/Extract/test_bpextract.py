@@ -1,7 +1,7 @@
 import subprocess as sub
 import numpy as np
 import os
-cwd = os.path.dirname(os.path.realpath(__file__))
+import pathlib
 import warnings
 import h5py
 import multiprocessing as mp
@@ -9,29 +9,28 @@ import sys
 import bigplanet as bp
 
 def test_bpextract():
+    #gets current path
+    path = pathlib.Path(__file__).parents[0].absolute()
+    sys.path.insert(1, str(path.parents[0]))
+
     #gets the number of cores on the machine
-    cores = str(mp.cpu_count())
+    cores = mp.cpu_count()
     if cores == 1:
         warnings.warn("There is only 1 core on the machine",stacklevel=3)
     else:
-        #removes checkpoint files
-        cp = cwd+'/.BP_Extract'
-        sub.run(['rm', cp],cwd=cwd)
-        cp_hdf5 = cwd+'/.BP_Extract_BPL'
-        sub.run(['rm', cp_hdf5],cwd=cwd)
-        #removes the folders from when vspace is ran
-        dir = cwd+'/BP_Extract'
-        sub.run(['rm', '-rf', dir],cwd=cwd)
-        sub.run(['rm', '-rf', (dir + '.bpl')],cwd=cwd)
-        #runs vspace
-        sub.run(['vspace','vspace.in'],cwd=cwd)
-        #runs multi-planet
-        sub.run(['multi-planet','vspace.in','-c',cores],cwd=cwd)
-        #runs bigplanet
-        sub.run(['bigplanet','vspace.in','-c',cores],cwd=cwd)
+        # Run vspace
+        if not (path / "BP_Extract").exists():
+            subprocess.check_output(["vspace", "vspace.in"], cwd=path)
 
-        #reads in the hdf5 file
-        file = h5py.File((dir + '.bpl'),'r')
+        # Run multi-planet
+        if not (path / ".BP_Extract").exists():
+            subprocess.check_output(["multi-planet", "vspace.in"], cwd=path)
+
+        # Run bigplanet
+        if not (path / ".BP_Extract_BPL").exists():
+            subprocess.check_output(["bigplanet", "vspace.in"], cwd=path)
+
+        file  = bp.BPLFile(path / "BP_Extract.bpl")
 
         earth_Instellation_final = bp.ExtractColumn(file,'earth_Instellation_final')
         sun_RotPer_initial = bp.ExtractColumn(file,'sun_RotPer_initial')

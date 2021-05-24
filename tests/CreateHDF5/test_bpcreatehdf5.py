@@ -1,37 +1,38 @@
 import subprocess as sub
 import numpy as np
 import os
-cwd = os.path.dirname(os.path.realpath(__file__))
+import pathlib
 import multiprocessing as mp
 import warnings
 import sys
 
+
 def test_bpcreatehdf5():
+    #gets current path
+    path = pathlib.Path(__file__).parents[0].absolute()
+    sys.path.insert(1, str(path.parents[0]))
+
     #gets the number of cores on the machine
-    cores = str(mp.cpu_count())
+    cores = mp.cpu_count()
     if cores == 1:
         warnings.warn("There is only 1 core on the machine",stacklevel=3)
     else:
-        #removes checkpoint files
-        cp = cwd+'/.BP_CreateHDF5'
-        sub.run(['rm', cp],cwd=cwd)
-        cp_hdf5 = cwd+'/.BP_CreateHDF5_BPL'
-        sub.run(['rm', cp_hdf5],cwd=cwd)
-        #removes the folders from when vspace is ran
-        dir = cwd+'/BP_CreateHDF5'
-        sub.run(['rm', '-rf', dir],cwd=cwd)
-        sub.run(['rm', '-rf', (dir + '.bpl')],cwd=cwd)
-        #runs vspace
-        sub.run(['vspace','vspace.in'],cwd=cwd)
-        #runs multi-planet
-        sub.run(['multi-planet','vspace.in','-c',cores],cwd=cwd)
-        #runs bigplanet
-        sub.run(['bigplanet','vspace.in','-c',cores],cwd=cwd)
+        # Run vspace
+        if not (path / "BP_CreateHDF5").exists():
+            subprocess.check_output(["vspace", "vspace.in"], cwd=path)
 
-        #gets list of folders
-        folders = sorted([f.path for f in os.scandir(dir) if f.is_dir()])
-        #checks if the hdf5 files exist
-        assert os.path.isfile((dir + '.bpl')) == True
+        # Run multi-planet
+        if not (path / ".BP_CreateHDF5").exists():
+            subprocess.check_output(["multi-planet", "vspace.in"], cwd=path)
+
+        # Run bigplanet
+        if not (path / ".BP_CreateHDF5_BPL").exists():
+            subprocess.check_output(["bigplanet", "vspace.in"], cwd=path)
+
+        file  = (path / "BP_CreateHDF5.bpl")
+
+        #checks if the bpl files exist
+        assert os.path.isfile(file) == True
 
 if __name__ == "__main__":
     test_bpcreatehdf5()
