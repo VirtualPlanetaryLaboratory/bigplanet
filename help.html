@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Command Line Usage &mdash; Bigplanet 2020 documentation</title>
@@ -27,6 +28,10 @@
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   
 
   
@@ -141,7 +146,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="command-line-usage">
+  <section id="command-line-usage">
 <h1>Command Line Usage<a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h1>
 <p>Using BigPlanet on the command line is relatively straight forward. After a suite of
 simulations (set up with <a class="reference external" href="../vspace">vspace</a>) has completed, simply run the following
@@ -154,8 +159,8 @@ There are three optional arguments:
 <code class="code docutils literal notranslate"><span class="pre">-c</span></code> : the number of processors used
 <code class="code docutils literal notranslate"><span class="pre">-q</span></code> : quiet mode (nothing is printed to the command line)
 <code class="code docutils literal notranslate"><span class="pre">-m</span></code> : emails the user when Bigplanet is complete</p>
-</div>
-<div class="section" id="module-usage">
+</section>
+<section id="module-usage">
 <h1>Module Usage<a class="headerlink" href="#module-usage" title="Permalink to this headline">¶</a></h1>
 <p>Using BigPlanet as a module is where majority of the <em>magic</em> happens. To start,
 import BigPlanet as a module:</p>
@@ -172,7 +177,7 @@ to a file (WriteOutput).</p>
 <p class="admonition-title">Note</p>
 <p>Keys using the following format for naming: body_variable_aggregation</p>
 </div>
-<div class="section" id="printgroups-and-printdatasets">
+<section id="printgroups-and-printdatasets">
 <h2><strong>PrintGroups and PrintDatasets</strong><a class="headerlink" href="#printgroups-and-printdatasets" title="Permalink to this headline">¶</a></h2>
 <p>PrintGroups, as the name suggests, simply that prints all of the group names in the BPL file (ie test_rand_123)
 Groups are the names of various simulation folders (called trials) that can be extracted.</p>
@@ -190,8 +195,8 @@ datasets are where the actual data is stored in the BPL file.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bpl_File</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="extractcolumn">
+</section>
+<section id="extractcolumn">
 <h2><strong>ExtractColumn</strong><a class="headerlink" href="#extractcolumn" title="Permalink to this headline">¶</a></h2>
 <p>ExtractColumn is a function that returns all of values of a particular column in the
 bpl file. It takes the following arguments:</p>
@@ -202,8 +207,8 @@ bpl file. It takes the following arguments:</p>
 <p><em>bpl_File</em> is the name of the bpl file</p>
 <p><em>Key</em> is the name of the particular variable you are extracting the units from.</p>
 <p>See the <a class="reference internal" href="#understanding-keys">Understanding Keys</a> Section for an indepth look at the types of key options available.</p>
-</div>
-<div class="section" id="extractunits">
+</section>
+<section id="extractunits">
 <h2><strong>ExtractUnits</strong><a class="headerlink" href="#extractunits" title="Permalink to this headline">¶</a></h2>
 <p>ExtractUnits is a function that returns the units of a particular column in the
 bpl file. It takes the following arguments:</p>
@@ -214,8 +219,8 @@ bpl file. It takes the following arguments:</p>
 <p><em>bpl_File</em> is the name of the bpl file</p>
 <p><em>Key</em> is the name of the particular variable you are extracting the units from.</p>
 <p>See the <a class="reference internal" href="#understanding-keys">Understanding Keys</a> Section for an indepth look at the types of key options available.</p>
-</div>
-<div class="section" id="extractuniquevalues">
+</section>
+<section id="extractuniquevalues">
 <h2><strong>ExtractUniqueValues</strong><a class="headerlink" href="#extractuniquevalues" title="Permalink to this headline">¶</a></h2>
 <p>ExtractUniqueValues is a function that returns a list of unique values in a key provided.
 It takes the following arguments:</p>
@@ -225,8 +230,8 @@ It takes the following arguments:</p>
 <p>where:</p>
 <p><em>bpl_File</em> is the name of the bpl file</p>
 <p><em>Key</em> is the name of the particular variable you are extracting the units from.</p>
-</div>
-<div class="section" id="createbplfile">
+</section>
+<section id="createbplfile">
 <h2><strong>CreatebplFile</strong><a class="headerlink" href="#createbplfile" title="Permalink to this headline">¶</a></h2>
 <p>CreatebplFile is a function that creates an bpl file from the input file that is passed
 to the function. This is mainly used if you forgot to run bigplanet or want to run all
@@ -236,8 +241,8 @@ the code for bigplanet in module format</p>
 </div>
 <p>where:</p>
 <p><em>inputfile</em> is the same file used to run vspace and multi-planet</p>
-</div>
-<div class="section" id="creatematrix">
+</section>
+<section id="creatematrix">
 <h2><strong>CreateMatrix</strong><a class="headerlink" href="#creatematrix" title="Permalink to this headline">¶</a></h2>
 <p>CreateMatrix is a function that returns the zaxis for a 3D matrix. This is useful
 for plotting Contour Plots of the data extracted. CreateMatrix takes the following
@@ -251,8 +256,8 @@ arguments:</p>
 <p><em>zarray</em> is the ExtractColumn() of what you want the zaxis to be</p>
 <p><em>orientation</em> is the orientation of the data based on a 4 quadrant grid that
 goes counter clockwise in 90 degree interments. The default is 1, or bottom left corner.</p>
-</div>
-<div class="section" id="writeoutput">
+</section>
+<section id="writeoutput">
 <h2><strong>WriteOutput</strong><a class="headerlink" href="#writeoutput" title="Permalink to this headline">¶</a></h2>
 <p>WriteOutput is a function that writes the list of columns to an output file. Headers
 are optional. WriteOutput takes the following arguments:</p>
@@ -267,9 +272,9 @@ ExtractUniqueValues)</p>
 <p><em>delim</em> is the delimiter for the output file (the default is spaces)</p>
 <p><em>header</em> adds the names and units for each column (default is False)</p>
 <p><em>ulysses</em> makes the file compatable with VR Ulysses (default is False)</p>
-</div>
-</div>
-<div class="section" id="understanding-keys">
+</section>
+</section>
+<section id="understanding-keys">
 <h1>Understanding Keys<a class="headerlink" href="#understanding-keys" title="Permalink to this headline">¶</a></h1>
 <p>Keys are the bread and butter of BigPlanet. The keys, as briefly mentioned above,
 are the names of the various variables that BigPlanet has extracted from the forward file,
@@ -368,7 +373,7 @@ values of the particular parameter for every simulation</p></td>
 </tbody>
 </table>
 </div>
-</div>
+</section>
 
 
            </div>
@@ -416,6 +421,7 @@ values of the particular parameter for every simulation</p></td>
             HAS_SOURCE:  true
         };
     </script>
+      <script type="text/javascript" src="_static/documentation_options.js"></script>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
