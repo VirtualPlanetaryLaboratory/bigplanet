@@ -46,4 +46,4 @@ jobs:
         if: steps.build.outcome == 'success' && github.event_name == 'push'
         with:
           branch: gh-pages
-          folder: docs/.build/html
+          folder: docs/_build/html
