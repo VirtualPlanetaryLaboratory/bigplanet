@@ -7,7 +7,7 @@
 *.DailyInsolInit
 *.inv
 *.pdf
-
+*.bpl
 *.zip
 *.ps
 *.gif
@@ -19,14 +19,12 @@ SeasonalClimateFiles
 *.hdf5
 
 #files created from running tests
-tests/BigPlanetCreateHDF5/BP_CreateHDF5/
-tests/BigPlanetExtract/BP_Extract/
-tests/BigPlanetStats/BP_Stats/
-
-
-# Examples
-examples/ParameterSweep/ParameterSweep/
-examples/IoHeat/data/
+tests/CreateHDF5/BP_CreateHDF5/
+tests/CreateHDF5/.*
+tests/Extract/BP_Extract/
+tests/Extract/.*
+tests/Stats/BP_Stats/
+tests/Stats/.*
 
 
 # Aux files / build info / garbage

@@ -37,8 +37,8 @@ jobs:
         run: |
           cd docs
           make html
-          cp sphinx_rtd_theme/static/css/theme.css .build/html/_static/css/theme.css
-          touch .build/html/.nojekyll
+          cp sphinx_rtd_theme/static/css/theme.css _build/html/_static/css/theme.css
+          touch _build/html/.nojekyll
 
       - name: Publish
         uses: JamesIves/github-pages-deploy-action@4.1.2

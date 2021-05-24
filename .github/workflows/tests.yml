@@ -17,6 +17,7 @@ jobs:
           - python-version: "3.6"
           - python-version: "3.7"
           - python-version: "3.8"
+          - python-version: "3.9"
 
     steps:
       - uses: actions/checkout@v2
@@ -60,7 +61,7 @@ jobs:
           comment_mode: update last
 
       - name: CodeCov
-        uses: codecov/codecov-actions@v1.5.0
+        uses: codecov/codecov-action@v1.5.0
         if: steps.install.outcome == 'success'
         with:
           files: junit/tests-*.xml

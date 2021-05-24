@@ -113,7 +113,7 @@ def ExtractColumn(hf,k):
         dataset = hf[key_list[0] + '/' + k]
         for d in dataset:
             for value in d:
-                data.append(value.decode())
+                data.append(float(value.decode()))
 
     else:
         aggreg = k.split("_")[2]
@@ -124,29 +124,34 @@ def ExtractColumn(hf,k):
                 data.append(HFD5Decoder(hf,dataset))
 
         elif aggreg == 'mean':
-            data = ArgumentParser(hf,k,key_list)
-            data = np.mean(data)
+            argument = ArgumentParser(hf,k,key_list)
+            for i in argument:
+                data.append(float(np.mean(i, axis = 1)))
 
         elif aggreg == 'stddev':
-            data = ArgumentParser(hf,k,key_list)
-            data = np.std(data)
+            argument = ArgumentParser(hf,k,key_list)
+            for i in argument:
+                data.append(float(np.std(i, axis = 1)))
 
         elif aggreg == 'min':
-            data = ArgumentParser(hf,k,key_list)
-            data = np.amin(data)
+            argument = ArgumentParser(hf,k,key_list)
+            for i in argument:
+                data.append(float(np.amin(i, axis = 1)))
 
         elif aggreg == 'max':
-            data = ArgumentParser(hf,k,key_list)
-            data = np.amax(data)
+            argument = ArgumentParser(hf,k,key_list)
+            for i in argument:
+                data.append(float(np.amax(i,axis = 1)))
 
         elif aggreg == 'mode':
-            data = ArgumentParser(hf,k,key_list)
-            data = stats.mode(data)
-            data = data[0]
+            argument = ArgumentParser(hf,k,key_list)
+            for i in argument:
+                data.append(float(stats.mode(i, axis = 1)))
 
         elif aggreg == 'geomean':
-            data = ArgumentParser(hf,k,key_list)
-            data = stats.gmean(data)
+            argument = ArgumentParser(hf,k,key_list)
+            for i in argument:
+                data.append(float(stats.gmean(i, axis = 1)))
 
         elif aggreg == 'rms':
             data = ArgumentParser(hf,k,key_list)

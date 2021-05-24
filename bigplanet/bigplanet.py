@@ -210,18 +210,21 @@ def ProcessLogFile(logfile, data):
 
     return data
 
-def ProcessOutputfile(climatefile, data, body, Output, prefix):
+def ProcessOutputfile(file, data, body, Output, prefix):
 
     header = []
 
     for i in Output:
         header.append([i][0][0])
 
-    sorted = np.loadtxt(climatefile, unpack=True, dtype=str,encoding=None)
+    sorted = np.genfromtxt(file, dtype=float,encoding=None)
+    sorted = sorted.transpose()
+
 
     for i,row in enumerate(sorted):
         key_name = body + '_' + header[i] + prefix
         data[key_name].append(row)
+        #print(data[key_name])
 
     return data
 
