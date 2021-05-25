@@ -7,6 +7,7 @@ import argparse
 import h5py
 import numpy as np
 import csv
+import pathlib
 
 
 def GetDir(vspace_file):
@@ -116,7 +117,6 @@ def GetVplanetHelp():
 def ProcessLogFile(logfile, data):
     prop = ''
     body = 'system'
-
     with open(logfile, 'r') as log:
         content = [line.strip() for line in log.readlines()]
 
@@ -557,7 +557,9 @@ def par_worker(checkpoint_file,system_name,body_list,log_file,in_files,quiet,loc
         group_name = folder.split('/')[-1]
 
         if group_name not in h5_file:
+            log_file = os.path.abspath(folder + '/' + log_file)
             CreateHDF5Group(data, system_name, body_list, log_file, group_name, in_files, vplanet_help, h5_file)
+
             for l in datalist:
                 if l[0] == folder:
                     l[1] = '1'
