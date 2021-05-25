@@ -47,7 +47,7 @@ jobs:
           python -m pip install -U pip
           python -m pip install -e .
           python -m pip install vspace
-          python -m pip install multi-planet
+          python -m pip install multiplanet
 
 
       - name: Run tests
