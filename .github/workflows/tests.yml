@@ -43,7 +43,7 @@ jobs:
 
       - name: Install tools
         id: tools
-          if: steps.install.outcome == 'success'
+        if: steps.install.outcome == 'success'
         shell: bash -l {0}
         run: |
           python -m pip install -U pip
