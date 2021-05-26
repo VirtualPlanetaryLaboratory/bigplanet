@@ -38,7 +38,7 @@ def GetDir(vspace_file):
 def GetSims(folder_name):
     """ Pass it folder name where simulations are and returns list of simulation folders. """
     #gets the list of sims
-    sims = sorted([f.path for f in os.scandir(folder_name) if f.is_dir()])
+    sims = sorted([f.path for f in os.scandir(os.path.abspath(folder_name)) if f.is_dir()])
     return sims
 
 def GetSNames(in_files,sims):
@@ -228,8 +228,9 @@ def ProcessOutputfile(file, data, body, Output, prefix):
 
     return data
 
-def ProcessSeasonalClimatefile(prefix, data, body, name):
-    path = os.path.abspath('SeasonalClimateFiles/' + prefix + '.' + name + '.0')
+def ProcessSeasonalClimatefile(prefix, data, body, name,folder):
+    file_name = prefix + '.' + name + '.0'
+    path = os.path.join(folder,"SeasonalClimateFiles", file_name)
     file = list(csv.reader(open(path)))
     key_name = body + '_' + name
     units = ''
@@ -369,16 +370,19 @@ def ProcessInfileUnits(name,value,infile_list,in_file, vplanet_help):
 
 
 
-def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files, vplanet_help, h5_file):
+def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files, vplanet_help, folder, h5_file):
     """
     ....
     """
 
     #for each of the infiles, process the data
     for infile in in_files:
+        infile = os.path.join(folder,infile)
         data = ProcessInputfile(data,infile,in_files,vplanet_help)
 
     # first process the log file
+    #gets the absoulte path for the log file
+    logfile = os.path.abspath(os.path.join(folder,logfile))
     data = ProcessLogFile(logfile, data)
     # for each of the body names in the body_list
     # check and see if they have a grid
@@ -389,20 +393,22 @@ def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files
         # if output order from the log file isn't empty process it
         if outputorder in data:
             OutputOrder = data[outputorder]
-            forward_name = os.path.abspath(system_name + '.' + body + '.forward')
-            data = ProcessOutputfile(forward_name, data, body, OutputOrder,'_forward')
+            forward_name = system_name + '.' + body + '.forward'
+            forward_path = os.path.abspath(os.path.join(folder,forward_name))
+            data = ProcessOutputfile(forward_path, data, body, OutputOrder,'_forward')
 
         #now process the grid output order (if it exists)
         if gridoutputorder in data:
             GridOutputOrder = data[gridoutputorder]
-            climate_name = os.path.abspath(system_name + '.' + body + '.Climate')
-            data = ProcessOutputfile(climate_name, data, body, GridOutputOrder,'_climate')
+            climate_name = system_name + '.' + body + '.Climate'
+            climate_path = os.path.abspath(os.path.join(folder,climate_name))
+            data = ProcessOutputfile(climate_path, data, body, GridOutputOrder,'_climate')
             prefix = system_name + '.' + body
             name = ['DailyInsol','PlanckB','SeasonalDivF','SeasonalFIn',
                     'SeasonalFMerid','SeasonalFOut','SeasonalIceBalance',
                     'SeasonalTemp']
             for i in range(len(name)):
-                data = ProcessSeasonalClimatefile(prefix,data,body,name[i])
+                data = ProcessSeasonalClimatefile(prefix,data,body,name[i],folder)
 
     # now create the group where the data is stored in the HDF5 file
     for k, v in data.items():
@@ -483,25 +489,20 @@ def Main(vspace_file,cores,quiet,email):
 
     # now that we have everything we need
     # we save the name of the Master HDF5 file
-    master_hdf5_file = dest_folder + '.bpl'
-
+    master_hdf5_file = os.path.abspath(dest_folder + '.bpl')
 
     #creates the lock and workers for the parallel processes
     lock = mp.Lock()
     workers = []
 
     #for each core, create a process that adds a group to the hdf5 file and adds that to the Master HDF5 file
-    with h5py.File(master_hdf5_file, 'w') as Master:
-        for i in range(cores):
-            workers.append(mp.Process(target=par_worker,
-                           args=(checkpoint_file, system_name, body_list, log_file, infile_list, quiet, lock, vplanet_help, Master)))
-        for w in workers:
-            w.start()
-        for w in workers:
-            w.join()
-
-    sub.run(['rm',checkpoint_file])
-
+    for i in range(cores):
+        workers.append(mp.Process(target=par_worker,
+                       args=(checkpoint_file, system_name, body_list, log_file, infile_list, quiet, lock, vplanet_help, master_hdf5_file)))
+    for w in workers:
+        w.start()
+    for w in workers:
+        w.join()
 
 def par_worker(checkpoint_file,system_name,body_list,log_file,in_files,quiet,lock,vplanet_help, h5_file):
 
@@ -533,7 +534,7 @@ def par_worker(checkpoint_file,system_name,body_list,log_file,in_files,quiet,loc
 
         lock.release()
 
-        os.chdir(folder)
+        folder = os.path.abspath(folder)
 
         lock.acquire()
         datalist = []
@@ -542,26 +543,23 @@ def par_worker(checkpoint_file,system_name,body_list,log_file,in_files,quiet,loc
             for newline in f:
                 datalist.append(newline.strip().split())
 
-        group_name = folder.split('/')[-1]
+        group_name = "/" + folder.split('/')[-1]
 
-        #gets the absoulte path for the log file and the infiles
-        log_file = os.path.abspath(log_file)
+        #creates the bpl file and reads to make sure the group name is in the file
+        with h5py.File(h5_file, 'a') as Master:
+            #if not then add it
+            if group_name not in Master:
+                CreateHDF5Group(data, system_name, body_list, log_file, group_name, in_files, vplanet_help, folder, Master)
 
-        for i in in_files:
-            i = os.path.abspath(i)
-
-        if group_name not in h5_file:
-            CreateHDF5Group(data, system_name, body_list, log_file, group_name, in_files, vplanet_help, h5_file)
-
-            for l in datalist:
-                if l[0] == folder:
-                    l[1] = '1'
-                    break
-        else:
-            for l in datalist:
-                if l[0] == folder:
-                    l[1] = '1'
-                    break
+                for l in datalist:
+                    if l[0] == folder:
+                        l[1] = '1'
+                        break
+            else:
+                for l in datalist:
+                    if l[0] == folder:
+                        l[1] = '1'
+                        break
 
         with open(checkpoint_file, 'w') as f:
             for newline in datalist:
@@ -570,7 +568,6 @@ def par_worker(checkpoint_file,system_name,body_list,log_file,in_files,quiet,loc
 
         lock.release()
 
-        os.chdir("../../")
 
 def Arguments():
     max_cores = mp.cpu_count()
