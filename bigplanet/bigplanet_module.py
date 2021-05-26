@@ -219,6 +219,9 @@ def HFD5Decoder(hf,dataset):
     for d in dataset:
         if "forward" in dataset.name:
             for value in d:
+                print(value)
+                print(value.decode())
+                print(float(value.decode()))
                 data.append(float(value.decode()))
         else:
             data.append(float(d.decode()))
