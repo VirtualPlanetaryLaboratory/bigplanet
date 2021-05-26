@@ -15,7 +15,7 @@ Code for Bigplanet Module
 """
 
 def BPLFile(hf):
-    return h5py.File(hf,'r+')
+    return h5py.File(hf,'r')
 
 
 def PrintGroups(hf):
@@ -162,8 +162,6 @@ def ExtractColumn(hf,k):
                 dataset = hf[key + '/' + k]
                 for d in dataset:
                     data.append(float(np.char.decode(d)))
-
-            #data = [float(d.decode()) for d in dataset]
 
         else:
             print('ERROR: Uknown aggregation option: ', aggreg)
