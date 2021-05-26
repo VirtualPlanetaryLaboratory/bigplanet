@@ -229,7 +229,8 @@ def ProcessOutputfile(file, data, body, Output, prefix):
     return data
 
 def ProcessSeasonalClimatefile(prefix, data, body, name):
-    file = list(csv.reader(open('SeasonalClimateFiles/' + prefix + '.' + name + '.0')))
+    path = os.path.abspath('SeasonalClimateFiles/' + prefix + '.' + name + '.0')
+    file = list(csv.reader(open(path)))
     key_name = body + '_' + name
     units = ''
     if (name == 'DailyInsol' or name == 'SeasonalFIn' or
@@ -388,13 +389,13 @@ def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files
         # if output order from the log file isn't empty process it
         if outputorder in data:
             OutputOrder = data[outputorder]
-            forward_name = system_name + '.' + body + '.forward'
+            forward_name = os.path.abspath(system_name + '.' + body + '.forward')
             data = ProcessOutputfile(forward_name, data, body, OutputOrder,'_forward')
 
         #now process the grid output order (if it exists)
         if gridoutputorder in data:
             GridOutputOrder = data[gridoutputorder]
-            climate_name = system_name + '.' + body + '.Climate'
+            climate_name = os.path.abspath(system_name + '.' + body + '.Climate')
             data = ProcessOutputfile(climate_name, data, body, GridOutputOrder,'_climate')
             prefix = system_name + '.' + body
             name = ['DailyInsol','PlanckB','SeasonalDivF','SeasonalFIn',
@@ -455,7 +456,7 @@ def ReCreateCP(checkpoint_file,input_file,quiet,sims,folder_name,email):
 
 
 
-def Main(vspace_file,cores,quiet,email,parallel):
+def Main(vspace_file,cores,quiet,email):
     # Get the directory and list of  from the vspace file
     dest_folder, infile_list = GetDir(vspace_file)
 
@@ -466,7 +467,6 @@ def Main(vspace_file,cores,quiet,email,parallel):
     # Save the name of the log file
     system_name, body_list = GetSNames(infile_list,sim_list)
     log_file = system_name + ".log"
-
 
     vplanet_help = GetVplanetHelp()
     #creates the chepoint file name
@@ -486,34 +486,22 @@ def Main(vspace_file,cores,quiet,email,parallel):
     master_hdf5_file = dest_folder + '.bpl'
 
 
-    if parallel:
-        #creates the lock and workers for the parallel processes
-        lock = mp.Lock()
-        workers = []
+    #creates the lock and workers for the parallel processes
+    lock = mp.Lock()
+    workers = []
 
-        #for each core, create a process that adds a group to the hdf5 file and adds that to the Master HDF5 file
-        with h5py.File(master_hdf5_file, 'w') as Master:
-            for i in range(cores):
-                workers.append(mp.Process(target=par_worker,
-                               args=(checkpoint_file, system_name, body_list, log_file, infile_list, quiet, lock, vplanet_help, Master)))
-            for w in workers:
-                w.start()
-            for w in workers:
-                w.join()
+    #for each core, create a process that adds a group to the hdf5 file and adds that to the Master HDF5 file
+    with h5py.File(master_hdf5_file, 'w') as Master:
+        for i in range(cores):
+            workers.append(mp.Process(target=par_worker,
+                           args=(checkpoint_file, system_name, body_list, log_file, infile_list, quiet, lock, vplanet_help, Master)))
+        for w in workers:
+            w.start()
+        for w in workers:
+            w.join()
 
-        sub.run(['rm',checkpoint_file])
+    sub.run(['rm',checkpoint_file])
 
-    else:
-        # loop over every trial in the list of simulations
-        # for each trial we need to create a group that hold the various files we
-        # want to populate the HDF5 file with
-        with h5py.File(master_hdf5_file, 'w') as Master:
-            for trial in sim_list:
-                data = {}
-                group_name = trial.split('/')[-1]
-                os.chdir(trial)
-                CreateHDF5Group(data, system_name, body_list, log_file, group_name,infile_list, vplanet_help, Master)
-                os.chdir('../../')
 
 def par_worker(checkpoint_file,system_name,body_list,log_file,in_files,quiet,lock,vplanet_help, h5_file):
 
@@ -556,8 +544,13 @@ def par_worker(checkpoint_file,system_name,body_list,log_file,in_files,quiet,loc
 
         group_name = folder.split('/')[-1]
 
+        #gets the absoulte path for the log file and the infiles
+        log_file = os.path.abspath(log_file)
+
+        for i in in_files:
+            i = os.path.abspath(i)
+
         if group_name not in h5_file:
-            log_file = os.path.abspath(folder + '/' + log_file)
             CreateHDF5Group(data, system_name, body_list, log_file, group_name, in_files, vplanet_help, h5_file)
 
             for l in datalist:
@@ -586,11 +579,9 @@ def Arguments():
     parser.add_argument("-c","--cores", type=int, default=max_cores, help="Number of processors used")
     parser.add_argument("-q","--quiet", action="store_true", help="no output for bigplanet")
     parser.add_argument("-m","--email",type=str, help="Mails user when bigplanet is complete")
-    parser.add_argument("-p","--parallel",action="store_true", help="parallel run of bigplanet")
-
     args = parser.parse_args()
 
-    Main(args.vspace_file,args.cores,args.quiet,args.email,args.parallel)
+    Main(args.vspace_file,args.cores,args.quiet,args.email)
 
 
 if __name__ == "__main__":
