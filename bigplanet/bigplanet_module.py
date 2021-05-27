@@ -113,7 +113,7 @@ def ExtractColumn(hf,k):
         dataset = hf[key_list[0] + '/' + k]
         for d in dataset:
             for value in d:
-                data.append(float(value.decode()))
+                data.append((value.decode()))
 
     else:
         aggreg = k.split("_")[2]
@@ -126,32 +126,32 @@ def ExtractColumn(hf,k):
         elif aggreg == 'mean':
             argument = ArgumentParser(hf,k,key_list)
             for i in argument:
-                data.append(float(np.mean(i, axis = 1)))
+                data.append((np.mean(i, axis = 1)))
 
         elif aggreg == 'stddev':
             argument = ArgumentParser(hf,k,key_list)
             for i in argument:
-                data.append(float(np.std(i, axis = 1)))
+                data.append((np.std(i, axis = 1)))
 
         elif aggreg == 'min':
             argument = ArgumentParser(hf,k,key_list)
             for i in argument:
-                data.append(float(np.amin(i, axis = 1)))
+                data.append((np.amin(i, axis = 1)))
 
         elif aggreg == 'max':
             argument = ArgumentParser(hf,k,key_list)
             for i in argument:
-                data.append(float(np.amax(i,axis = 1)))
+                data.append((np.amax(i,axis = 1)))
 
         elif aggreg == 'mode':
             argument = ArgumentParser(hf,k,key_list)
             for i in argument:
-                data.append(float(stats.mode(i, axis = 1)))
+                data.append((stats.mode(i, axis = 1)))
 
         elif aggreg == 'geomean':
             argument = ArgumentParser(hf,k,key_list)
             for i in argument:
-                data.append(float(stats.gmean(i, axis = 1)))
+                data.append((stats.gmean(i, axis = 1)))
 
         elif aggreg == 'rms':
             data = ArgumentParser(hf,k,key_list)
@@ -161,7 +161,7 @@ def ExtractColumn(hf,k):
             for key in key_list:
                 dataset = hf[key + '/' + k]
                 for d in dataset:
-                    data.append(float(np.char.decode(d)))
+                    data.append((np.char.decode(d)))
 
         else:
             print('ERROR: Uknown aggregation option: ', aggreg)
@@ -214,17 +214,16 @@ def ArgumentParser(hf,k,key_list):
 
 def HFD5Decoder(hf,dataset):
     #because the data is saved as a UTF-8 string, we need to decode it and
-    #turn it into a float
+    #turn it into a
     data = []
     for d in dataset:
         if "forward" in dataset.name:
             for value in d:
                 print(value)
                 print(value.decode())
-                print(float(value.decode()))
-                data.append(float(value.decode()))
+                data.append((value.decode()))
         else:
-            data.append(float(d.decode()))
+            data.append((d.decode()))
     #and now we reshape it the same shape as the original dataset
     shape = dataset.shape
     data = np.reshape(data,shape)
@@ -264,7 +263,7 @@ def ExtractUniqueValues(hf,k):
             data.flatten()
         else:
             for d in dataset:
-                data.append(float(d.decode()))
+                data.append((d.decode()))
 
     unique = np.unique(data)
     return unique
