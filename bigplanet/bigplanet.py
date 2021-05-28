@@ -81,7 +81,6 @@ def GetVplanetHelp():
             option = line
             vplanet_dict[option] = {}
             num = count + 2
-
             while num != count:
                 if "Type " in output[num]:
                     tp = output[num].strip("|").strip()
@@ -432,20 +431,20 @@ def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files
 
         if "OutputOrder" in var or "GridOutput" in var:
             tp = "S"
-            
+
         elif var not in vplanet_help:
             tp = "float"
         else:
-            if vplanet_help.get(var,{}).get('Type') == 'String' or vplanet_help.get(var,{}).get('Type') == 'Array':
+            if vplanet_help.get(var,{}).get('Type') == 'String' or vplanet_help.get(var,{}).get('Type') == 'String-Array':
                 tp = "S"
             else:
                 tp = "float"
 
         dataset_name = group_name + '/'+ k
 
-        print("Dataset:",dataset_name)
-        print("Type:",tp)
-        print("value:",v_value)
+        #print("Dataset:",dataset_name)
+        #print("Type:",tp)
+        #print("value:",v_value)
 
         h5_file.create_dataset(dataset_name, data=np.array([v_value] ,dtype = tp), compression = 'gzip')
 
