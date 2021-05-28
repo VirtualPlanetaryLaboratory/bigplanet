@@ -119,10 +119,10 @@ def GetVplanetHelp():
 
 
 
-def ProcessLogFile(logfile, data):
+def ProcessLogFile(logfile, data,folder):
     prop = ''
     body = 'system'
-    with open(logfile, 'r') as log:
+    with open(os.path.join(folder,logfile), 'r') as log:
         content = [line.strip() for line in log.readlines()]
 
     for line in content:
@@ -215,16 +215,17 @@ def ProcessLogFile(logfile, data):
 
     return data
 
-def ProcessOutputfile(file, data, body, Output, prefix):
+def ProcessOutputfile(file, data, body, Output, prefix, folder):
 
+    file = os.path.join(folder,file)
     header = []
-
+    print(file)
     for i in Output:
         header.append([i][0][0])
 
     sorted = np.genfromtxt(file, dtype=float,encoding=None)
     sorted = sorted.transpose()
-
+    sorted = sorted.tolist()
 
     for i,row in enumerate(sorted):
         key_name = body + '_' + header[i] + prefix
@@ -393,8 +394,7 @@ def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files
         data = ProcessInputfile(data,infile,folder,vplanet_help)
     # first process the log file
     #gets the absoulte path for the log file
-    logfile = os.path.join(folder,logfile)
-    data = ProcessLogFile(logfile, data)
+    data = ProcessLogFile(logfile, data, folder)
     # for each of the body names in the body_list
     # check and see if they have a grid
     # if so, then process those particular files
@@ -405,15 +405,13 @@ def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files
         if outputorder in data:
             OutputOrder = data[outputorder]
             forward_name = system_name + '.' + body + '.forward'
-            forward_path = os.path.join(folder,forward_name)
-            data = ProcessOutputfile(forward_path, data, body, OutputOrder,'_forward')
+            data = ProcessOutputfile(forward_name, data, body, OutputOrder,'_forward',folder)
 
         #now process the grid output order (if it exists)
         if gridoutputorder in data:
             GridOutputOrder = data[gridoutputorder]
             climate_name = system_name + '.' + body + '.Climate'
-            climate_path = os.path.join(folder,climate_name)
-            data = ProcessOutputfile(climate_path, data, body, GridOutputOrder,'_climate')
+            data = ProcessOutputfile(climate_name, data, body, GridOutputOrder,'_climate',folder)
             prefix = system_name + '.' + body
             name = ['DailyInsol','PlanckB','SeasonalDivF','SeasonalFIn',
                     'SeasonalFMerid','SeasonalFOut','SeasonalIceBalance',
@@ -431,20 +429,25 @@ def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files
             v_attr = ''
 
         var = k.split("_")[1]
-        tp = "float64"
-        if var not in vplanet_help:
-            continue
+
+        if "OutputOrder" in var or "GridOutput" in var:
+            tp = "S"
+            
+        elif var not in vplanet_help:
+            tp = "float"
         else:
-            print(vplanet_help.get(var,{}).get('Type'))
             if vplanet_help.get(var,{}).get('Type') == 'String' or vplanet_help.get(var,{}).get('Type') == 'Array':
                 tp = "S"
+            else:
+                tp = "float"
 
         dataset_name = group_name + '/'+ k
 
-        print("Name:",dataset_name)
-        print("Value:",v_value)
+        print("Dataset:",dataset_name)
+        print("Type:",tp)
+        print("value:",v_value)
 
-        h5_file.create_dataset(dataset_name, data=v_value, compression = 'gzip')
+        h5_file.create_dataset(dataset_name, data=np.array([v_value] ,dtype = tp), compression = 'gzip')
 
         h5_file[dataset_name].attrs['Units'] = v_attr
 

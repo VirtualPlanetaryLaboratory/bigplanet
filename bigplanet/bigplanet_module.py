@@ -113,7 +113,7 @@ def ExtractColumn(hf,k):
         dataset = hf[key_list[0] + '/' + k]
         for d in dataset:
             for value in d:
-                data.append((value.decode()))
+                data.append(value)
 
     else:
         aggreg = k.split("_")[2]
@@ -161,7 +161,8 @@ def ExtractColumn(hf,k):
             for key in key_list:
                 dataset = hf[key + '/' + k]
                 for d in dataset:
-                    data.append((np.char.decode(d)))
+                    d = d.astype(float,casting = 'safe')
+                    data.append(d)
 
         else:
             print('ERROR: Uknown aggregation option: ', aggreg)
@@ -219,11 +220,11 @@ def HFD5Decoder(hf,dataset):
     for d in dataset:
         if "forward" in dataset.name:
             for value in d:
-                print(value)
-                print(value.decode())
-                data.append((value.decode()))
+                value = value.astype(float, casting = 'safe')
+                data.append(value)
         else:
-            data.append((d.decode()))
+            d = d.astype(float,casting = 'safe')
+            data.append(d)
     #and now we reshape it the same shape as the original dataset
     shape = dataset.shape
     data = np.reshape(data,shape)

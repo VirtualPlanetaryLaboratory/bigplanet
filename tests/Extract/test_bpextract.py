@@ -35,12 +35,10 @@ def test_bpextract():
         earth_Instellation_final = bp.ExtractColumn(file,'earth_Instellation_final')
         sun_RotPer_initial = bp.ExtractColumn(file,'sun_RotPer_initial')
 
-        for i in range(len(earth_Instellation_final)):
-            assert np.isclose(earth_Instellation_final[0],1367.635318)
-            assert np.isclose(earth_Instellation_final[1],341.90883)
+        assert np.isclose(earth_Instellation_final[0],1367.635318)
+        assert np.isclose(earth_Instellation_final[1],341.90883)
 
-        for j in range(len(sun_RotPer_initial)):
-            assert np.isclose(sun_RotPer_initial[j],86400.0)
+        assert np.isclose(sun_RotPer_initial[0],86400.0)
 
 
 

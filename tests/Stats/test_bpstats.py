@@ -32,19 +32,18 @@ def test_bpstats():
 
         file  = bp.BPLFile(path / "BP_Stats.bpl")
 
+
         earth_TMan_min = bp.ExtractColumn(file,'earth_TMan_min')
         earth_235UNumMan_max = bp.ExtractColumn(file,'earth_235UNumMan_max')
         earth_TCMB_mean = bp.ExtractColumn(file,'earth_TCMB_mean')
         earth_FMeltUMan_geomean = bp.ExtractColumn(file,'earth_FMeltUMan_geomean')
         earth_BLUMan_stddev = bp.ExtractColumn(file,'earth_BLUMan_stddev')
 
-        print(earth_TMan_min)
-        
-        # assert np.isclose(earth_TMan_min[0],2257.85093)
-        # assert np.isclose(earth_235UNumMan_max[0],2.700598e+28)
-        # assert np.isclose(earth_TCMB_mean[0],4359.67230935255)
-        # assert np.isclose(earth_FMeltUMan_geomean[0],0.20819565439935903)
-        # assert np.isclose(earth_BLUMan_stddev[0],18.265090016213463)
+        assert np.isclose(earth_TMan_min[0],2257.85093)
+        assert np.isclose(earth_235UNumMan_max[0],2.700598e+28)
+        assert np.isclose(earth_TCMB_mean[0],4359.67230935255)
+        assert np.isclose(earth_FMeltUMan_geomean[0],0.20819565439935903)
+        assert np.isclose(earth_BLUMan_stddev[0],18.265090016213463)
 
 
 if __name__ == "__main__":
