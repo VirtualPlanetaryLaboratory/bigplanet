@@ -8,7 +8,7 @@ import h5py
 import numpy as np
 import csv
 import pathlib
-
+import pandas as pd
 
 def GetDir(vspace_file):
     """ Give it input file and returns name of folder where simulations are located. """
@@ -67,50 +67,52 @@ def GetSNames(in_files,sims):
     return system_name,body_names
 
 def GetVplanetHelp():
-    proc = sub.Popen(['vplanet', '-H'], stdout=sub.PIPE,stderr=sub.PIPE)
-    output = str(proc.stdout.read())
-    output = output.split("\\n")[48:-1]
+    command = "vplanet -H | egrep -v '^$|^\+' | cut -f 2,4 -d '|' | egrep '^ \*\*|^ Cust|^ Type|^ Dim|^ Defa|^Output Parameters'"
+    proc = sub.run(command, shell = True, text = True, stdout=sub.PIPE,stderr=sub.PIPE)
+    output = proc.stdout.splitlines()
+
     vplanet_dict = {}
 
     for count, line in enumerate(output):
-        if line.startswith("+-----") or line.startswith("+====="):
-            continue
+        if ((line.startswith(' **b') or line.startswith(' **d') or line.startswith(' **i') or line.startswith(' **s')) or line.startswith(' **sa') and len(line.split()) == 1):
 
-        line = line.strip("|").strip()
-        if ((line.startswith('b') or line.startswith('d') or line.startswith('i') or line.startswith('s')) or line.startswith('sa') and len(line.split()) == 1):
-            option = line
+            option = line.strip("** ")
+            #print("Option:",option)
             vplanet_dict[option] = {}
-            num = count + 2
+            num = count + 1
             while num != count:
-                if "Type " in output[num]:
-                    tp = output[num].strip("|").strip()
-                    tp = tp.rpartition('|')[-1].strip()
+                if "Type" in output[num]:
+                    tp = output[num].rpartition('|')[-1].strip()
                     vplanet_dict[option]['Type'] = tp
+                    #print("Type:",tp)
                     num += 1
 
                 elif "Custom unit" in output[num]:
-                    custom_unit = output[num].strip("|").strip()
-                    custom_unit = custom_unit.rpartition('|')[-1].strip()
+                    custom_unit = output[num].rpartition('|')[-1].strip()
                     vplanet_dict[option]['Custom Unit'] = custom_unit
+                    #print("Custom Unit:",custom_unit)
                     num += 1
 
-                elif "Dimension(s) " in output[num]:
-                    dim = output[num].strip("|").strip()
-                    dim = dim.rpartition('|')[-1].strip()
+                elif "Dimension(s)" in output[num]:
+                    dim = output[num].rpartition('|')[-1].strip()
                     vplanet_dict[option]['Dimension'] = dim
+                    #print("Dimension:",dim)
                     num += 1
 
                 elif "Default value" in output[num]:
-                    default = output[num].strip("|").strip()
-                    default = default.rpartition('|')[-1].strip()
-                    vplanet_dict[option]['Default value'] = default
+                    default = output[num].rpartition('|')[-1].strip()
+                    vplanet_dict[option]['Default Value'] = default
+                    #print("Default Value",default)
+                    #print()
+
                     num += 1
 
-                elif " " in output[num]:
+                elif "**" in output[num]:
                     num = count
 
                 else:
                     num += 1
+
         if "Output Parameters" in line:
             break
 
@@ -216,27 +218,38 @@ def ProcessLogFile(logfile, data,folder):
 
 def ProcessOutputfile(file, data, body, Output, prefix, folder):
 
-    file = os.path.join(folder,file)
+    path = os.path.join(folder,file)
+    print(path)
     header = []
-    print(file)
     for i in Output:
         header.append([i][0][0])
 
-    sorted = np.genfromtxt(file, dtype=float,encoding=None)
-    sorted = sorted.transpose()
-    sorted = sorted.tolist()
+    sorted = np.genfromtxt(path, dtype=float,encoding=None)
+    sorted = sorted.transpose().tolist()
+    print(sorted)
+    #sorted = pd.read_csv(path, delimiter = " ", header = None,skipinitialspace = True)
+    #print("Read in:",sorted)
+    #print()
+    #sorted = sorted.transpose()
+    #print("Transposed:",sorted)
+    #print()
+#    sorted = sorted.iloc[:-1, :]
+    #print("Broken:",sorted)
+    #print()
 
+    #sorted = sorted.to_numpy().tolist()
     for i,row in enumerate(sorted):
         key_name = body + '_' + header[i] + prefix
         data[key_name].append(row)
-        #print(data[key_name])
 
     return data
 
 def ProcessSeasonalClimatefile(prefix, data, body, name,folder):
     file_name = prefix + '.' + name + '.0'
-    path = os.path.join(folder,"SeasonalClimateFiles", file_name)
-    file = list(csv.reader(open(path)))
+    path = os.path.join(folder,"SeasonalClimateFiles/", file_name)
+    sorted = np.genfromtxt(path, dtype=float,encoding=None)
+    sorted = sorted.tolist()
+
     key_name = body + '_' + name
     units = ''
     if (name == 'DailyInsol' or name == 'SeasonalFIn' or
@@ -252,9 +265,9 @@ def ProcessSeasonalClimatefile(prefix, data, body, name,folder):
         units = 'W'
 
     if key_name not in data:
-        data[key_name]= [units, file]
+        data[key_name]= [units, sorted]
     else:
-        data[key_name].append(file)
+        data[key_name].append(sorted)
 
     return data
 
@@ -264,9 +277,9 @@ def ProcessInputfile(data,in_file, folder, vplanet_help):
     body = in_file.partition('.')[0]
     infile = os.path.join(folder,in_file)
     #open the input file and read it into an array
-    with open(in_file,"r") as infile:
+    with open(infile,"r") as file:
 
-        content = [line.strip() for line in infile.readlines()]
+        content = [line.strip() for line in file.readlines()]
 
     # for every line in the array check if the line is blank
     # or if the line starts with a #
@@ -301,7 +314,7 @@ def ProcessInputfile(data,in_file, folder, vplanet_help):
         key = key.replace('-','')
         key_name = body + '_' + key + '_option'
 
-        units = ProcessInfileUnits(key, value, folder, in_file, vplanet_help)
+        units = ProcessInfileUnits(key, value, folder, infile, vplanet_help)
 
         if 'saOutputOrder' in key_name or 'saGridOutput' in key_name:
             value = [i.replace('-','') for i in value]
@@ -369,15 +382,21 @@ def ProcessInfileUnits(name,value,folder,in_file, vplanet_help):
 #the only place left is the default of sUnit of the Dimension
                 if vpl_line == vpl_lines[-1]:
                     if 'length' in dim:
-                        dim = dim.replace('length',vplanet_help['sUnitLength']['Default value'])
+                        dim = dim.replace('length',vplanet_help['sUnitLength']['Default Value'])
+                        #dim = dim.replace('length',vplanet_help.get('sUnitLength',{}).get('Default Value'))
                     if 'angle' in dim:
-                        dim = dim.replace('angle',vplanet_help['sUnitAngle']['Default value'])
+                        dim = dim.replace('angle',vplanet_help['sUnitAngle']['Default Value'])
+                        #dim = dim.replace('angle',vplanet_help.get('sUnitAngle',{}).get('Default Value'))
                     if 'temperature' in dim:
-                        dim = dim.replace('temperature',vplanet_help['sUnitTemp']['Default value'])
+                        dim = dim.replace('temperature',vplanet_help['sUnitTemp']['Default Value'])
+                        #dim = dim.replace('temperature',vplanet_help.get('sUnitTemp',{}).get('Default Value'))
                     if 'mass' in dim:
-                        dim = dim.replace('mass',vplanet_help['sUnitMass']['Default value'])
+                        dim = dim.replace('mass',vplanet_help['sUnitMass']['Default Value'])
+                        #dim = dim.replace('mass',vplanet_help.get('sUnitMass',{}).get('Default Value'))
                     if 'time' in dim:
-                        dim = dim.replace('time',vplanet_help['sUnitTime']['Default value'])
+                        print(vplanet_help.get('sUnitTime',{}).get('Default Value'))
+                        #dim = dim.replace('time',vplanet_help['sUnitTime']['Default Value'])
+                        #dim = dim.replace('time',vplanet_help.get('sUnitTime',{}).get('Default Value'))
         unit = dim
     return unit
 
@@ -428,6 +447,7 @@ def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files
             v_attr = ''
 
         var = k.split("_")[1]
+        print(var)
 
         if "OutputOrder" in var or "GridOutput" in var:
             tp = "S"
@@ -496,7 +516,10 @@ def Main(vspace_file,cores,quiet,email):
     # Save the name of the log file
     system_name, body_list = GetSNames(infile_list,sim_list)
     log_file = system_name + ".log"
+
+    #gets the dictionary of input params
     vplanet_help = GetVplanetHelp()
+
     #creates the chepoint file name
     checkpoint_file = os.getcwd() + '/' + '.' + dest_folder + '_BPL'
 

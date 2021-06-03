@@ -19,6 +19,8 @@ SeasonalClimateFiles
 *.hdf5
 
 #files created from running tests
+tests/Bpstatus/BP_Status/
+tests/Bpstatus/.*
 tests/CreateHDF5/BP_CreateHDF5/
 tests/CreateHDF5/.*
 tests/Extract/BP_Extract/
@@ -26,6 +28,7 @@ tests/Extract/.*
 tests/Stats/BP_Stats/
 tests/Stats/.*
 
+.coverage
 
 # Aux files / build info / garbage
 merge-from-public.sh
