@@ -8,6 +8,7 @@ import h5py
 import numpy as np
 import csv
 import pathlib
+import sys
 
 def GetDir(vspace_file):
     """ Give it input file and returns name of folder where simulations are located. """
