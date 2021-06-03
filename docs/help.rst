@@ -180,7 +180,7 @@ ExtractUniqueValues)
 
 *header* adds the names and units for each column (default is False)
 
-*ulysses* makes the file compatable with VR Ulysses (default is False)
+*ulysses* makes the file compatable with `VR Ulysses <https://www.vrulysses.com/download-ulysses>`_ (default is False)
 
 
 
