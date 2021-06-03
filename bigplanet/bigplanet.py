@@ -8,7 +8,6 @@ import h5py
 import numpy as np
 import csv
 import pathlib
-import pandas as pd
 
 def GetDir(vspace_file):
     """ Give it input file and returns name of folder where simulations are located. """
@@ -68,7 +67,11 @@ def GetSNames(in_files,sims):
 
 def GetVplanetHelp():
     command = "vplanet -H | egrep -v '^$|^\+' | cut -f 2,4 -d '|' | egrep '^ \*\*|^ Cust|^ Type|^ Dim|^ Defa|^Output Parameters'"
-    proc = sub.run(command, shell = True, text = True, stdout=sub.PIPE,stderr=sub.PIPE)
+    pv_ver = sys.version.split()[1]
+    if '3.6' in py_ver:
+        proc = sub.run(command, shell = True, universal_newline = True, stdout=sub.PIPE,stderr=sub.PIPE)
+    else:
+        proc = sub.run(command, shell = True, text = True, stdout=sub.PIPE,stderr=sub.PIPE)
     output = proc.stdout.splitlines()
 
     vplanet_dict = {}
