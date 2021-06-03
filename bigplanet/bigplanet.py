@@ -71,7 +71,7 @@ def GetVplanetHelp():
     py_ver = sys.version.split()[0]
     print(py_ver)
     if '3.6' in py_ver:
-        proc = sub.run(command, shell = True, universal_newline = True, stdout=sub.PIPE,stderr=sub.PIPE)
+        proc = sub.run(command, shell = True, universal_newlines = True, stdout=sub.PIPE,stderr=sub.PIPE)
     else:
         proc = sub.run(command, shell = True, text = True, stdout=sub.PIPE,stderr=sub.PIPE)
     output = proc.stdout.splitlines()
