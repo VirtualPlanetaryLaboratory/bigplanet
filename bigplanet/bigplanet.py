@@ -224,25 +224,14 @@ def ProcessLogFile(logfile, data,folder):
 def ProcessOutputfile(file, data, body, Output, prefix, folder):
 
     path = os.path.join(folder,file)
-    print(path)
+    #print(path)
     header = []
     for i in Output:
         header.append([i][0][0])
 
     sorted = np.genfromtxt(path, dtype=float,encoding=None)
     sorted = sorted.transpose().tolist()
-    print(sorted)
-    #sorted = pd.read_csv(path, delimiter = " ", header = None,skipinitialspace = True)
-    #print("Read in:",sorted)
-    #print()
-    #sorted = sorted.transpose()
-    #print("Transposed:",sorted)
-    #print()
-#    sorted = sorted.iloc[:-1, :]
-    #print("Broken:",sorted)
-    #print()
-
-    #sorted = sorted.to_numpy().tolist()
+    
     for i,row in enumerate(sorted):
         key_name = body + '_' + header[i] + prefix
         data[key_name].append(row)
@@ -452,7 +441,7 @@ def CreateHDF5Group(data, system_name, body_names, logfile, group_name, in_files
             v_attr = ''
 
         var = k.split("_")[1]
-        print(var)
+        #print(var)
 
         if "OutputOrder" in var or "GridOutput" in var:
             tp = "S"
