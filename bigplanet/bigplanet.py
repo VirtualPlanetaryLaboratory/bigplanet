@@ -231,7 +231,7 @@ def ProcessOutputfile(file, data, body, Output, prefix, folder):
 
     sorted = np.genfromtxt(path, dtype=float,encoding=None)
     sorted = sorted.transpose().tolist()
-    
+
     for i,row in enumerate(sorted):
         key_name = body + '_' + header[i] + prefix
         data[key_name].append(row)
@@ -388,8 +388,7 @@ def ProcessInfileUnits(name,value,folder,in_file, vplanet_help):
                         dim = dim.replace('mass',vplanet_help['sUnitMass']['Default Value'])
                         #dim = dim.replace('mass',vplanet_help.get('sUnitMass',{}).get('Default Value'))
                     if 'time' in dim:
-                        print(vplanet_help.get('sUnitTime',{}).get('Default Value'))
-                        #dim = dim.replace('time',vplanet_help['sUnitTime']['Default Value'])
+                        dim = dim.replace('time',vplanet_help['sUnitTime']['Default Value'])
                         #dim = dim.replace('time',vplanet_help.get('sUnitTime',{}).get('Default Value'))
         unit = dim
     return unit

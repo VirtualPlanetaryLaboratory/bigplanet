@@ -14,9 +14,9 @@ def bpstatus(input_file):
     count_done = 0
     count_todo = 0
     count_ip = 0
-    checkpoint_file = os.getcwd() + '/' + '.' + folder_name + '_BPL'
+    checkpoint_file = os.getcwd() + '.' + folder_name + '_BPL'
     if os.path.isfile(checkpoint_file) == False:
-        raise Exception("Multi-Planet must be running prior to using mpstatus")
+        raise Exception("BigPlanet must be running prior to using bpstatus")
     else:
         with open(checkpoint_file,'r') as cp:
             content = [line.strip().split() for line in cp.readlines()]

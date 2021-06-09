@@ -264,8 +264,8 @@ def ExtractUniqueValues(hf,k):
             data.flatten()
         else:
             for d in dataset:
-                data.append((d.decode()))
-
+                data.append((d))
+    #print(data)
     unique = np.unique(data)
     return unique
 
@@ -299,15 +299,16 @@ def CreateMatrix(xaxis,yaxis,zarray, orientation=1):
     ynum = len(yaxis)
 
     if xnum * ynum != len(zarray):
-        print("ERROR: Cannot reshape",zarray,"into shape("+xnum+","+ynum+")")
+        print("ERROR: Cannot reshape zarray into shape (", xnum ,",", ynum ,")")
+        exit()
 
     zmatrix = np.reshape(zarray, (ynum, xnum))
-    # zmatrix = np.flipud(zmatrix)
-    #
-    # for i in range(0,orientation):
-    #     zmatrix = rotate90Clockwise(zmatrix)
-    #
-    # zmatrix = np.flipud(zmatrix)
+    zmatrix = np.flipud(zmatrix)
+
+    for i in range(0,orientation):
+        zmatrix = rotate90Clockwise(zmatrix)
+
+    zmatrix = np.flipud(zmatrix)
 
     return zmatrix
 
