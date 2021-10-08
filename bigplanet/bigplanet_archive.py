@@ -9,12 +9,13 @@ import numpy as np
 import pandas as pd
 from .bp_process import *
 from .bp_get import *
+from .bp_extract import *
 
 
 def MainMethodA(bpInputFile,cores,quiet,email,force,verbose):
 
     # Get the directory and list of  from the bpl file
-    dest_folder,bpl_file,outputFile,bodylist,primaryFile,includelist,excludelist = ReadFile(bpInputFile,verbose)
+    dest_folder,bpl_file,outputFile,bodylist,primaryFile,includelist,excludelist,ulysses = ReadFile(bpInputFile,verbose)
     #we need to combine the body and primary files into one list
     infile_list = []
     for i in bodylist:
@@ -45,7 +46,7 @@ def MainMethodA(bpInputFile,cores,quiet,email,force,verbose):
 
     # now that we have everything we need
     # we save the name of the Master HDF5 file
-    master_hdf5_file = os.path.abspath(dest_folder + '.bpla')
+    master_hdf5_file = os.path.abspath(dest_folder + '.bpa')
 
     #creates the lock and workers for the parallel processes
     lock = mp.Lock()
@@ -81,7 +82,7 @@ def ReCreateCP(checkpoint_file,input_file,quiet,sims,folder_name,email,force):
                     if l[1] == '0':
                         l[1] = '-1'
                         folder = l[0]
-                        with h5py.File(folder_name + '.bpla', "a") as master:
+                        with h5py.File(folder_name + '.bpa', "a") as master:
                             group_name = "/" + folder.split('/')[-1]
                             if group_name in master:
                                 if quiet == False:
@@ -102,7 +103,7 @@ def ReCreateCP(checkpoint_file,input_file,quiet,sims,folder_name,email,force):
         if force == True:
             if quiet == False:
                 print("Deleting BPL file...")
-            os.remove(folder_name + '.bpl')
+            os.remove(folder_name + '.bpa')
             if quiet == False:
                 print("Deleting checkpoint file...")
             os.remove(checkpoint_file)

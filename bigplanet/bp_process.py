@@ -9,8 +9,6 @@ def ProcessLogFile(logfile, data,folder,verbose, incl = None, excl = None):
     prop = ''
     body = 'system'
     path = os.path.join(folder,logfile)
-    
-    
     if verbose == True:
         print(path)
     with open(path, 'r+', errors = 'ignore') as log:
@@ -47,12 +45,12 @@ def ProcessLogFile(logfile, data,folder,verbose, incl = None, excl = None):
 
             fv_value = line[line.find(':')+1:].strip()
             key_name = body + ':' +  fv_param + ':' + prop
-            
-            #make this into a function 
+
+            #make this into a function
             if incl is not None:
                 for i in incl:
                     if key_name == i:
-                        #make this into a function 
+                        #make this into a function
                         if key_name in data:
                             data[key_name].append(fv_value)
                         else:
@@ -64,7 +62,7 @@ def ProcessLogFile(logfile, data,folder,verbose, incl = None, excl = None):
                     data[key_name].append(fv_value)
                 else:
                     data[key_name] = [units, fv_value]
-                
+
         #if the name starts with output order then its a list of variables
         if line.startswith('Output Order') and len(line[line.find(':'):]) > 1:
             parm_key = line[:line.find(':')].replace(' ', '')
@@ -86,31 +84,31 @@ def ProcessLogFile(logfile, data,folder,verbose, incl = None, excl = None):
 
                 key_name_forward = body + ':' + var + ':forward'
 
-                 #make this into a function 
+                 #make this into a function
                 if incl is not None:
                     for j in incl:
                         if key_name_forward == j:
-                            #make this into a function 
+                            #make this into a function
                             if key_name_forward not in data:
                                 data[key_name_forward] = [units]
                         else:
-                            continue                            
+                            continue
                 else:
                     if key_name_forward not in data:
-                        data[key_name_forward] = [units] 
-            
+                        data[key_name_forward] = [units]
+
             if incl is not None:
                 for k in incl:
                     if key_name == k:
-                        #make this into a function 
+                        #make this into a function
                         if key_name not in data:
                             data[key_name] = out_params
                     else:
-                        continue                            
+                        continue
             else:
                 if key_name not in data:
                     data[key_name] = out_params
-                
+
         #if the name starts with  grid output order then its a list of variables
         if line.startswith('Grid Output Order') and len(line[line.find(':'):]) > 1:
             parm_key = line[:line.find(':')].replace(' ', '')
@@ -132,41 +130,41 @@ def ProcessLogFile(logfile, data,folder,verbose, incl = None, excl = None):
 
                 key_name_climate = body + ':' + var + ':climate'
 
-                 #make this into a function 
+                 #make this into a function
                 if incl is not None:
                     for j in incl:
                         if key_name_climate == j:
-                            #make this into a function 
+                            #make this into a function
                             if key_name_climate not in data:
-                                data[key_name_climate] = [units]                            
+                                data[key_name_climate] = [units]
                 else:
                     if key_name_climate not in data:
-                        data[key_name_climate] = [units] 
-            
+                        data[key_name_climate] = [units]
+
             if incl is not None:
                 for k in incl:
                     if key_name == k:
-                        #make this into a function 
+                        #make this into a function
                         if key_name not in data:
                             data[key_name] = out_params
                     else:
-                        continue                            
+                        continue
             else:
                 if key_name not in data:
-                    data[key_name] = out_params 
+                    data[key_name] = out_params
 
-                               
+
     return data
 
 def ProcessOutputfile(file, data, body, Output, prefix, folder, verbose, incl = None, excl = None):
-    
+
     path = os.path.join(folder,file)
     if verbose == True:
         print(path)
 
     header = []
     for k,v in Output.items():
-        for num in v:  
+        for num in v:
             header.append(num[0])
 
     sorted = pd.read_csv(path,header = None,delim_whitespace=True).to_numpy()
@@ -175,17 +173,17 @@ def ProcessOutputfile(file, data, body, Output, prefix, folder, verbose, incl = 
 
     for i,row in enumerate(sorted):
         key_name = body + ':' + header[i] + prefix
-        
+
         # if key_name in data:
         #     data[key_name].append(row)
         # else:
         #     data[key_name] = [row]
-    
-        #make this into a function 
+
+        #make this into a function
         if incl is not None:
             for i in incl:
                 if key_name == i:
-                    #make this into a function 
+                    #make this into a function
                     if key_name in data:
                         data[key_name].append(row)
                     else:
@@ -197,7 +195,7 @@ def ProcessOutputfile(file, data, body, Output, prefix, folder, verbose, incl = 
                 data[key_name].append(row)
             else:
                 data[key_name] = [row]
-                
+
 
 
     return data
@@ -230,11 +228,11 @@ def ProcessSeasonalClimatefile(prefix, data, body, name,folder,verbose, incl = N
     #     data[key_name]= [units, sorted]
     # else:
     #     data[key_name].append(sorted)
-        
+
     if incl is not None:
         for i in incl:
             if key_name == i:
-                #make this into a function 
+                #make this into a function
                 if key_name in data:
                     data[key_name].append(sorted)
                 else:
@@ -289,12 +287,9 @@ def ProcessInputfile(data,in_file, folder, vplanet_help,verbose, incl = None, ex
         line = line.split()
         key = line[0]
         value = line[1]
-        
-        value = value[1:]
-
 
         key = key.replace('-','')
-        key_name = body + ':' + key[1:] + ':option'
+        key_name = body + ':' + key + ':option'
 
         units = ProcessInfileUnits(key, value, folder, path, vplanet_help)
 
@@ -303,11 +298,11 @@ def ProcessInputfile(data,in_file, folder, vplanet_help,verbose, incl = None, ex
                 if value[0] == '-':
                     value = value[1:]
 
-        #make this into a function 
+        #make this into a function
         if incl is not None:
             for i in incl:
                 if key_name == i:
-                    #make this into a function 
+                    #make this into a function
                     if key_name in data:
                         data[key_name].append(value)
                     else:
@@ -408,13 +403,16 @@ def GatherData(data, system_name, body_names, logfile, in_files, vplanet_help, f
         gridoutputorder = body + ":GridOutputOrder"
         # if output order from the log file isn't empty process it
         if outputorder in data:
-            OutputOrder = data[outputorder]
+            #OutputOrder = data[outputorder]
+            OutputOrder = {}
+            OutputOrder[outputorder] = data[outputorder]
             forward_name = system_name + '.' + body + '.forward'
             data = ProcessOutputfile(forward_name, data, body, OutputOrder,':forward',folder,verbose)
 
         #now process the grid output order (if it exists)
         if gridoutputorder in data:
-            GridOutputOrder = data[gridoutputorder]
+            GridOutputOrder = {}
+            GridOutputOrder[gridoutputorder] = data[gridoutputorder]
             climate_name = system_name + '.' + body + '.Climate'
             data = ProcessOutputfile(climate_name, data, body, GridOutputOrder,':climate',folder,verbose)
             prefix = system_name + '.' + body
@@ -423,26 +421,19 @@ def GatherData(data, system_name, body_names, logfile, in_files, vplanet_help, f
                     'SeasonalTemp']
             for i in range(len(name)):
                 data = ProcessSeasonalClimatefile(prefix,data,body,name[i],folder,verbose)
-    
+
     return data
 
 def CreateHDF5Group(data,vplanet_help,h5_file,verbose = False,group_name = None, archive = True):
 
-    # now create the group where the data is stored in the HDF5 file
     for k,v in data.items():
-        print("Key:",k)
-        print("Is the Value in the Key a list?",any(isinstance(i,list)for i in v))
-        print("Is the Value in the Key a string?",any(isinstance(i,str)for i in v))
-        
-    
-    for k,v in data.items():
-        
+
         var = k.split(":")[1]
-        
+
         if "OutputOrder" in var or "GridOutput" in var:
             v_value = v
             v_attr = ''
-            
+
         else:
             v_attr = v[0]
             v_value = v[1:]
@@ -452,7 +443,7 @@ def CreateHDF5Group(data,vplanet_help,h5_file,verbose = False,group_name = None,
 
         elif var not in vplanet_help:
             tp = "float"
-            
+
         else:
             if vplanet_help.get(var,{}).get('Type') == 'String' or vplanet_help.get(var,{}).get('Type') == 'String-Array':
                 tp = "S"
@@ -469,10 +460,9 @@ def CreateHDF5Group(data,vplanet_help,h5_file,verbose = False,group_name = None,
             print("Dataset:",dataset_name)
             print("Type:",tp)
             print("Units:",v_attr)
-            print("Value:",v_value)
+            print("Value:",v_value[0])
             print()
 
-        h5_file.create_dataset(dataset_name, data=np.array([v_value] ,dtype = tp), compression = 'gzip')
+        h5_file.create_dataset(dataset_name, data=np.array([v_value] ,dtype = tp), compression = 'gzip',fletcher32 = True)
 
         h5_file[dataset_name].attrs['Units'] = v_attr
-

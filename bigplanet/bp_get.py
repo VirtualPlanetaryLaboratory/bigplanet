@@ -11,6 +11,8 @@ def ReadFile(bplSplitFile,verbose = False):
     excludelist = []
     bodylist = []
     bpl_file = None
+    Ulysses = False
+    folder_name = None
 
     with open(bplSplitFile, 'r') as input:
         #first thing we check is if both include and exclude are in the file bc that is bad
@@ -26,15 +28,17 @@ def ReadFile(bplSplitFile,verbose = False):
                 #we get the folder where the raw data is stored and have the default output file name set
                 if line[0] == 'sDestFolder':
                     folder_name = line[1]
-                    outputFile = folder_name.split('/')[-1] + "_filtered.bpl"
-                if line[0] == 'sBigplanetFile':
+                    outputFile = folder_name.split('/')[-1] + "_filtered.bpf"
+                if line[0] == 'sBigplanetArchive':
                     bpl_file = line[1]
                 if line[0] == 'sOutputName':
                     outputFile = line[1]
+                    if outputFile.endswith('.bpf') == False:
+                        print("ERROR: Output File must be a .bpf extenstion")
                 if line[0] == 'sPrimaryFile':
                     primaryFile = line[1]
                 if line[0] == 'bUlysses':
-                    thing = line[1]
+                    Ulysses = True
                 if line[0] == "saBodyFiles":
                     bodylist = line[1:]
                     for i, value in enumerate(bodylist):
@@ -49,9 +53,13 @@ def ReadFile(bplSplitFile,verbose = False):
                         excludelist[i] = value.strip("[]")
 
         if bpl_file == None and includelist == [] and excludelist == []:
-            print("No BPL Archive file or Include/Exclude List detected. This will create the BPL Archive File.")
-            print("WARNING: This may take some time...")
+            print("Error: No BPL Archive file or Include/Exclude List detected.")
+            exit()
+            #print("WARNING: This may take some time...")
 
+        if folder_name == None:
+            print("ERROR: No sDestFolder found in bpl.in file")
+            exit()
 
         if verbose:
             print("Folder Name:",folder_name)
@@ -60,11 +68,12 @@ def ReadFile(bplSplitFile,verbose = False):
                 print("Include List:",includelist)
                 print("Exclude List:",excludelist)
                 print("Output File:",outputFile)
+                print("Ulysses Output:", Ulysses)
             print("Body Files:",bodylist)
             print("Primary File:",primaryFile)
 
 
-        return folder_name,bpl_file,outputFile,bodylist,primaryFile,includelist,excludelist
+        return folder_name,bpl_file,outputFile,bodylist,primaryFile,includelist,excludelist,Ulysses
 
 
 def GetDir(vspace_file):

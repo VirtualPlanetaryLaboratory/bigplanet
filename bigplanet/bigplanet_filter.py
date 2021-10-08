@@ -51,7 +51,7 @@ def SplitsaKey(saKeylist,verbose):
 
 
 def MainMethodF(file,quiet,verbose):
-    folder,bplArchive,output,bodyFileList,primaryFile,IncludeList,ExcludeList = ReadFile(file,verbose)
+    folder,bplArchive,output,bodyFileList,primaryFile,IncludeList,ExcludeList,Ulysses = ReadFile(file,verbose)
     vplHelp = GetVplanetHelp()
 
     infile_list = []
@@ -59,7 +59,6 @@ def MainMethodF(file,quiet,verbose):
         infile_list.append(i)
     infile_list = bodyFileList
     infile_list.append(primaryFile)
-    
 
     #if the bpl archive file does NOT exist, we have to get the data manually
     if os.path.isfile(bplArchive) == False:
@@ -78,7 +77,7 @@ def MainMethodF(file,quiet,verbose):
                     print("Processing Log file...")
                 #we need to get the system name to get the name of the logfile
                 data = ProcessLogFile(log_file,data,sim,verbose,incl=IncludeList)
-                
+
             if optionList:
                 if verbose:
                     print("Processing input files...")
@@ -94,9 +93,8 @@ def MainMethodF(file,quiet,verbose):
                         break
                     else:
                         heading = {}
-                        print("getting Output Order data...")
                         heading = ProcessLogFile(log_file,heading,sim,verbose,incl=header)
-                        print("Adding data to export dict...")
+                        print(heading)
                         data = ProcessOutputfile(forward_name, data, body, heading,':forward',sim,verbose,incl=IncludeList)
                               #ProcessOutputfile(file, data, body, Output, prefix, folder, verbose, incl = None, excl = None)
             if climatelist:
@@ -107,19 +105,23 @@ def MainMethodF(file,quiet,verbose):
                     if os.path.isfile(path) == False:
                         break
                     else:
-                        print("getting Grid Output Order data...")
+                        heading = {}
                         heading = ProcessLogFile(log_file,heading,sim,verbose,incl=header)
-                        print("Adding data to export dict...")
                         data = ProcessOutputfile(forward_name, data, body, heading,':climate',sim,verbose,incl=IncludeList)
-        
-        for k,v in data.items():
-            print("Key:",k)
-            print("Value:",v)
-        
+
+        # for k,v in data.items():
+        #     print("Key:",k)
+        #     print("Value:",v)
+
         with h5py.File(output, 'w') as h5_output:
-            CreateHDF5Group(data,vplHelp,h5_output,verbose,group_name = None, archive = False)    
+            CreateHDF5Group(data,vplHelp,h5_output,verbose,group_name = None, archive = False)
+
+            if Ulysses == True:
+                WriteOutput(h5_output,IncludeList,ulysses = True)
     #if the bpl file DOES exist, we just need to open it and extract the data to put it in the filter file
     else:
         print("Extracting data from BPL Archive Folder. Please wait...")
         archive = BPLFile(bplArchive)
         WriteOutput(archive,IncludeList,output)
+        if Ulysses == True:
+            WriteOutput(archive,IncludeList,ulysses = True)

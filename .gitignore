@@ -16,17 +16,24 @@
 *.Ecc.Eigen
 *.Inc.Eigen
 SeasonalClimateFiles
-*.hdf5
+*.bpa
+*.bpf
 
 #files created from running tests
 tests/Bpstatus/BP_Status/
 tests/Bpstatus/.*
 tests/CreateHDF5/BP_CreateHDF5/
 tests/CreateHDF5/.*
-tests/Extract/BP_Extract/
-tests/Extract/.*
+tests/ExtractArchive/BP_Extract/
+tests/ExtractArchive/.*
 tests/Stats/BP_Stats/
 tests/Stats/.*
+tests/ExtractFilterArchive/BP_Extract/
+tests/ExtractFilterArchive/.*
+tests/ExtractFilterRawData/BP_Extract/
+tests/ExtractFilterRawData/.*
+tests/MD5CheckSum/BP_Extract/
+tests/MD5CheckSum/.*
 
 .coverage
 

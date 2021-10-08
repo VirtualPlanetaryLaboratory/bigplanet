@@ -11,6 +11,15 @@ from .bigplanet_archive import MainMethodA
 from .bigplanet_filter import MainMethodF
 
 def Main(bpInputFile,cores,quiet,email,force,verbose,split):
+    # folder,bplArchive,output,bodyFileList,primaryFile,IncludeList,ExcludeList,Ulysses = ReadFile(file,verbose)
+    #
+    # if if IncludeList != [] and ExcludeList != [] and os.path.isfile(bplArchive) == False:
+    #     print("Creating Archive BLA file...")
+    #     MainMethodA(bpInputFile,cores,quiet,email,force,verbose)
+    # else:
+    #     print("Creating filtered BPL file...")
+    #     MainMethodF(bpInputFile,quiet,verbose)
+
     if split == True:
         print("Creating filtered BPL file...")
         MainMethodF(bpInputFile,quiet,verbose)

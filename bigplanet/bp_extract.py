@@ -5,6 +5,8 @@ import multiprocessing as mp
 import h5py
 import numpy as np
 from scipy import stats
+import csv
+
 from .bp_get import GetVplanetHelp
 from .bp_process import CreateHDF5Group
 
@@ -48,14 +50,9 @@ def ExtractColumn(hf,k):
     archive = False
     key_list = list(hf.keys())
 
-
-    if ":" not in key_list:
-        print("this is a test")
+    if ":" not in key_list[0]:
         archive = True
 
-
-
-    print(archive)
     var = k.split(":")[1]
 
     if var == 'OutputOrder' or var == 'GridOutputOrder':
@@ -63,10 +60,12 @@ def ExtractColumn(hf,k):
             dataset = hf[key_list[0] + '/' + k]
             for d in dataset:
                 for value in d:
+                    value = value.astype(str, casting = 'safe')
                     data.append(value)
         else:
             for v in hf[k]:
                 for item in v:
+                    item = item.astype(str, casting = 'safe')
                     data.append(item)
 
     else:
@@ -76,7 +75,7 @@ def ExtractColumn(hf,k):
             if archive == True:
                 for key in key_list:
                     dataset = hf[key + '/' + k]
-                    data.append(HFD5Decoder(hf,dataset))
+                    data.append(HFD5Decoder(dataset))
             else:
                  for v in hf[k]:
                     for item in v:
@@ -120,10 +119,10 @@ def ExtractColumn(hf,k):
                         d = d.astype(float,casting = 'safe')
                         data.append(d)
             else:
-                dataset = hf[k]
-                for d in dataset:
-                    d = d.astype(float,casting = 'safe')
-                    data.append(d)
+                for d in hf[k]:
+                    for v in d:
+                        v = v.astype(float,casting = 'safe')
+                        data.append(v)
 
         else:
             print('ERROR: Uknown aggregation option: ', aggreg)
@@ -160,8 +159,9 @@ def ExtractUnits(hf,k):
     units : string
         A string value of the units
     """
-    if ":" not in hf.keys():
-        key_list = list(hf.keys())
+    key_list = list(hf.keys())
+
+    if ":" not in key_list[0]:
         dataset = hf[key_list[0] + '/' + k]
     else:
         dataset = hf[k]
@@ -169,9 +169,9 @@ def ExtractUnits(hf,k):
 
 def ForwardData(hf,k):
     data = []
+    key_list = list(hf.keys())
     forward = k.rpartition(':')[0] + ':forward'
-    if ":" not in hf.keys():
-        key_list = list(hf.keys())
+    if ":" not in key_list[0]:
         for key in key_list:
             dataset = hf[key + '/' + forward]
             data.append(HFD5Decoder(dataset))
@@ -230,21 +230,20 @@ def WriteOutput(inputfile, columns,exportfile="bigplanet.out",delim=" ",header=F
     """
     export = []
     units = []
+
     for i in columns:
         export.append(ExtractColumn(inputfile,i))
         units.append(ExtractUnits(inputfile,i))
 
-    if ".bpl" in exportfile:
+    if ".bpf" in exportfile:
         for j,value in enumerate(columns):
             with h5py.File(exportfile,"w") as f_dest:
                 f_dest.create_dataset(value, data=export[j], compression = 'gzip')
                 f_dest[value].attrs['Units'] = units[j]
-        print("Done")
     else:
 
         if ulysses == True:
             delim = ','
-            header = True
             exportfile = 'User.csv'
 
         if delim == "":
@@ -252,18 +251,33 @@ def WriteOutput(inputfile, columns,exportfile="bigplanet.out",delim=" ",header=F
             exit()
 
         with open(exportfile, "w", newline="") as f:
+            writer = csv.writer(f, delimiter = delim)
+            if ulysses == True:
+                headers = []
+                headers.append("")
+                for i in columns:
+                     headers.append(i)
+                writer.writerow(headers)
+
             if header == True:
-                for count,i in enumerate(columns):
-                    f.write(i + '[' + units[count] + ']')
-                    if columns[-1] != i:
-                        f.write(delim)
+                writer.writerow(columns)
 
-                f.write("\n")
 
-            icol, irow = export.shape
-            for i in range(irow):
-                for j in range(icol):
-                    f.write(str(export[j][i]))
-                    if j < icol - 1:
-                        f.write(delim)
-                f.write("\n")
+                # for count,i in enumerate(columns):
+                #     f.write(i + '[' + units[count] + ']')
+                #     if columns[-1] != i:
+                #         f.write(delim)
+                #
+                # f.write("\n")
+
+            export = np.array(export,dtype = 'object').T.tolist()
+            for name in export:
+                for data in name:
+                    writer.writerow(data)
+            # icol, irow = export.shape
+            # for i in range(irow):
+            #     for j in range(icol):
+            #         f.write(str(export[j][i]))
+            #         if j < icol - 1:
+            #             f.write(delim)
+            #     f.write("\n")
