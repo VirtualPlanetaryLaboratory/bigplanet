@@ -5,40 +5,41 @@ import subprocess as sub
 import sys
 
 
-def ReadFile(bplSplitFile,verbose = False):
+def ReadFile(bplSplitFile, verbose=False):
 
     includelist = []
     excludelist = []
     bodylist = []
-    bpl_file = None
+    bpl_file = ""
     Ulysses = False
-    folder_name = None
+    folder_name = ""
+    SimName = ""
 
     with open(bplSplitFile, 'r') as input:
-        #first thing we check is if both include and exclude are in the file bc that is bad
+        # first thing we check is if both include and exclude are in the file bc that is bad
         if 'saKeyInclude' and 'saKeyExclude' in input.read():
             print("ERROR: saKeyInclude and saKeyExclude are mutually exclusive")
             exit()
 
     with open(bplSplitFile, 'r') as input:
-        #now we loop over the file and get the various inputs
+        # now we loop over the file and get the various inputs
         content = [line.strip().split() for line in input.readlines()]
         for line in content:
             if line:
-                #we get the folder where the raw data is stored and have the default output file name set
+                # we get the folder where the raw data is stored and have the default output file name set
                 if line[0] == 'sDestFolder':
                     folder_name = line[1]
                     outputFile = folder_name.split('/')[-1] + "_filtered.bpf"
                 if line[0] == 'sBigplanetArchive':
                     bpl_file = line[1]
-                if line[0] == 'sOutputName':
+                if line[0] == 'sOutputFile':
                     outputFile = line[1]
-                    if outputFile.endswith('.bpf') == False:
-                        print("ERROR: Output File must be a .bpf extenstion")
                 if line[0] == 'sPrimaryFile':
                     primaryFile = line[1]
                 if line[0] == 'bUlysses':
                     Ulysses = True
+                if line[0] == 'sSimName':
+                    SimName = line[1]
                 if line[0] == "saBodyFiles":
                     bodylist = line[1:]
                     for i, value in enumerate(bodylist):
@@ -52,28 +53,61 @@ def ReadFile(bplSplitFile,verbose = False):
                     for i, value in enumerate(excludelist):
                         excludelist[i] = value.strip("[]")
 
-        if bpl_file == None and includelist == [] and excludelist == []:
+        if not bpl_file and not includelist or bpl_file == None and not excludelist:
             print("Error: No BPL Archive file or Include/Exclude List detected.")
             exit()
             #print("WARNING: This may take some time...")
 
-        if folder_name == None:
+        if not folder_name:
             print("ERROR: No sDestFolder found in bpl.in file")
             exit()
 
+        if Ulysses == True:
+            outputFile = 'User.csv'
+            print("WARNING: Ulysses is True. Changed Output file to User.csv")
+
+        # if the simName is some value we need to check if all the keys are forward
+        if SimName:
+            for i in includelist:
+                if 'forward' not in i:
+                    print("ERROR: SimName must only use forward file data for output")
+                    exit()
+                if 'backward' in i:
+                    print("ERROR: Backwards File not supported at this time")
+                    exit()
+            for j in excludelist:
+                if 'forward' not in j:
+                    print("ERROR: SimName must only use forward file data for output")
+                    exit()
+                if 'backward' in j:
+                    print("ERROR: Backwards File not supported at this time")
+                    exit()
+
+        if Ulysses == True and SimName == None:
+            for i in includelist:
+                if 'forward' in i:
+                    print(
+                        "ERROR: Forward keys in saKeyInclude requires sSimName for Ulysses Output")
+                    exit()
+            for j in excludelist:
+                if 'forward' in j:
+                    print(
+                        "ERROR: Forward keys in saKeyExclude requires sSimName for Ulysses Output")
+                    exit()
+
         if verbose:
-            print("Folder Name:",folder_name)
-            if bpl_file != None and includelist != [] and excludelist != []:
-                print("BPL Archive File:",bpl_file)
-                print("Include List:",includelist)
-                print("Exclude List:",excludelist)
-                print("Output File:",outputFile)
+            print("Folder Name:", folder_name)
+            if not bpl_file and includelist or not bpl_file and excludelist:
+                print("BPL Archive File:", bpl_file)
+                print("Include List:", includelist)
+                print("Exclude List:", excludelist)
+                print("Output File:", outputFile)
                 print("Ulysses Output:", Ulysses)
-            print("Body Files:",bodylist)
-            print("Primary File:",primaryFile)
+                print("Simulation Name:", SimName)
+            print("Body Files:", bodylist)
+            print("Primary File:", primaryFile)
 
-
-        return folder_name,bpl_file,outputFile,bodylist,primaryFile,includelist,excludelist,Ulysses
+        return folder_name, bpl_file, outputFile, bodylist, primaryFile, includelist, excludelist, Ulysses, SimName
 
 
 def GetDir(vspace_file):
@@ -92,36 +126,40 @@ def GetDir(vspace_file):
                     infiles.append(line[1])
     if folder_name is None:
         raise IOError("Name of destination folder not provided in file '%s'."
-                      "Use syntax 'destfolder <foldername>'"% vspace_file)
-
+                      "Use syntax 'destfolder <foldername>'" % vspace_file)
 
     if os.path.isdir(folder_name) == False:
-        print("ERROR: Folder", folder_name, "does not exist in the current directory.")
+        print("ERROR: Folder", folder_name,
+              "does not exist in the current directory.")
         exit()
 
     return folder_name, infiles
 
+
 def GetSims(folder_name):
     """ Pass it folder name where simulations are and returns list of simulation folders. """
-    #gets the list of sims
-    sims = sorted([f.path for f in os.scandir(os.path.abspath(folder_name)) if f.is_dir()])
+    # gets the list of sims
+    sims = sorted([f.path for f in os.scandir(
+        os.path.abspath(folder_name)) if f.is_dir()])
     return sims
 
-def GetSNames(in_files,sims):
-    #get system and the body names
+
+def GetSNames(bodyfiles, sims):
+    # get system and the body names
     body_names = []
 
-    for file in in_files:
-        #gets path to infile
-        full_path = os.path.join(sims[0],file)
-        #if the infile is the vpl.in, then get the system name
-        if "vpl.in" in file:
+    for file in bodyfiles:
+        # gets path to infile
+        full_path = os.path.join(sims[0], file)
+        # if the infile is the primary file, then get the system name
+        if bodyfiles[-1] == file:
             with open(full_path, 'r') as vpl:
                 content = [line.strip().split() for line in vpl.readlines()]
                 for line in content:
                     if line:
                         if line[0] == 'sSystemName':
                             system_name = line[1]
+        # otherwise get the sName from the body files
         else:
             with open(full_path, 'r') as infile:
                 content = [line.strip().split() for line in infile.readlines()]
@@ -130,15 +168,18 @@ def GetSNames(in_files,sims):
                         if line[0] == 'sName':
                             body_names.append(line[1])
 
-    return system_name,body_names
+    return system_name, body_names
+
 
 def GetVplanetHelp():
     command = "vplanet -H | egrep -v '^$|^\+' | cut -f 2,4 -d '|' | egrep '^ \*\*|^ Cust|^ Type|^ Dim|^ Defa|^Output Parameters'"
     py_ver = sys.version.split()[0]
     if '3.6' in py_ver:
-        proc = sub.run(command, shell = True, universal_newlines = True, stdout=sub.PIPE,stderr=sub.PIPE)
+        proc = sub.run(command, shell=True, universal_newlines=True,
+                       stdout=sub.PIPE, stderr=sub.PIPE)
     else:
-        proc = sub.run(command, shell = True, text = True, stdout=sub.PIPE,stderr=sub.PIPE)
+        proc = sub.run(command, shell=True, text=True,
+                       stdout=sub.PIPE, stderr=sub.PIPE)
     output = proc.stdout.splitlines()
 
     vplanet_dict = {}
@@ -147,14 +188,14 @@ def GetVplanetHelp():
         if ((line.startswith(' **b') or line.startswith(' **d') or line.startswith(' **i') or line.startswith(' **s')) or line.startswith(' **sa') and len(line.split()) == 1):
 
             option = line.strip("** ")
-            #print("Option:",option)
+            # print("Option:",option)
             vplanet_dict[option] = {}
             num = count + 1
             while num != count:
                 if "Type" in output[num]:
                     tp = output[num].rpartition('|')[-1].strip()
                     vplanet_dict[option]['Type'] = tp
-                    #print("Type:",tp)
+                    # print("Type:",tp)
                     num += 1
 
                 elif "Custom unit" in output[num]:
@@ -166,14 +207,14 @@ def GetVplanetHelp():
                 elif "Dimension(s)" in output[num]:
                     dim = output[num].rpartition('|')[-1].strip()
                     vplanet_dict[option]['Dimension'] = dim
-                    #print("Dimension:",dim)
+                    # print("Dimension:",dim)
                     num += 1
 
                 elif "Default value" in output[num]:
                     default = output[num].rpartition('|')[-1].strip()
                     vplanet_dict[option]['Default Value'] = default
                     #print("Default Value",default)
-                    #print()
+                    # print()
 
                     num += 1
 
@@ -187,3 +228,19 @@ def GetVplanetHelp():
             break
 
     return vplanet_dict
+
+
+def GetLogName(in_files, sims, system_name):
+    prefix = system_name
+
+    for file in in_files:
+        full_path = os.path.join(sims[0], file)
+        with open(full_path, 'r') as vpl:
+            content = [line.strip().split() for line in vpl.readlines()]
+            for line in content:
+                if line:
+                    if line[0] == 'sLogfile':
+                        prefix = line[1]
+    logfile = prefix + ".log"
+
+    return logfile

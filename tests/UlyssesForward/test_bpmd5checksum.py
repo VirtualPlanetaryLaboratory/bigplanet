@@ -31,16 +31,12 @@ def test_bpextract():
         if not (path / ".BP_Extract_BPL").exists():
             subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
 
-        file = bp.BPLFile(path / "BP_Extract.bpa")
+        file = path / "BP_Extract.bpa"
 
-        earth_Instellation_final = bp.ExtractColumn(
-            file, 'earth:Instellation:final')
-        sun_RotPer_initial = bp.ExtractColumn(file, 'sun:RotPer:initial')
-
-        assert np.isclose(earth_Instellation_final[0], 1367.635318)
-        assert np.isclose(earth_Instellation_final[1], 341.90883)
-
-        assert np.isclose(sun_RotPer_initial[0], 86400.0)
+        with h5py.File(file, "r") as h5:
+            print(h5['semi_a0']['earth:TMan:forward'][0])
+            assert np.isclose(
+                h5['semi_a0']['earth:Instellation:final'][0], 1367.635318)
 
 
 if __name__ == "__main__":

@@ -1,42 +1,53 @@
 Quickstart Guide
 ================
-BigPlanet has two different uses: Creating HDF5 files that hold all the data from the various
-simulations (command line usage), and extracting the data for plotting (Module usage).
 
 
-Command Line Usage
--------------------
-Using BigPlanet on the command line is relatively straight forward. After a suite of
-simulations (set up with `vspace <../vspace>`_) has completed, simply run the following
-command in the in the command line:
+Tutorial that walks the user through how to use bigplanet with an example case (small) creating a filtered file
+
+assume user has ran vspace + multiplanet, use bigplanet to access the data fast
+this explains how to turn raw data -> BPA file
+create filtered file for fast analysis
+
+.. code-block:: bash
+    
+    bigplanet bpl.in -a 
+
+This will create the archive file, but lets first look at the bpl.in file.
 
 .. code-block:: bash
 
-    bigplanet <input file> -c [number of cores] -q -m [email]
 
-where the input file is the same file used to run vspace and multi-planet.
-There are three optional arguments:
-:code:`-c` : the number of processors used
-:code:`-q` : quiet mode (nothing is printed to the command line)
-:code:`-m` : emails the user when Bigplanet is complete
+    [add line numbers]
+    sDestFolder GDwarf_exp10000
+    sArchiveFile GDwarf_exp10000.bpa
+    sOutputFile Test.bpf
 
-Module Usage
-------------
-Using BigPlanet as a module is where majority of the *magic* happens. To start,
-import BigPlanet as a module:
+    saBodyFiles earth.in sun.in
+    sPrimaryFile vpl.in
 
-.. code-block:: python
+    saKeyInclude earth:Obliquity:forward earth:Instellation:final earth:IceBeltLand:final $
+    earth:IceBeltSea:final earth:IceCapNorthLand:final earth:IceCapNorthSea:final $
+    earth:IceCapSouthLand:final earth:IceCapSouthSea:final earth:IceFree:final earth:Snowball:final
 
-    import bigplanet as bp
+On line 1 is the folder where the raw data are located
 
-This allows you to use the various functions that are outlined in detail below, such as
-print all the names of the variables (the "keys") in the HDF5 file (PrintKeys), extract a particular
-variable from its key (ExtractColumn), extract the units of a particular key value
-(ExtractUnits), extract unique values in a particular key (ExtractUniqueValues),
-create a matrix based on two keys (CreateMatrix), and write out a list of keys
-to a file (WriteOutput).
+On line 2 is the name of archive file
 
+On line 3 is the Output file which is ignored with the -a option. The output file is the name of the filtered file which will be created later
 
-.. note::
+On line 4 is a list of
 
-    Keys using the following format for naming: body_variable_aggregation
+On line 5 is 
+
+On line 6 is
+
+On lines 7-9 is the key names that are included in the output file. Similarly to line 3, these lines are ignored when the -a option is passed
+
+To extract the data from the Archive, run the following command:
+
+.. code-block:: bash
+    
+    bigplanet bpl.in
+
+This now *does* use lines 3 and 7-9 to create the filtered file, which only contains the data the user is interested in.
+From here checkout Scripting with bigplanet page for the next steps in analysing your data.
