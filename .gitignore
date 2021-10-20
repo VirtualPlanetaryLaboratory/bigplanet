@@ -81,3 +81,6 @@ build/
 
 # SCM VERSION
 bigplanet/bigplanet_version.py
+.vscode/settings.json
+junit/test-results.xml
+coverage.xml

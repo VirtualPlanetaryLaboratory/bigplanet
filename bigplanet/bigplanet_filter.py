@@ -56,7 +56,7 @@ def SplitsaKey(saKeylist, verbose):
 
 def Filter(file, quiet, verbose):
     folder, bplArchive, output, bodyFileList, primaryFile, IncludeList, ExcludeList, Ulysses, SimName = ReadFile(
-        file, verbose)
+        file, verbose, archive=False)
     vplHelp = GetVplanetHelp()
 
     infile_list = []
@@ -81,7 +81,7 @@ def Filter(file, quiet, verbose):
             log_file = GetLogName(infile_list, simList, system_name)
             data = {}
 
-            if SimName:
+            if SimName and Ulysses == 1:
                 for body in body_names:
                     header = [body + ':' + 'OutputOrder']
                     forward_name = system_name + '.' + body + '.forward'
@@ -95,6 +95,79 @@ def Filter(file, quiet, verbose):
                         print(heading)
                         data = ProcessOutputfile(
                             forward_name, data, body, heading, ':forward', SimName, verbose, incl=IncludeList)
+            # Check if SimName exists and Ulyssess is False
+            elif SimName and Ulysses == 0:
+                if loglist:
+                    if verbose:
+                        print("Processing Log file " + log_file)
+                    # we need to get the system name to get the name of the logfile
+                    data = ProcessLogFile(
+                        log_file, data, SimName, verbose, incl=IncludeList)
+
+                if optionList:
+                    if verbose:
+                        print("Processing input files...")
+                    # we need to get the vplanet help and process the particular log file it came in
+                    for k in infile_list:
+                        data = ProcessInputfile(
+                            data, k, SimName, vplHelp, verbose, incl=IncludeList)
+                if forwardlist:
+                    for body in body_names:
+                        outfile = body + ":sOutFile:option"
+                        # check bodyfile for sOutfile to see if the name is set for the forward file otherwise
+                        # its the same as default
+                        if outfile in data:
+                            forward_name = data[outfile]
+                        else:
+                            forward_name = system_name + '.' + body + '.forward'
+
+                        header = [body + ':' + 'OutputOrder']
+                        path = os.path.join(SimName, forward_name)
+                        if os.path.isfile(path) == False:
+                            break
+                        else:
+                            heading = {}
+                            heading = ProcessLogFile(
+                                log_file, heading, SimName, verbose, incl=header)
+                            data = ProcessOutputfile(
+                                forward_name, data, body, heading, ':forward', SimName, verbose, incl=IncludeList)
+
+                if backwardlist:
+                    for body in body_names:
+                        outfile = body + ":sOutFile:option"
+                        # check bodyfile for sOutfile to see if the name is set for the forward file otherwise
+                        # its the same as default
+                        if outfile in data:
+                            backward_name = data[outfile]
+                        else:
+                            backward_name = system_name + '.' + body + '.backward'
+
+                        header = [body + ':' + 'OutputOrder']
+                        path = os.path.join(SimName, backward_name)
+                        if os.path.isfile(path) == False:
+                            break
+                        else:
+                            heading = {}
+                            heading = ProcessLogFile(
+                                log_file, heading, SimName, verbose, incl=header)
+
+                            data = ProcessOutputfile(
+                                backward_name, data, body, heading, ':backward', SimName, verbose, incl=IncludeList)
+
+                            #ProcessOutputfile(file, data, body, Output, prefix, folder, verbose, incl = None, excl = None)
+                if climatelist:
+                    for body in body_names:
+                        header = [body + ':' + 'GridOutputOrder']
+                        forward_name = system_name + '.' + body + '.climate'
+                        path = os.path.join(SimName, forward_name)
+                        if os.path.isfile(path) == False:
+                            break
+                        else:
+                            heading = {}
+                            heading = ProcessLogFile(
+                                log_file, heading, SimName, verbose, incl=header)
+                            data = ProcessOutputfile(
+                                forward_name, data, body, heading, ':climate', SimName, verbose, incl=IncludeList)
 
             else:
                 for sim in simList:
@@ -145,7 +218,7 @@ def Filter(file, quiet, verbose):
                                 data = ProcessOutputfile(
                                     forward_name, data, body, heading, ':climate', sim, verbose, incl=IncludeList)
 
-                if Ulysses == True:
+                if Ulysses == 1:
                     DictToCSV(data, ulysses=True)
                 else:
                     with h5py.File(output, 'w') as filter:
@@ -156,13 +229,13 @@ def Filter(file, quiet, verbose):
     else:
         print("Extracting data from BPA File. Please wait...")
         archive = BPLFile(bplArchive)
-        if Ulysses == True:
+        if Ulysses == 1:
             if SimName:
                 ArchiveToCSV(archive, IncludeList, output,
-                             ulysses=True, group=SimName)
+                             ulysses=1, group=SimName)
             else:
                 # Change this to ArchiveToCSV <- this reads from archive file and exports a CSV
-                ArchiveToCSV(archive, IncludeList, output, ulysses=True)
+                ArchiveToCSV(archive, IncludeList, output, ulysses=1)
         else:
             # Change this to ArchiveToBPF <- this reads from Archive to Filterd File
             ArchiveToFiltered(archive, IncludeList, output)

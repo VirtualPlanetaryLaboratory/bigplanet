@@ -5,6 +5,7 @@ import multiprocessing as mp
 import h5py
 import numpy as np
 from scipy import stats
+import statistics as st
 import csv
 
 from .bp_get import GetVplanetHelp
@@ -84,32 +85,32 @@ def ExtractColumn(hf, k):
         elif aggreg == 'mean':
             argument = ForwardData(hf, k)
             for i in argument:
-                data.append((np.mean(i, axis=1)))
+                data.append((st.mean(i)))
 
         elif aggreg == 'stddev':
             argument = ForwardData(hf, k)
             for i in argument:
-                data.append((np.std(i, axis=1)))
+                data.append((st.stdev(i)))
 
         elif aggreg == 'min':
             argument = ForwardData(hf, k)
             for i in argument:
-                data.append((np.amin(i, axis=1)))
+                data.append((min(i)))
 
         elif aggreg == 'max':
             argument = ForwardData(hf, k)
             for i in argument:
-                data.append((np.amax(i, axis=1)))
+                data.append((max(i)))
 
         elif aggreg == 'mode':
             argument = ForwardData(hf, k)
             for i in argument:
-                data.append((stats.mode(i, axis=1)))
+                data.append((stats.mode(i)))
 
         elif aggreg == 'geomean':
             argument = ForwardData(hf, k)
             for i in argument:
-                data.append((stats.gmean(i, axis=1)))
+                data.append((stats.gmean(i)))
 
         elif aggreg == 'initial' or aggreg == 'final' or aggreg == 'option':
             if archive == True:
@@ -175,30 +176,34 @@ def ForwardData(hf, k):
     if ":" not in key_list[0]:
         for key in key_list:
             dataset = hf[key + '/' + forward]
-            data.append(HFD5Decoder(dataset))
+            for d in dataset:
+                for v in d:
+                    data.append(v)
     else:
         dataset = hf[forward]
-        data.append(HFD5Decoder(dataset))
+        for d in dataset:
+            data.append(d)
     return data
 
 
 def HFD5Decoder(dataset):
     # because the data is saved as a UTF-8 string, we need to decode it and
     # turn it into a
-    data = []
     for d in dataset:
         if "forward" in dataset.name:
             for value in d:
                 value = value.astype(float, casting='safe')
-                data.append(value)
+                # data.append(value)
         else:
             d = d.astype(float, casting='safe')
-            data.append(d)
+            # data.append(d)
     # and now we reshape it the same shape as the original dataset
-    shape = dataset.shape
-    data = np.reshape(data, shape)
+    #shape = dataset.shape
+    #data = np.reshape(data, shape)
+    # print(data)
+    # data.tolist()
 
-    return data
+    return dataset
 
 
 def ExtractUniqueValues(hf, k):
@@ -347,7 +352,7 @@ def ArchiveToFiltered(inputfile, columns, exportfile):
                 f_dest[value].attrs['Units'] = units[j]
 
 
-def ArchiveToCSV(inputfile, columns, exportfile, delim=" ", header=False, ulysses=False, group=None):
+def ArchiveToCSV(inputfile, columns, exportfile, delim=" ", header=False, ulysses=0, group=None):
     """
     Writes an Output file in csv format
 
@@ -389,7 +394,7 @@ def ArchiveToCSV(inputfile, columns, exportfile, delim=" ", header=False, ulysse
             for i in data:
                 export.append(i)
 
-    if ulysses == True:
+    if ulysses == 1:
         delim = ','
         exportfile = 'User.csv'
 
@@ -399,7 +404,7 @@ def ArchiveToCSV(inputfile, columns, exportfile, delim=" ", header=False, ulysse
 
     with open(exportfile, "w", newline="") as f:
         writer = csv.writer(f, delimiter=delim)
-        if ulysses == True:
+        if ulysses == 1:
             headers = []
             headers.append("")
             for i in columns:
@@ -415,7 +420,7 @@ def ArchiveToCSV(inputfile, columns, exportfile, delim=" ", header=False, ulysse
                 writer.writerow([data])
 
 
-def DictToCSV(dictData, exportfile="bigplanet.csv", delim=" ", header=False, ulysses=False):
+def DictToCSV(dictData, exportfile="bigplanet.csv", delim=" ", header=False, ulysses=0):
     """
     Writes an Output file in csv format
 
@@ -446,7 +451,7 @@ def DictToCSV(dictData, exportfile="bigplanet.csv", delim=" ", header=False, uly
         If True, the output file will have headers, and be named 'User.csv'
     """
 
-    if ulysses == True:
+    if ulysses == 1:
         delim = ','
         exportfile = 'User.csv'
 
@@ -457,7 +462,7 @@ def DictToCSV(dictData, exportfile="bigplanet.csv", delim=" ", header=False, uly
         with open(exportfile, "w", newline="") as f:
             writer = csv.DictWriter(f, dictData.keys(), delimiter=delim)
 
-            if ulysses == True:
+            if ulysses == 1:
                 headers = []
                 headers.append("")
                 for i in dictData:

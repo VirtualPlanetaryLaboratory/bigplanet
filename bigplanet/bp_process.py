@@ -171,6 +171,7 @@ def ProcessOutputfile(file, data, body, Output, prefix, folder, verbose, incl=No
 
     sorted = pd.read_csv(path, header=None, delim_whitespace=True).to_numpy()
     sorted = sorted.transpose().tolist()
+    print(sorted)
     #np.genfromtxt(path, dtype=float,encoding=None)
 
     for i, row in enumerate(sorted):
@@ -421,11 +422,14 @@ def GatherData(data, system_name, body_names, logfile, in_files, vplanet_help, f
                 file_name = data[Outfile]
             else:
                 # need to figure out if its forward file or backwards file
-                forwardOption = body + ":bFoward:option"
+                forwardOption = in_files[-1].partition(
+                    '.')[0] + ":bDoForward:option"
+                backwardOption = in_files[-1].partition(
+                    '.')[0] + ":bDoBackward:option"
                 if forwardOption in data:
                     file_name = system_name + '.' + body + '.forward'
                     prefix = ":forward"
-                else:
+                elif backwardOption in data:
                     file_name = system_name + '.' + body + '.backward'
                     prefix = ":backward"
 

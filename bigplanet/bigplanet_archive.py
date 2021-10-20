@@ -16,7 +16,7 @@ def Archive(bpInputFile, cores, quiet, force, verbose):
 
     # Get the directory and list of  from the bpl file
     dest_folder, bpl_file, outputFile, bodylist, primaryFile, includelist, excludelist, ulysses, SimName = ReadFile(
-        bpInputFile, verbose)
+        bpInputFile, verbose, archive=True)
     # we need to combine the body and primary files into one list
     infile_list = []
     for i in bodylist:

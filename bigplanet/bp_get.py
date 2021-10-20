@@ -5,13 +5,13 @@ import subprocess as sub
 import sys
 
 
-def ReadFile(bplSplitFile, verbose=False):
+def ReadFile(bplSplitFile, verbose=False, archive=False):
 
     includelist = []
     excludelist = []
     bodylist = []
     bpl_file = ""
-    Ulysses = False
+    Ulysses = 0
     folder_name = ""
     SimName = ""
 
@@ -37,7 +37,7 @@ def ReadFile(bplSplitFile, verbose=False):
                 if line[0] == 'sPrimaryFile':
                     primaryFile = line[1]
                 if line[0] == 'bUlysses':
-                    Ulysses = True
+                    Ulysses = 1
                 if line[0] == 'sSimName':
                     SimName = line[1]
                 if line[0] == "saBodyFiles":
@@ -53,7 +53,7 @@ def ReadFile(bplSplitFile, verbose=False):
                     for i, value in enumerate(excludelist):
                         excludelist[i] = value.strip("[]")
 
-        if not bpl_file and not includelist or bpl_file == None and not excludelist:
+        if not bpl_file and not includelist and archive == False or not bpl_file and not excludelist and archive == False:
             print("Error: No BPL Archive file or Include/Exclude List detected.")
             exit()
             #print("WARNING: This may take some time...")
@@ -62,9 +62,9 @@ def ReadFile(bplSplitFile, verbose=False):
             print("ERROR: No sDestFolder found in bpl.in file")
             exit()
 
-        if Ulysses == True:
+        if Ulysses == 1:
             outputFile = 'User.csv'
-            print("WARNING: Ulysses is True. Changed Output file to User.csv")
+            print("WARNING: Ulysses is set to True. Changed Output file to User.csv")
 
         # if the simName is some value we need to check if all the keys are forward
         if SimName:
@@ -244,3 +244,14 @@ def GetLogName(in_files, sims, system_name):
     logfile = prefix + ".log"
 
     return logfile
+
+
+# def GetForwardBackwards(in_files,sims,system_name):
+
+#     prefix = system_name
+#     #check if sOutfile in body files
+#     #check if bDoFoward or bDoBackward in primaryfile
+#     #if sOutfile in body files and bDoForward true,
+#     #then return the name and forward = true
+#     #if outfile is not in body files, and bDoforward is true,
+#     #then return the default name

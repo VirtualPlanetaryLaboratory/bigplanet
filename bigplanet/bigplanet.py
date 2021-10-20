@@ -21,6 +21,8 @@ def Main(bpInputFile, cores, quiet, overwrite, verbose, archive):
     #     print("Creating filtered BPF file...")
     #     MainMethodF(bpInputFile,quiet,verbose)
 
+    print(archive)
+
     if archive == True:
         print("Creating Archive BPA file...")
         Archive(bpInputFile, cores, quiet, overwrite, verbose)
