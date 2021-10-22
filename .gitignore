@@ -18,6 +18,7 @@
 SeasonalClimateFiles
 *.bpa
 *.bpf
+*.csv
 
 #files created from running tests
 tests/Bpstatus/BP_Status/
@@ -84,3 +85,5 @@ bigplanet/bigplanet_version.py
 .vscode/settings.json
 junit/test-results.xml
 coverage.xml
+tests/UlyssesAggregated/User.csv
+tests/UlyssesForward/test_bpulyssessforward.py

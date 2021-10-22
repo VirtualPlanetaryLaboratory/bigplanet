@@ -1,6 +1,9 @@
 sDestFolder BP_Extract
-sBigplanetArchive BP_Extract.bpla
+sArchiveFile BP_Extract.bpa
 sOutputName Test.bpf
+
+bUlysses 1
+sSimName semi_a0
 
 saBodyFiles  earth.in sun.in
 sPrimaryFile vpl.in

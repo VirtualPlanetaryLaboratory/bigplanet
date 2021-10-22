@@ -3,13 +3,13 @@ import numpy as np
 import os
 import pathlib
 import warnings
-import h5py
+import csv
 import multiprocessing as mp
 import sys
-import bigplanet as bp
+import bigplanet.bp_extract as bp
 
 
-def test_bpextract():
+def test_ulyssesaggregated():
     # gets current path
     path = pathlib.Path(__file__).parents[0].absolute()
     sys.path.insert(1, str(path.parents[0]))
@@ -28,19 +28,15 @@ def test_bpextract():
             subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
-        if not (path / ".BP_Extract_BPL").exists():
+        if not (path / "User.csv").exists():
             subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
 
-        # Run bigplanet
-        if not (path / "Test.bpf").exists():
-            subprocess.check_output(["bigplanet", "bpl.in", "-s"], cwd=path)
+        file = path / "User.csv"
 
-        file = path / "BP_Extract.bpa"
-
-        with h5py.File(file, "r") as h5:
-            assert np.isclose(
-                h5['semi_a0']['earth:Instellation:final'][0], 1367.635318)
+        data = bp.CSVToDict(file, 1)
+        assert np.isclose(
+            data['earth:Instellation:final'][0], 1367.635318)
 
 
 if __name__ == "__main__":
-    test_bpextract()
+    test_ulyssesaggregated()

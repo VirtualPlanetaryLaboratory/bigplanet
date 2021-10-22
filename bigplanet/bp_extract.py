@@ -7,7 +7,7 @@ import numpy as np
 from scipy import stats
 import statistics as st
 import csv
-
+import pandas as pd
 from .bp_get import GetVplanetHelp
 from .bp_process import DictToBP
 
@@ -453,23 +453,48 @@ def DictToCSV(dictData, exportfile="bigplanet.csv", delim=" ", header=False, uly
 
     if ulysses == 1:
         delim = ','
+        # headers.append("")
         exportfile = 'User.csv'
 
-        if delim == "":
-            print('ERROR: Delimiter cannot be empty')
-            exit()
+    headers = []
+    for k in dictData.keys():
+        headers.append(k)
 
-        with open(exportfile, "w", newline="") as f:
-            writer = csv.DictWriter(f, dictData.keys(), delimiter=delim)
-
+    for k, v in dictData.items():
+        if "forward" not in k:
+            del dictData[k][0]
+        else:
             if ulysses == 1:
-                headers = []
-                headers.append("")
-                for i in dictData:
-                    headers.append(i)
-                writer.writerow(headers)
+                dictData[k] = [item for sublist in v for item in sublist]
 
-            if header == True:
-                writer.writeheader()
+    if delim == "":
+        print('ERROR: Delimiter cannot be empty')
+        exit()
 
-            writer.writerow(dictData)
+    df = pd.DataFrame.from_dict(dictData, orient='index').transpose()
+
+    if header == True or ulysses == 1:
+        df.to_csv(exportfile, index=False, header=True)
+    else:
+        df.to_csv(exportfile, index=False, header=False)
+
+    if ulysses == 1:
+        with open(exportfile) as uly:
+            lines = uly.readlines()
+        first = "," + lines[0]
+        lines[0] = first
+
+        with open(exportfile, "w") as uly_r:
+            uly_r.writelines(lines)
+
+
+def CSVToDict(CSV_File, ulysses=0):
+
+    df = pd.read_csv(CSV_File)
+
+    if ulysses == 1:
+        df = df.shift(periods=1, axis="columns")
+
+    df_dict = df.to_dict()
+
+    return df_dict

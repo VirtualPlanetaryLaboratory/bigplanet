@@ -27,7 +27,6 @@ def SplitsaKey(saKeylist, verbose):
     for item in saKeylist:
         # to figure out what list they belong in, we have to rpartion them and look at the last word
         spl = item.rpartition(':')
-        print(spl[-1])
         if spl[-1] == "inital" or spl[-1] == "final" or spl[-1] == 'OutputOption' or spl[-1] == 'GridOutputOption':
             loglist.append(item)
         # check if its forward or any of the statsitical functions
@@ -73,7 +72,10 @@ def Filter(file, quiet, verbose):
             loglist, optionList, forwardlist, climatelist, backwardlist = SplitsaKey(
                 IncludeList, verbose)
             # now that we have the list of which keys to look for in which files, we can process the files and grab the data
-            simList = GetSims(folder)
+            if SimName:
+                simList = GetSims(folder, simname=SimName)
+            else:
+                simList = GetSims(folder)
             system_name, body_names = GetSNames(infile_list, simList)
             # add new function to get sLogName if in any of input files
             # else it would use the default of system name + .log
@@ -81,28 +83,105 @@ def Filter(file, quiet, verbose):
             log_file = GetLogName(infile_list, simList, system_name)
             data = {}
 
-            if SimName and Ulysses == 1:
-                for body in body_names:
-                    header = [body + ':' + 'OutputOrder']
-                    forward_name = system_name + '.' + body + '.forward'
-                    path = os.path.join(SimName, forward_name)
-                    if os.path.isfile(path) == False:
-                        break
-                    else:
-                        heading = {}
-                        heading = ProcessLogFile(
-                            log_file, heading, SimName, verbose, incl=header)
-                        print(heading)
-                        data = ProcessOutputfile(
-                            forward_name, data, body, heading, ':forward', SimName, verbose, incl=IncludeList)
-            # Check if SimName exists and Ulyssess is False
-            elif SimName and Ulysses == 0:
+            # if SimName and Ulysses == 1:
+            #     SimName = os.path.join(folder, SimName)
+            #     print('Fetching data from', SimName)
+            #     for body in body_names:
+            #         header = [body + ':' + 'OutputOrder']
+            #         forward_name = system_name + '.' + body + '.forward'
+            #         path = os.path.join(SimName, forward_name)
+
+            #         if os.path.isfile(path) == False:
+            #             break
+            #         else:
+            #             heading = {}
+            #             heading = ProcessLogFile(
+            #                 log_file, heading, SimName, verbose, incl=header)
+            #             print(heading)
+            #             data = ProcessOutputfile(
+            #                 forward_name, data, body, heading, ':forward', SimName, verbose, incl=IncludeList)
+
+            # # Check if SimName exists and Ulyssess is False
+            # elif SimName and Ulysses == 0:
+            #     if loglist:
+            #         if verbose:
+            #             print("Processing Log file " + log_file)
+            #         # we need to get the system name to get the name of the logfile
+            #         data = ProcessLogFile(
+            #             log_file, data, SimName, verbose, incl=IncludeList)
+
+            #     if optionList:
+            #         if verbose:
+            #             print("Processing input files...")
+            #         # we need to get the vplanet help and process the particular log file it came in
+            #         for k in infile_list:
+            #             data = ProcessInputfile(
+            #                 data, k, SimName, vplHelp, verbose, incl=IncludeList)
+            #     if forwardlist:
+            #         for body in body_names:
+            #             outfile = body + ":sOutFile:option"
+            #             # check bodyfile for sOutfile to see if the name is set for the forward file otherwise
+            #             # its the same as default
+            #             if outfile in data:
+            #                 forward_name = data[outfile]
+            #             else:
+            #                 forward_name = system_name + '.' + body + '.forward'
+
+            #             header = [body + ':' + 'OutputOrder']
+            #             path = os.path.join(SimName, forward_name)
+            #             if os.path.isfile(path) == False:
+            #                 break
+            #             else:
+            #                 heading = {}
+            #                 heading = ProcessLogFile(
+            #                     log_file, heading, SimName, verbose, incl=header)
+            #                 data = ProcessOutputfile(
+            #                     forward_name, data, body, heading, ':forward', SimName, verbose, incl=IncludeList)
+            #     if backwardlist:
+            #         for body in body_names:
+            #             outfile = body + ":sOutFile:option"
+            #             # check bodyfile for sOutfile to see if the name is set for the forward file otherwise
+            #             # its the same as default
+            #             if outfile in data:
+            #                 backward_name = data[outfile]
+            #             else:
+            #                 backward_name = system_name + '.' + body + '.backward'
+
+            #             header = [body + ':' + 'OutputOrder']
+            #             path = os.path.join(SimName, backward_name)
+            #             if os.path.isfile(path) == False:
+            #                 break
+            #             else:
+            #                 heading = {}
+            #                 heading = ProcessLogFile(
+            #                     log_file, heading, SimName, verbose, incl=header)
+
+            #                 data = ProcessOutputfile(
+            #                     backward_name, data, body, heading, ':backward', SimName, verbose, incl=IncludeList)
+
+            #           #ProcessOutputfile(file, data, body, Output, prefix, folder, verbose, incl = None, excl = None)
+            # if climatelist:
+            #     for body in body_names:
+            #         header = [body + ':' + 'GridOutputOrder']
+            #          forward_name = system_name + '.' + body + '.climate'
+            #           path = os.path.join(SimName, forward_name)
+            #            if os.path.isfile(path) == False:
+            #                 break
+            #             else:
+            #                 heading = {}
+            #                 heading = ProcessLogFile(
+            #                     log_file, heading, SimName, verbose, incl=header)
+            #                 data = ProcessOutputfile(
+            #                     forward_name, data, body, heading, ':climate', SimName, verbose, incl=IncludeList)
+
+            # else:
+            for sim in simList:
                 if loglist:
                     if verbose:
                         print("Processing Log file " + log_file)
                     # we need to get the system name to get the name of the logfile
                     data = ProcessLogFile(
-                        log_file, data, SimName, verbose, incl=IncludeList)
+                        log_file, data, sim, verbose, incl=IncludeList)
 
                 if optionList:
                     if verbose:
@@ -110,121 +189,46 @@ def Filter(file, quiet, verbose):
                     # we need to get the vplanet help and process the particular log file it came in
                     for k in infile_list:
                         data = ProcessInputfile(
-                            data, k, SimName, vplHelp, verbose, incl=IncludeList)
+                            data, k, sim, vplHelp, verbose, incl=IncludeList)
                 if forwardlist:
                     for body in body_names:
                         outfile = body + ":sOutFile:option"
                         # check bodyfile for sOutfile to see if the name is set for the forward file otherwise
                         # its the same as default
-                        if outfile in data:
-                            forward_name = data[outfile]
-                        else:
-                            forward_name = system_name + '.' + body + '.forward'
 
                         header = [body + ':' + 'OutputOrder']
-                        path = os.path.join(SimName, forward_name)
+                        forward_name = system_name + '.' + body + '.forward'
+                        path = os.path.join(sim, forward_name)
                         if os.path.isfile(path) == False:
                             break
                         else:
                             heading = {}
                             heading = ProcessLogFile(
-                                log_file, heading, SimName, verbose, incl=header)
+                                log_file, heading, sim, verbose, incl=header)
                             data = ProcessOutputfile(
-                                forward_name, data, body, heading, ':forward', SimName, verbose, incl=IncludeList)
-
-                if backwardlist:
-                    for body in body_names:
-                        outfile = body + ":sOutFile:option"
-                        # check bodyfile for sOutfile to see if the name is set for the forward file otherwise
-                        # its the same as default
-                        if outfile in data:
-                            backward_name = data[outfile]
-                        else:
-                            backward_name = system_name + '.' + body + '.backward'
-
-                        header = [body + ':' + 'OutputOrder']
-                        path = os.path.join(SimName, backward_name)
-                        if os.path.isfile(path) == False:
-                            break
-                        else:
-                            heading = {}
-                            heading = ProcessLogFile(
-                                log_file, heading, SimName, verbose, incl=header)
-
-                            data = ProcessOutputfile(
-                                backward_name, data, body, heading, ':backward', SimName, verbose, incl=IncludeList)
-
+                                forward_name, data, body, heading, ':forward', sim, verbose, incl=IncludeList)
                             #ProcessOutputfile(file, data, body, Output, prefix, folder, verbose, incl = None, excl = None)
                 if climatelist:
                     for body in body_names:
                         header = [body + ':' + 'GridOutputOrder']
                         forward_name = system_name + '.' + body + '.climate'
-                        path = os.path.join(SimName, forward_name)
+                        path = os.path.join(sim, forward_name)
                         if os.path.isfile(path) == False:
                             break
                         else:
                             heading = {}
                             heading = ProcessLogFile(
-                                log_file, heading, SimName, verbose, incl=header)
+                                log_file, heading, sim, verbose, incl=header)
                             data = ProcessOutputfile(
-                                forward_name, data, body, heading, ':climate', SimName, verbose, incl=IncludeList)
+                                forward_name, data, body, heading, ':climate', sim, verbose, incl=IncludeList)
 
+            if Ulysses == 1:
+                DictToCSV(data, ulysses=True)
             else:
-                for sim in simList:
-                    if loglist:
-                        if verbose:
-                            print("Processing Log file " + log_file)
-                        # we need to get the system name to get the name of the logfile
-                        data = ProcessLogFile(
-                            log_file, data, sim, verbose, incl=IncludeList)
-
-                    if optionList:
-                        if verbose:
-                            print("Processing input files...")
-                        # we need to get the vplanet help and process the particular log file it came in
-                        for k in infile_list:
-                            data = ProcessInputfile(
-                                data, k, sim, vplHelp, verbose, incl=IncludeList)
-                    if forwardlist:
-                        for body in body_names:
-                            outfile = body + ":sOutFile:option"
-                            # check bodyfile for sOutfile to see if the name is set for the forward file otherwise
-                            # its the same as default
-
-                            header = [body + ':' + 'OutputOrder']
-                            forward_name = system_name + '.' + body + '.forward'
-                            path = os.path.join(sim, forward_name)
-                            if os.path.isfile(path) == False:
-                                break
-                            else:
-                                heading = {}
-                                heading = ProcessLogFile(
-                                    log_file, heading, sim, verbose, incl=header)
-                                print(heading)
-                                data = ProcessOutputfile(
-                                    forward_name, data, body, heading, ':forward', sim, verbose, incl=IncludeList)
-                                #ProcessOutputfile(file, data, body, Output, prefix, folder, verbose, incl = None, excl = None)
-                    if climatelist:
-                        for body in body_names:
-                            header = [body + ':' + 'GridOutputOrder']
-                            forward_name = system_name + '.' + body + '.climate'
-                            path = os.path.join(sim, forward_name)
-                            if os.path.isfile(path) == False:
-                                break
-                            else:
-                                heading = {}
-                                heading = ProcessLogFile(
-                                    log_file, heading, sim, verbose, incl=header)
-                                data = ProcessOutputfile(
-                                    forward_name, data, body, heading, ':climate', sim, verbose, incl=IncludeList)
-
-                if Ulysses == 1:
-                    DictToCSV(data, ulysses=True)
-                else:
-                    with h5py.File(output, 'w') as filter:
-                        # Change this to DictToBP <- this reads from Dict to Bigplanet File
-                        DictToBP(data, vplHelp, filter, verbose,
-                                 group_name=None, archive=False)
+                with h5py.File(output, 'w') as filter:
+                    # Change this to DictToBP <- this reads from Dict to Bigplanet File
+                    DictToBP(data, vplHelp, filter, verbose,
+                             group_name=None, archive=False)
     # if the bpl file DOES exist, we just need to open it and extract the data to put it in the filter file
     else:
         print("Extracting data from BPA File. Please wait...")

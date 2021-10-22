@@ -171,7 +171,6 @@ def ProcessOutputfile(file, data, body, Output, prefix, folder, verbose, incl=No
 
     sorted = pd.read_csv(path, header=None, delim_whitespace=True).to_numpy()
     sorted = sorted.transpose().tolist()
-    print(sorted)
     #np.genfromtxt(path, dtype=float,encoding=None)
 
     for i, row in enumerate(sorted):

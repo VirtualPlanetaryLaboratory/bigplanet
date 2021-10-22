@@ -9,7 +9,7 @@ import sys
 import bigplanet as bp
 
 
-def test_bpextract():
+def test_ulyssesforward():
     # gets current path
     path = pathlib.Path(__file__).parents[0].absolute()
     sys.path.insert(1, str(path.parents[0]))
@@ -28,16 +28,16 @@ def test_bpextract():
             subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
-        if not (path / ".BP_Extract_BPL").exists():
+        if not (path / "User.csv").exists():
             subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
 
-        file = path / "BP_Extract.bpa"
+        file = path / "User.csv"
 
-        with h5py.File(file, "r") as h5:
-            print(h5['semi_a0']['earth:TMan:forward'][0])
-            assert np.isclose(
-                h5['semi_a0']['earth:Instellation:final'][0], 1367.635318)
+        data = bp.CSVToDict(file, 1)
+
+        assert np.isclose(
+            data['earth:TCore:forward'][450], 4999.131849)
 
 
 if __name__ == "__main__":
-    test_bpextract()
+    test_ulyssesforward()

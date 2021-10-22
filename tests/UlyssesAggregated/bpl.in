@@ -1,6 +1,8 @@
 sDestFolder BP_Extract
-sBigplanetArchive BP_Extract.bpla
+sArchiveFile BP_Extract.bpla
 sOutputName Test.bpf
+
+bUlysses True
 
 saBodyFiles  earth.in sun.in
 sPrimaryFile vpl.in

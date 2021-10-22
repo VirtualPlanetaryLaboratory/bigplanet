@@ -30,7 +30,7 @@ def ReadFile(bplSplitFile, verbose=False, archive=False):
                 if line[0] == 'sDestFolder':
                     folder_name = line[1]
                     outputFile = folder_name.split('/')[-1] + "_filtered.bpf"
-                if line[0] == 'sBigplanetArchive':
+                if line[0] == 'sArchiveFile':
                     bpl_file = line[1]
                 if line[0] == 'sOutputFile':
                     outputFile = line[1]
@@ -72,15 +72,9 @@ def ReadFile(bplSplitFile, verbose=False, archive=False):
                 if 'forward' not in i:
                     print("ERROR: SimName must only use forward file data for output")
                     exit()
-                if 'backward' in i:
-                    print("ERROR: Backwards File not supported at this time")
-                    exit()
             for j in excludelist:
                 if 'forward' not in j:
                     print("ERROR: SimName must only use forward file data for output")
-                    exit()
-                if 'backward' in j:
-                    print("ERROR: Backwards File not supported at this time")
                     exit()
 
         if Ulysses == True and SimName == None:
@@ -97,13 +91,13 @@ def ReadFile(bplSplitFile, verbose=False, archive=False):
 
         if verbose:
             print("Folder Name:", folder_name)
-            if not bpl_file and includelist or not bpl_file and excludelist:
-                print("BPL Archive File:", bpl_file)
-                print("Include List:", includelist)
-                print("Exclude List:", excludelist)
-                print("Output File:", outputFile)
-                print("Ulysses Output:", Ulysses)
-                print("Simulation Name:", SimName)
+
+            print("BPL Archive File:", bpl_file)
+            print("Include List:", includelist)
+            print("Exclude List:", excludelist)
+            print("Output File:", outputFile)
+            print("Ulysses Output:", Ulysses)
+            print("Simulation Name:", SimName)
             print("Body Files:", bodylist)
             print("Primary File:", primaryFile)
 
@@ -136,11 +130,16 @@ def GetDir(vspace_file):
     return folder_name, infiles
 
 
-def GetSims(folder_name):
+def GetSims(folder_name, simname=""):
     """ Pass it folder name where simulations are and returns list of simulation folders. """
     # gets the list of sims
     sims = sorted([f.path for f in os.scandir(
         os.path.abspath(folder_name)) if f.is_dir()])
+
+    if simname:
+        sims = [x for x in sims if simname in x]
+
+    print(sims)
     return sims
 
 
