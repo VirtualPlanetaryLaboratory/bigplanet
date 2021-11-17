@@ -3,6 +3,16 @@
 import os
 import subprocess as sub
 import sys
+from itertools import chain
+
+
+def DollarSign(m_bl, m_line, m_num, m_file):
+    '''Process each line looking for $ at the end, continue until no $ present'''
+    if m_line[-1] == '$':
+        m_bl.append(m_line[0:-1])
+        DollarSign(m_bl, m_file[m_num + 1], (m_num + 1), m_file)
+    else:
+        m_bl.append(m_line[0:])
 
 
 def ReadFile(bplSplitFile, verbose=False, archive=False):
@@ -24,7 +34,7 @@ def ReadFile(bplSplitFile, verbose=False, archive=False):
     with open(bplSplitFile, 'r') as input:
         # now we loop over the file and get the various inputs
         content = [line.strip().split() for line in input.readlines()]
-        for line in content:
+        for num, line in enumerate(content):
             if line:
                 # we get the folder where the raw data is stored and have the default output file name set
                 if line[0] == 'sDestFolder':
@@ -40,18 +50,18 @@ def ReadFile(bplSplitFile, verbose=False, archive=False):
                     Ulysses = 1
                 if line[0] == 'sSimName':
                     SimName = line[1]
+
                 if line[0] == "saBodyFiles":
-                    bodylist = line[1:]
-                    for i, value in enumerate(bodylist):
-                        bodylist[i] = value.strip("[]")
+                    DollarSign(bodylist, line[1:], num, content)
+                    bodylist = list(chain.from_iterable(bodylist))
+
                 if line[0] == 'saKeyInclude':
-                    includelist = line[1:]
-                    for i, value in enumerate(includelist):
-                        includelist[i] = value.strip("[]")
+                    DollarSign(includelist, line[1:], num, content)
+                    includelist = list(chain.from_iterable(includelist))
+
                 if line[0] == 'saKeyExclude':
-                    excludelist = line[1:]
-                    for i, value in enumerate(excludelist):
-                        excludelist[i] = value.strip("[]")
+                    DollarSign(excludelist, line[1:], num, content)
+                    excludelist = list(chain.from_iterable(excludelist))
 
         if not bpl_file and not includelist and archive == False or not bpl_file and not excludelist and archive == False:
             print("Error: No BPL Archive file or Include/Exclude List detected.")
@@ -66,18 +76,20 @@ def ReadFile(bplSplitFile, verbose=False, archive=False):
             outputFile = 'User.csv'
             print("WARNING: Ulysses is set to True. Changed Output file to User.csv")
 
-        # if the simName is some value we need to check if all the keys are forward
-        if SimName:
-            for i in includelist:
-                if 'forward' not in i:
-                    print("ERROR: SimName must only use forward file data for output")
-                    exit()
-            for j in excludelist:
-                if 'forward' not in j:
-                    print("ERROR: SimName must only use forward file data for output")
-                    exit()
+            # if the simName is some value we need to check if all the keys are forward
+            if SimName:
+                for i in includelist:
+                    if 'forward' not in i:
+                        print(
+                            "ERROR: SimName must only use forward file data for output")
+                        exit()
+                for j in excludelist:
+                    if 'forward' not in j:
+                        print(
+                            "ERROR: SimName must only use forward file data for output")
+                        exit()
 
-        if Ulysses == True and SimName == None:
+        if Ulysses == True and SimName == "":
             for i in includelist:
                 if 'forward' in i:
                     print(

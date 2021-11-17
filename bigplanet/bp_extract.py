@@ -72,7 +72,7 @@ def ExtractColumn(hf, k):
     else:
         aggreg = k.split(":")[2]
 
-        if aggreg == 'forward':
+        if aggreg == 'forward' or aggreg == "backward" or aggreg == "climate":
             if archive == True:
                 for key in key_list:
                     dataset = hf[key + '/' + k]

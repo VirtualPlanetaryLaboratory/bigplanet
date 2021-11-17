@@ -28,7 +28,7 @@ def test_bpextract():
 
         # Run bigplanet
         if not (path / "Test.bpf").exists():
-            subprocess.check_output(["bigplanet", "bpl.in", "-s"], cwd=path)
+            subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
 
         file  = bp.BPLFile(path / "Test.bpf")
 

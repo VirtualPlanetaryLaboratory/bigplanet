@@ -39,7 +39,8 @@ tests/UlyssesAggregated/BP_Extract/
 tests/UlyssesAggregated/.*
 tests/UlyssesForward/BP_Extract/
 tests/UlyssesForward/.*
-
+tests/SingleSim/BP_Extract/
+tests/SingleSim/.*
 
 
 .coverage

@@ -16,8 +16,6 @@ This will create the archive file, but lets first look at the bpl.in file.
 
 .. code-block:: bash
 
-
-    [add line numbers]
     sDestFolder GDwarf_exp10000
     sArchiveFile GDwarf_exp10000.bpa
     sOutputFile Test.bpf
@@ -35,13 +33,11 @@ On line 2 is the name of archive file
 
 On line 3 is the Output file which is ignored with the -a option. The output file is the name of the filtered file which will be created later
 
-On line 4 is a list of
+On line 5 is a list of body files
 
-On line 5 is 
+On line 6 is the primary file (in this case its vpl.in)
 
-On line 6 is
-
-On lines 7-9 is the key names that are included in the output file. Similarly to line 3, these lines are ignored when the -a option is passed
+On lines 8-10 is the key names that are included in the output file. Similarly to line 3, these lines are ignored when the -a option is passed
 
 To extract the data from the Archive, run the following command:
 

@@ -165,13 +165,17 @@ def ProcessOutputfile(file, data, body, Output, prefix, folder, verbose, incl=No
         print(path)
 
     header = []
+    units = []
     for k, v in Output.items():
         for num in v:
             header.append(num[0])
+            if num[1] == '':
+                units.append('nd')
+            else:
+                units.append(num[1])
 
-    sorted = pd.read_csv(path, header=None, delim_whitespace=True).to_numpy()
-    sorted = sorted.transpose().tolist()
-    #np.genfromtxt(path, dtype=float,encoding=None)
+    sorted = pd.read_csv(path, header=None, delim_whitespace=True)
+    sorted = sorted.to_numpy().transpose().tolist()
 
     for i, row in enumerate(sorted):
         key_name = body + ':' + header[i] + prefix
@@ -183,20 +187,21 @@ def ProcessOutputfile(file, data, body, Output, prefix, folder, verbose, incl=No
 
         # make this into a function
         if incl is not None:
-            for i in incl:
-                if key_name == i:
+            for j in incl:
+                if key_name == j:
                     # make this into a function
                     if key_name in data:
                         data[key_name].append(row)
                     else:
-                        data[key_name] = [row]
+                        data[key_name] = [units[i], row]
+
                 else:
                     continue
         else:
             if key_name in data:
                 data[key_name].append(row)
             else:
-                data[key_name] = [row]
+                data[key_name] = [units[i], row]
 
     return data
 
@@ -458,6 +463,7 @@ def DictToBP(data, vplanet_help, h5_file, verbose=False, group_name="", archive=
     for k, v in data.items():
 
         var = k.split(":")[1]
+        end = k.split(':')[-1]
 
         if "OutputOrder" in var or "GridOutput" in var:
             v_value = v
@@ -489,7 +495,7 @@ def DictToBP(data, vplanet_help, h5_file, verbose=False, group_name="", archive=
             print("Dataset:", dataset_name)
             print("Type:", tp)
             print("Units:", v_attr)
-            print("Value:", v_value[0])
+            print("Value:", v_value)
             print()
 
         h5_file.create_dataset(dataset_name, data=np.array(

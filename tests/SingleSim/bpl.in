@@ -2,7 +2,9 @@ sDestFolder BP_Extract
 sArchiveFile BP_Extract.bpa
 sOutputFile Test.bpf
 
+sSimName semi_a0
+
 saBodyFiles  earth.in sun.in
 sPrimaryFile vpl.in
 
-saKeyInclude earth:Instellation:final sun:dLuminosity:option earth:dMass:option vpl:dStopTime:option earth:TMan:forward
+saKeyInclude earth:TMan:forward earth:TCore:initial

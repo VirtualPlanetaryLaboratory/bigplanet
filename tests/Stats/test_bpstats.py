@@ -40,11 +40,6 @@ def test_bpstats():
             file, 'earth:FMeltUMan:geomean')
         earth_BLUMan_stddev = bp.ExtractColumn(file, 'earth:BLUMan:stddev')
 
-        print(earth_TMan_min)
-        print(earth_235UNumMan_max)
-        print(earth_TCMB_mean)
-        print(earth_FMeltUMan_geomean)
-        print(earth_BLUMan_stddev)
 
         assert np.isclose(earth_TMan_min[0], 2257.85093)
         assert np.isclose(earth_235UNumMan_max[0], 2.700598e+28)

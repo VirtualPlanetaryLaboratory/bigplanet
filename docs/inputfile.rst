@@ -10,7 +10,9 @@ sweep. An example bigplanet input file, called :code:`bpl.in` is described below
     sBigplanetFile GDwarf_exp10000.bpa
     sOutputFile Test.bpf
 
-    saBodyFiles earth.in sun.in
+    saBodyFiles earth.in $
+                sun.in
+                
     sPrimaryFile vpl.in
 
     saKeyInclude earth:Obliquity:forward earth:Instellation:final earth:IceBeltLand:final $
@@ -26,8 +28,8 @@ that can be seen in the input file.
 | sDestFolder       | The folder where the raw           | sDestFolder GDwarf                   | Yes                    |
 |                   | data is stored                     |                                      |                        |
 +-------------------+------------------------------------+--------------------------------------+------------------------+
-| sBigplanetArchive | The name of the Bigplanet          | sBigplanetArchive GDwarf.bpa         |                        |
-|                   | Archive file                       |                                      |                        |
+| sArchiveFile      | The name of the Bigplanet          | sArchiveFile GDwarf.bpa              |                        |
+|                   | Archive file (.bpa)                |                                      |                        |
 +-------------------+------------------------------------+--------------------------------------+------------------------+
 | sOutputFile       | The name of the Output file.       | sOutputFile Test.bpf                 |                        |
 |                   | Note that this can be either       |                                      |                        |
