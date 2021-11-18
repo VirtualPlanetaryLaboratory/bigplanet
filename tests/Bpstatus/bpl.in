@@ -1,0 +1,4 @@
+sDestFolder BP_Status
+sArchiveFile BP_Status.bpa
+saBodyFiles   earth.in sun.in
+sPrimaryFile vpl.in

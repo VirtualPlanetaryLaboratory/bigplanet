@@ -29,7 +29,7 @@ def test_bpstats():
 
         # Run bigplanet
         if not (path / "BP_Stats.bpa").exists():
-            subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
+            subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
         file = bp.BPLFile(path / "BP_Stats.bpa")
 

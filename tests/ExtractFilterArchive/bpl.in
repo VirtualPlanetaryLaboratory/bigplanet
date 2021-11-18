@@ -1,6 +1,6 @@
 sDestFolder BP_Extract
 sArchiveFile BP_Extract.bpa
-sOutputName Test.bpf
+sOutputFile Test.bpf
 
 saBodyFiles  earth.in sun.in
 sPrimaryFile vpl.in

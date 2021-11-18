@@ -29,7 +29,7 @@ def test_bpextract():
 
         # Run bigplanet
         if not (path / "BP_Extract.bpa").exists():
-            subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
+            subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
         # Run bigplanet
         if not (path / "Test.bpf").exists():
