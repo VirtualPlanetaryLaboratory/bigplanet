@@ -35,7 +35,7 @@ def test_ulyssesaggregated():
 
         data = bp.CSVToDict(file, 1)
         assert np.isclose(
-            data['earth:Instellation:final'][0], 1367.635318)
+            float(data['earth:Instellation:final'][0]), 1367.635318)
 
 
 if __name__ == "__main__":

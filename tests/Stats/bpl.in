@@ -1,6 +1,6 @@
 sDestFolder BP_Stats
 
-sBigplanetArchive BP_Stats.bpa
+sArchiveFile BP_Stats.bpa
 
 saBodyFiles sun.in earth.in
 sPrimaryFile vpl.in

@@ -25,10 +25,10 @@ def test_bpstats():
 
         # Run multi-planet
         if not (path / ".BP_Stats").exists():
-            subprocess.check_output(["multi-planet", "vspace.in"], cwd=path)
+            subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
-        if not (path / ".BP_Stats_BPL").exists():
+        if not (path / "BP_Stats.bpa").exists():
             subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
 
         file = bp.BPLFile(path / "BP_Stats.bpa")
@@ -39,7 +39,6 @@ def test_bpstats():
         earth_FMeltUMan_geomean = bp.ExtractColumn(
             file, 'earth:FMeltUMan:geomean')
         earth_BLUMan_stddev = bp.ExtractColumn(file, 'earth:BLUMan:stddev')
-
 
         assert np.isclose(earth_TMan_min[0], 2257.85093)
         assert np.isclose(earth_235UNumMan_max[0], 2.700598e+28)

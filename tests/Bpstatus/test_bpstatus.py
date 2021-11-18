@@ -23,7 +23,7 @@ def test_bpstatus():
 
         # Run multi-planet
         if not (path / ".BP_Status").exists():
-            subprocess.check_output(["multi-planet", "vspace.in"], cwd=path)
+            subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
         if not (path / ".BP_Status_BPL").exists():

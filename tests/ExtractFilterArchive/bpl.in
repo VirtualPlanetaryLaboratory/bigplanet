@@ -1,5 +1,5 @@
 sDestFolder BP_Extract
-sBigplanetArchive BP_Extract.bpla
+sArchiveFile BP_Extract.bpa
 sOutputName Test.bpf
 
 saBodyFiles  earth.in sun.in

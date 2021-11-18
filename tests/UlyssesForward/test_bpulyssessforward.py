@@ -36,7 +36,7 @@ def test_ulyssesforward():
         data = bp.CSVToDict(file, 1)
 
         assert np.isclose(
-            data['earth:TCore:forward'][450], 4999.131849)
+            float(data['earth:TCore:forward'][450]), 4999.131849)
 
 
 if __name__ == "__main__":

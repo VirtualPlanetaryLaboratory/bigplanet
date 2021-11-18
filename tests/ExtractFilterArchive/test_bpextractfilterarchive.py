@@ -28,7 +28,7 @@ def test_bpextract():
             subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
-        if not (path / ".BP_Extract_BPL").exists():
+        if not (path / "BP_Extract.bpa").exists():
             subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
 
         # Run bigplanet
