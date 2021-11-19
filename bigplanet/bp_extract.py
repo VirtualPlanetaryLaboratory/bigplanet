@@ -77,8 +77,7 @@ def ExtractColumn(hf, k):
                 for key in key_list:
                     dataset = hf[key + '/' + k]
                     for d in dataset:
-                        for v in d:
-                            data.append(v)
+                        data.append(d)
             else:
                 dataset = hf[k]
                 for d in dataset:
