@@ -27,7 +27,7 @@ def test_bpstatus():
 
         # Run bigplanet
         if not (path / ".BP_Status_BPL").exists():
-            subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
+            subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
             subprocess.check_output(["bpstatus", "vspace.in"], cwd=path)
 
         file = (path / "BP_Status.bpa")
