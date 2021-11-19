@@ -36,7 +36,7 @@ def test_singlesim():
         earth_Tman_forward = bp.ExtractColumn(file, 'earth:TMan:forward')
         earth_Tcore_inital = bp.ExtractColumn(file, 'earth:TCore:initial')
 
-        assert np.isclose(earth_Tman_forward[0][450], 2257.850930)
+        assert np.isclose(earth_Tman_forward[0][-1], 2257.850930)
         assert np.isclose(earth_Tcore_inital[0], 6000.00000)
 
 

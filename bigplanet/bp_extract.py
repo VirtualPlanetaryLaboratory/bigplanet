@@ -85,31 +85,37 @@ def ExtractColumn(hf, k):
 
         elif aggreg == 'mean':
             argument = ForwardData(hf, k)
+            # print(argument)
             for i in argument:
                 data.append((st.mean(i)))
 
         elif aggreg == 'stddev':
             argument = ForwardData(hf, k)
+            # print(argument)
             for i in argument:
                 data.append((st.stdev(i)))
 
         elif aggreg == 'min':
             argument = ForwardData(hf, k)
+            # print(argument)
             for i in argument:
                 data.append((min(i)))
 
         elif aggreg == 'max':
             argument = ForwardData(hf, k)
+            # print(argument)
             for i in argument:
                 data.append((max(i)))
 
         elif aggreg == 'mode':
             argument = ForwardData(hf, k)
+            # print(argument)
             for i in argument:
                 data.append((stats.mode(i)))
 
         elif aggreg == 'geomean':
             argument = ForwardData(hf, k)
+            # print(argument)
             for i in argument:
                 data.append((stats.gmean(i)))
 
@@ -176,16 +182,18 @@ def ForwardData(hf, k):
     # if hf is an archive file
     if ":" not in key_list[0]:
         for key in key_list:
-            print(key)
             dataset = hf[key + '/' + forward]
             for d in dataset:
-                print(d)
-                for v in d:
-                    data.append(v)
+                data.append(d)
+                # for v in d:
+                # data.append(v)
     else:
         dataset = hf[forward]
         for d in dataset:
             data.append(d)
+
+    print(len(data))
+    print(data)
     return data
 
 

@@ -30,7 +30,7 @@ def test_bpstatus():
             subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
             subprocess.check_output(["bpstatus", "vspace.in"], cwd=path)
 
-        file = (path / "BP_Status.bpl")
+        file = (path / "BP_Status.bpa")
 
         # checks if the bpl files exist
         assert os.path.isfile(file) == True

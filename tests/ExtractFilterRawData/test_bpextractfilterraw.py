@@ -38,6 +38,9 @@ def test_bpextract():
         vpl_stoptime_option = bp.ExtractColumn(file,'vpl:dStopTime:option')
         earth_tman_forward = bp.ExtractColumn(file,'earth:TMan:forward')
 
+
+
+
         assert np.isclose(earth_Instellation_final[1],341.90883)
         assert np.isclose(sun_Luminosity_option[0],3.846e26)
         assert np.isclose(earth_Mass_option[1],-1.5)
