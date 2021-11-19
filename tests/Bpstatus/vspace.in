@@ -3,7 +3,7 @@ destfolder BP_Status
 trialname  semi_
 
 file   earth.in
-dSemi [1, 2, n2] a
+dSemi [1, 2, n8] a
 
 file sun.in
 
