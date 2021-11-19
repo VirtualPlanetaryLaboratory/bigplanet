@@ -61,12 +61,12 @@ def ExtractColumn(hf, k):
             dataset = hf[key_list[0] + '/' + k]
             for d in dataset:
                 for value in d:
-                    value = value.astype(str, casting='safe')
+                    value = value.decode('UTF-8')
                     data.append(value)
         else:
             for v in hf[k]:
                 for item in v:
-                    item = item.astype(str, casting='safe')
+                    item = item.decode('UTF-8')
                     data.append(item)
 
     else:
@@ -76,11 +76,13 @@ def ExtractColumn(hf, k):
             if archive == True:
                 for key in key_list:
                     dataset = hf[key + '/' + k]
-                    data.append(HFD5Decoder(dataset))
+                    for d in dataset:
+                        for v in d:
+                            data.append(v)
             else:
-                for v in hf[k]:
-                    for item in v:
-                        data.append(item)
+                dataset = hf[k]
+                for d in dataset:
+                    data.append(d)
 
         elif aggreg == 'mean':
             argument = ForwardData(hf, k)
@@ -117,13 +119,12 @@ def ExtractColumn(hf, k):
                 for key in key_list:
                     dataset = hf[key + '/' + k]
                     for d in dataset:
-                        d = d.astype(float, casting='safe')
+                        d = float(d)
                         data.append(d)
             else:
                 for d in hf[k]:
-                    for v in d:
-                        v = v.astype(float, casting='safe')
-                        data.append(v)
+                    d = float(d)
+                    data.append(d)
 
         else:
             print('ERROR: Uknown aggregation option: ', aggreg)
@@ -173,10 +174,13 @@ def ForwardData(hf, k):
     data = []
     key_list = list(hf.keys())
     forward = k.rpartition(':')[0] + ':forward'
+    # if hf is an archive file
     if ":" not in key_list[0]:
         for key in key_list:
+            print(key)
             dataset = hf[key + '/' + forward]
             for d in dataset:
+                print(d)
                 for v in d:
                     data.append(v)
     else:
@@ -188,22 +192,23 @@ def ForwardData(hf, k):
 
 def HFD5Decoder(dataset):
     # because the data is saved as a UTF-8 string, we need to decode it and
-    # turn it into a
+    # turn it into a float
+
     for d in dataset:
         if "forward" in dataset.name:
             for value in d:
-                value = value.astype(float, casting='safe')
-                # data.append(value)
+                for num in value:
+                    num = num.astype(float, casting='safe')
+                #data.append(value.astype(float, casting='safe'))
         else:
             d = d.astype(float, casting='safe')
-            # data.append(d)
-    # and now we reshape it the same shape as the original dataset
+   # and now we reshape it the same shape as the original dataset
     #shape = dataset.shape
     #data = np.reshape(data, shape)
     # print(data)
     # data.tolist()
 
-    return dataset
+    return d
 
 
 def ExtractUniqueValues(hf, k):
@@ -320,7 +325,7 @@ def ArchiveToFiltered(inputfile, columns, exportfile):
     columns : list of strings
         a list of variables that are to be written to the csv file
         Example:
-            columns = ['earth_Obliquity_final','earth_Instellation_final']
+            columns = ['earth:Obliquity:final','earth:Instellation:final']
     file : string
         the name of the output file
         Default is Bigplanet.out
@@ -337,19 +342,23 @@ def ArchiveToFiltered(inputfile, columns, exportfile):
         True/False boolean determing if the output file will be in VR Ulysses format
         If True, the output file will have headers, and be named 'User.csv'
     """
-    export = []
-    units = []
+    export = {}
+    units = {}
 
     for i in columns:
-        export.append(ExtractColumn(inputfile, i))
-        units.append(ExtractUnits(inputfile, i))
+        export[i] = ExtractColumn(inputfile, i)
+        units[i] = ExtractUnits(inputfile, i)
 
-    if ".bpf" in exportfile:
-        for j, value in enumerate(columns):
-            with h5py.File(exportfile, "w") as f_dest:
-                f_dest.create_dataset(
-                    value, data=export[j], compression='gzip')
-                f_dest[value].attrs['Units'] = units[j]
+        with h5py.File(exportfile, "a") as f_dest:
+            print(i)
+            print(export[i])
+            print(units[i])
+            f_dest.create_dataset(
+                i, data=export[i], compression='gzip', fletcher32=True)
+            f_dest[i].attrs['Units'] = units[i]
+
+        with h5py.File(exportfile, "r") as f:
+            print(f.keys())
 
 
 def ArchiveToCSV(inputfile, columns, exportfile, delim=" ", header=False, ulysses=0, group=None):
