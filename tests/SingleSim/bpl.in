@@ -1,0 +1,10 @@
+sDestFolder BP_Extract
+sArchiveFile BP_Extract.bpa
+sOutputFile Test.bpf
+
+sSimName semi_a0
+
+saBodyFiles  earth.in sun.in
+sPrimaryFile vpl.in
+
+saKeyInclude earth:TMan:forward earth:TCore:initial

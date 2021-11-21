@@ -1,0 +1,4 @@
+sDestFolder BP_Extract
+
+saBodyFiles  earth.in sun.in
+sPrimaryFile vpl.in

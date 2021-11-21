@@ -8,14 +8,14 @@ import sys
 
 
 def test_bpstatus():
-    #gets current path
+    # gets current path
     path = pathlib.Path(__file__).parents[0].absolute()
     sys.path.insert(1, str(path.parents[0]))
 
-    #gets the number of cores on the machine
+    # gets the number of cores on the machine
     cores = mp.cpu_count()
     if cores == 1:
-        warnings.warn("There is only 1 core on the machine",stacklevel=3)
+        warnings.warn("There is only 1 core on the machine", stacklevel=3)
     else:
         # Run vspace
         if not (path / "BP_Status").exists():
@@ -23,17 +23,18 @@ def test_bpstatus():
 
         # Run multi-planet
         if not (path / ".BP_Status").exists():
-            subprocess.check_output(["multi-planet", "vspace.in"], cwd=path)
+            subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
         if not (path / ".BP_Status_BPL").exists():
-            subprocess.check_output(["bigplanet", "vspace.in"], cwd=path)
+            subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
             subprocess.check_output(["bpstatus", "vspace.in"], cwd=path)
 
-        file  = (path / "BP_Status.bpl")
+        file = (path / "BP_Status.bpa")
 
-        #checks if the bpl files exist
+        # checks if the bpl files exist
         assert os.path.isfile(file) == True
+
 
 if __name__ == "__main__":
     test_bpstatus()

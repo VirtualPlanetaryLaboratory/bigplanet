@@ -2,12 +2,14 @@ import subprocess
 import numpy as np
 import os
 import pathlib
-import multiprocessing as mp
 import warnings
+import h5py
+import multiprocessing as mp
 import sys
+import bigplanet as bp
 
 
-def test_bpcreatehdf5():
+def test_bpextract():
     # gets current path
     path = pathlib.Path(__file__).parents[0].absolute()
     sys.path.insert(1, str(path.parents[0]))
@@ -18,22 +20,28 @@ def test_bpcreatehdf5():
         warnings.warn("There is only 1 core on the machine", stacklevel=3)
     else:
         # Run vspace
-        if not (path / "BP_CreateHDF5").exists():
+        if not (path / "BP_Extract").exists():
             subprocess.check_output(["vspace", "vspace.in"], cwd=path)
 
         # Run multi-planet
-        if not (path / ".BP_CreateHDF5").exists():
+        if not (path / ".BP_Extract").exists():
             subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
-        if not (path / ".BP_CreateHDF5_BPL").exists():
+        if not (path / ".BP_Extract_BPL").exists():
             subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
-        file = (path / "BP_CreateHDF5.bpa")
+        file = bp.BPLFile(path / "BP_Extract.bpa")
 
-        # checks if the bpl files exist
-        assert os.path.isfile(file) == True
+        earth_Instellation_final = bp.ExtractColumn(
+            file, 'earth:Instellation:final')
+        sun_RotPer_initial = bp.ExtractColumn(file, 'sun:RotPer:initial')
+
+        assert np.isclose(earth_Instellation_final[0], 1367.635318)
+        assert np.isclose(earth_Instellation_final[1], 341.90883)
+
+        assert np.isclose(sun_RotPer_initial[0], 86400.0)
 
 
 if __name__ == "__main__":
-    test_bpcreatehdf5()
+    test_bpextract()

@@ -1,0 +1,10 @@
+sDestFolder BP_Extract
+sArchiveFile BP_Extract.bpla
+sOutputName Test.bpf
+
+bUlysses True
+
+saBodyFiles  earth.in sun.in
+sPrimaryFile vpl.in
+
+saKeyInclude earth:Instellation:final sun:dLuminosity:option earth:dMass:option vpl:dStopTime:option

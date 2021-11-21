@@ -1,0 +1,5 @@
+sDestFolder BP_CreateHDF5
+sArchiveFile BP_CreateHDF5.bpa
+saBodyFiles sun.in earth.in
+
+sPrimaryFile vpl.in

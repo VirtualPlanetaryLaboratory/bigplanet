@@ -16,17 +16,32 @@
 *.Ecc.Eigen
 *.Inc.Eigen
 SeasonalClimateFiles
-*.hdf5
+*.bpa
+*.bpf
+*.csv
 
 #files created from running tests
 tests/Bpstatus/BP_Status/
 tests/Bpstatus/.*
 tests/CreateHDF5/BP_CreateHDF5/
 tests/CreateHDF5/.*
-tests/Extract/BP_Extract/
-tests/Extract/.*
+tests/ExtractArchive/BP_Extract/
+tests/ExtractArchive/.*
 tests/Stats/BP_Stats/
 tests/Stats/.*
+tests/ExtractFilterArchive/BP_Extract/
+tests/ExtractFilterArchive/.*
+tests/ExtractFilterRawData/BP_Extract/
+tests/ExtractFilterRawData/.*
+tests/MD5CheckSum/BP_Extract/
+tests/MD5CheckSum/.*
+tests/UlyssesAggregated/BP_Extract/
+tests/UlyssesAggregated/.*
+tests/UlyssesForward/BP_Extract/
+tests/UlyssesForward/.*
+tests/SingleSim/BP_Extract/
+tests/SingleSim/.*
+
 
 .coverage
 
@@ -68,3 +83,8 @@ build/
 
 # SCM VERSION
 bigplanet/bigplanet_version.py
+.vscode/settings.json
+junit/test-results.xml
+coverage.xml
+tests/UlyssesAggregated/User.csv
+tests/UlyssesForward/test_bpulyssessforward.py

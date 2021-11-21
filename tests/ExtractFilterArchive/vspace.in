@@ -1,9 +1,9 @@
 srcfolder  .
-destfolder BP_Status
+destfolder BP_Extract
 trialname  semi_
 
 file   earth.in
-dSemi [1, 2, n8] a
+dSemi [1, 2, n2] a
 
 file sun.in
 
