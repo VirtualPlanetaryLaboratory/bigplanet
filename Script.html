@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scripting with BigPlanet &mdash; Bigplanet 2020 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Bigplanet
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples Using BigPlanet</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/VirtualPlanetaryLaboratory/bigplanet">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bigplanet</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Scripting with BigPlanet</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Script.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scripting-with-bigplanet">
+<h1>Scripting with BigPlanet<a class="headerlink" href="#scripting-with-bigplanet" title="Permalink to this headline"></a></h1>
+<p>Using BigPlanet as a module is where majority of the <em>magic</em> happens. To start,
+import BigPlanet as a module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bigplanet</span> <span class="k">as</span> <span class="nn">bp</span>
+</pre></div>
+</div>
+<p>This allows you to use the various functions that are outlined in detail below, such as
+print all the names of the variables (the “keys”) in the bpl file (PrintGroups and PrintDatasets), extract a particular
+variable from its key (ExtractColumn), extract the units of a particular key value
+(ExtractUnits), extract unique values in a particular key (ExtractUniqueValues),
+create a matrix based on two keys (CreateMatrix), and write out a list of keys
+to a file (WriteOutput).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Keys using the following format for naming: body:variable:aggregation</p>
+</div>
+<section id="printgroups-and-printdatasets">
+<h2><strong>PrintGroups and PrintDatasets</strong><a class="headerlink" href="#printgroups-and-printdatasets" title="Permalink to this headline"></a></h2>
+<p>PrintGroups, as the name suggests, simply that prints all of the group names in the BPL file (ie test_rand_123)
+Groups are the names of various simulation folders (called trials) that can be extracted.</p>
+<p>PrintDatasets is identical except it prints the dataset names (ie ‘earth:Obliquity:final’)
+datasets are where the actual data is stored in the BPL file.</p>
+<p>PrintGroups takes in the following arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PrintGroups</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>PrintDatasets takes in the following arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PrintDatasets</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <em>bpl_File</em> is the name of the bpl file, which is used like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bpl_File</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="extractcolumn">
+<h2><strong>ExtractColumn</strong><a class="headerlink" href="#extractcolumn" title="Permalink to this headline"></a></h2>
+<p>ExtractColumn is a function that returns all of values of a particular column in the
+bpl file. It takes the following arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractColumn</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">,</span><span class="n">Key</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where:</p>
+<p><em>bpl_File</em> is the name of the bpl file</p>
+<p><em>Key</em> is the name of the particular variable you are extracting the units from.</p>
+<p>See the <a href="#id1"><span class="problematic" id="id2">`Understanding Keys`_</span></a> Section for an indepth look at the types of key options available.</p>
+</section>
+<section id="extractunits">
+<h2><strong>ExtractUnits</strong><a class="headerlink" href="#extractunits" title="Permalink to this headline"></a></h2>
+<p>ExtractUnits is a function that returns the units of a particular column in the
+bpl file. It takes the following arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractUnits</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">,</span><span class="n">Key</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where:</p>
+<p><em>bpl_File</em> is the name of the bpl file</p>
+<p><em>Key</em> is the name of the particular variable you are extracting the units from.</p>
+<p>See the <a href="#id3"><span class="problematic" id="id4">`Understanding Keys`_</span></a> Section for an indepth look at the types of key options available.</p>
+</section>
+<section id="extractuniquevalues">
+<h2><strong>ExtractUniqueValues</strong><a class="headerlink" href="#extractuniquevalues" title="Permalink to this headline"></a></h2>
+<p>ExtractUniqueValues is a function that returns a list of unique values in a key provided.
+It takes the following arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractUniqueValues</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">,</span><span class="n">Key</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where:</p>
+<p><em>bpl_File</em> is the name of the bpl file</p>
+<p><em>Key</em> is the name of the particular variable you are extracting the units from.</p>
+</section>
+<section id="createbplfile">
+<h2><strong>CreatebplFile</strong><a class="headerlink" href="#createbplfile" title="Permalink to this headline"></a></h2>
+<p>CreatebplFile is a function that creates an bpl file from the input file that is passed
+to the function. This is mainly used if you forgot to run bigplanet or want to run all
+the code for bigplanet in module format</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CreatebplFile</span><span class="p">(</span><span class="n">inputfile</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where:</p>
+<p><em>inputfile</em> is the same file used to run vspace and multi-planet</p>
+</section>
+<section id="creatematrix">
+<h2><strong>CreateMatrix</strong><a class="headerlink" href="#creatematrix" title="Permalink to this headline"></a></h2>
+<p>CreateMatrix is a function that returns the zaxis for a 3D matrix. This is useful
+for plotting Contour Plots of the data extracted. CreateMatrix takes the following
+arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CreateMatrix</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">,</span><span class="n">zarray</span><span class="p">,</span><span class="n">orientation</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where:</p>
+<p><em>xaxis</em> is the ExtractUniqueValues() of the column you want the xaxis to be</p>
+<p><em>yaxis</em> is the ExtractUniqueValues() of the column you want the xaxis to be</p>
+<p><em>zarray</em> is the ExtractColumn() of what you want the zaxis to be</p>
+<p><em>orientation</em> is the orientation of the data based on a 4 quadrant grid that
+goes counter clockwise in 90 degree interments. The default is 1, or bottom left corner.</p>
+</section>
+<section id="writeoutput">
+<h2><strong>WriteOutput</strong><a class="headerlink" href="#writeoutput" title="Permalink to this headline"></a></h2>
+<p>WriteOutput is a function that writes the list of columns to an output file. Headers
+are optional. WriteOutput takes the following arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">WriteOutput</span><span class="p">(</span><span class="n">inputfile</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="s2">&quot;bigplanet.out&quot;</span><span class="p">,</span> <span class="n">delim</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ulysses</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where:</p>
+<p><em>inputfile</em> is the name of the bpl file</p>
+<p><em>columns</em> is the list of keys you are extracting (Use the same format as ExtractColumn, ExtractUnits and
+ExtractUniqueValues)</p>
+<p><em>File</em> is the name of the output file</p>
+<p><em>delim</em> is the delimiter for the output file (the default is spaces)</p>
+<p><em>header</em> adds the names and units for each column (default is False)</p>
+<p><em>ulysses</em> makes the file compatable with <a class="reference external" href="https://www.vrulysses.com/download-ulysses">VR Ulysses</a> (default is False)</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, The VPLanet Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quickstart Guide &mdash; Bigplanet 2020 documentation</title>
+  <title>Command Line &mdash; Bigplanet 2020 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,9 +17,7 @@
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples Using BigPlanet" href="examples.html" />
-    <link rel="prev" title="Installation Guide" href="install.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -37,9 +35,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation Guide</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples Using BigPlanet</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/VirtualPlanetaryLaboratory/bigplanet">GitHub</a></li>
 </ul>
@@ -58,9 +56,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Quickstart Guide</li>
+      <li>Command Line</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/commandline.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -68,49 +66,28 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="quickstart-guide">
-<h1>Quickstart Guide<a class="headerlink" href="#quickstart-guide" title="Permalink to this headline"></a></h1>
-<p>Tutorial that walks the user through how to use bigplanet with an example case (small) creating a filtered file</p>
-<p>assume user has ran vspace + multiplanet, use bigplanet to access the data fast
-this explains how to turn raw data -&gt; BPA file
-create filtered file for fast analysis</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bigplanet bpl.in -a
+  <section id="command-line">
+<h1>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h1>
+<p>Using BigPlanet on the command line is relatively straight forward. After a suite of
+simulations (set up with <a class="reference external" href="../vspace">vspace</a>) has completed, simply run the following
+command in the in the command line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bigplanet &lt;input file&gt; -c <span class="o">[</span>number of cores<span class="o">]</span> -q -m <span class="o">[</span>email<span class="o">]</span>
 </pre></div>
 </div>
-<p>This will create the archive file, but lets first look at the bpl.in file.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sDestFolder GDwarf_exp10000
-sArchiveFile GDwarf_exp10000.bpa
-sOutputFile Test.bpf
-
-saBodyFiles earth.in sun.in
-sPrimaryFile vpl.in
-
-saKeyInclude earth:Obliquity:forward earth:Instellation:final earth:IceBeltLand:final $
-earth:IceBeltSea:final earth:IceCapNorthLand:final earth:IceCapNorthSea:final $
-earth:IceCapSouthLand:final earth:IceCapSouthSea:final earth:IceFree:final earth:Snowball:final
-</pre></div>
-</div>
-<p>On line 1 is the folder where the raw data are located</p>
-<p>On line 2 is the name of archive file</p>
-<p>On line 3 is the Output file which is ignored with the -a option. The output file is the name of the filtered file which will be created later</p>
-<p>On line 5 is a list of body files</p>
-<p>On line 6 is the primary file (in this case its vpl.in)</p>
-<p>On lines 8-10 is the key names that are included in the output file. Similarly to line 3, these lines are ignored when the -a option is passed</p>
-<p>To extract the data from the Archive, run the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bigplanet bpl.in
-</pre></div>
-</div>
-<p>This now <em>does</em> use lines 3 and 7-9 to create the filtered file, which only contains the data the user is interested in.
-From here checkout Scripting with bigplanet page for the next steps in analysing your data.</p>
+<p>where the input file is the bpl.in file, which is explained here.</p>
+<p>There are three optional arguments:</p>
+<p><code class="code docutils literal notranslate"><span class="pre">-c</span></code> : the number of processors used</p>
+<p><code class="code docutils literal notranslate"><span class="pre">-q</span></code> : quiet mode (nothing is printed to the command line)</p>
+<p><code class="code docutils literal notranslate"><span class="pre">-v</span></code> : verbose mode (more output is printed to the command like)</p>
+<p><code class="code docutils literal notranslate"><span class="pre">-m</span></code> : emails the user when Bigplanet is complete</p>
+<p><code class="code docutils literal notranslate"><span class="pre">-o</span></code> : overrides the creation of a bigplanet archive file if it already exists</p>
+<p><code class="code docutils literal notranslate"><span class="pre">-a</span></code> : flag for bigplanet filtered file</p>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="install.html" class="btn btn-neutral float-left" title="Installation Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="examples.html" class="btn btn-neutral float-right" title="Examples Using BigPlanet" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

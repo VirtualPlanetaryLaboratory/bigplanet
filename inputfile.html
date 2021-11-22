@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Bigplanet Input File &mdash; Bigplanet 2020 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Bigplanet
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples Using BigPlanet</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/VirtualPlanetaryLaboratory/bigplanet">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bigplanet</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>The Bigplanet Input File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/inputfile.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="the-bigplanet-input-file">
+<h1>The Bigplanet Input File<a class="headerlink" href="#the-bigplanet-input-file" title="Permalink to this headline"></a></h1>
+<p>The Bigplanet input file tells bigplanet the various information about your parameter
+sweep. An example bigplanet input file, called <code class="code docutils literal notranslate"><span class="pre">bpl.in</span></code> is described below:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sDestFolder GDwarf_exp10000
+sBigplanetFile GDwarf_exp10000.bpa
+sOutputFile Test.bpf
+
+saBodyFiles earth.in $
+            sun.in
+
+sPrimaryFile vpl.in
+
+saKeyInclude earth:Obliquity:forward earth:Instellation:final earth:IceBeltLand:final $
+earth:IceBeltSea:final earth:IceCapNorthLand:final earth:IceCapNorthSea:final $
+earth:IceCapSouthLand:final earth:IceCapSouthSea:final earth:IceFree:final earth:Snowball:final
+</pre></div>
+</div>
+<p>Where users can use a variety of variables for their bigplanet run. Below is a table of each of the variables
+that can be seen in the input file.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 31%" />
+<col style="width: 32%" />
+<col style="width: 21%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Variable</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Example</strong></p></td>
+<td><p><strong>Required Arguments</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>sDestFolder</p></td>
+<td><p>The folder where the raw
+data is stored</p></td>
+<td><p>sDestFolder GDwarf</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>sArchiveFile</p></td>
+<td><p>The name of the Bigplanet
+Archive file (.bpa)</p></td>
+<td><p>sArchiveFile GDwarf.bpa</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>sOutputFile</p></td>
+<td><p>The name of the Output file.
+Note that this can be either
+a bplanet filtered file (.bpf)
+or a csv (.csv)</p></td>
+<td><p>sOutputFile Test.bpf</p>
+<p>OR</p>
+<p>sOutputFile Test.csv</p>
+</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>bUlysses</p></td>
+<td><p>Flag if the user wants a
+VR Ulysses output. If set to true,
+then sOutputFile is automatically
+set to <cite>User.csv</cite>.</p></td>
+<td><p>bUlysses True</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>sSimName</p></td>
+<td><p>If a user wants to output data
+from either a forward, backward or
+climate file for VR Ulysses, this
+must be set to the particular
+simulation the user wants to view</p></td>
+<td><p>sSimName test001/</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>saBodyFiles</p></td>
+<td><p>A list of the body file names in
+each of the simulations</p></td>
+<td><p>saBodyFiles earth.in sun.in</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>sPrimaryFile</p></td>
+<td><p>the name of the primary file
+(usually is called vpl.in in
+most cases)</p></td>
+<td><p>sPrimaryFile vpl.in</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>saKeyInclude</p></td>
+<td><p>the list of keys the user wants
+to export in the output file.
+If the line is too long end it
+with a <cite>$</cite> and continue on the
+next line</p></td>
+<td><p>saKeyInclude earth:obliquity:forward</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>saKeyExclude</p></td>
+<td><p>the list of key the user wants to
+<em>exclude</em> from the filtered file.
+This is mutually exclusive to
+saKeyInclude.</p></td>
+<td><p>saKeyExclude sun:luminosity:final</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<section id="vr-ulysses-output">
+<h2>VR Ulysses Output<a class="headerlink" href="#vr-ulysses-output" title="Permalink to this headline"></a></h2>
+<p>WIth bigplanet, the user can output as a VR Ulysses file. To do so, the <code class="code docutils literal notranslate"><span class="pre">bpl.in</span></code> file could look
+like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sDestFolder GDwarf_exp10000
+sBigplanetFile GDwarf_exp10000.bpa
+
+bUlysses True
+sSimName test_001
+
+saBodyFiles earth.in sun.in
+sPrimaryFile vpl.in
+
+saKeyInclude earth:Obliquity:forward
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>sSimName is only used when saKeyInclude has forward file keys <em>ie</em> earth:oblquity:final
+If extracting logfile information, that variable is not needed.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, The VPLanet Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

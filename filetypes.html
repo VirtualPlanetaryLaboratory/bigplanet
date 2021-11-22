@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quickstart Guide &mdash; Bigplanet 2020 documentation</title>
+  <title>Bigplanet File Types &mdash; Bigplanet 2020 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,9 +17,7 @@
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples Using BigPlanet" href="examples.html" />
-    <link rel="prev" title="Installation Guide" href="install.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -37,9 +35,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation Guide</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples Using BigPlanet</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/VirtualPlanetaryLaboratory/bigplanet">GitHub</a></li>
 </ul>
@@ -58,9 +56,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Quickstart Guide</li>
+      <li>Bigplanet File Types</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/filetypes.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -68,49 +66,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="quickstart-guide">
-<h1>Quickstart Guide<a class="headerlink" href="#quickstart-guide" title="Permalink to this headline"></a></h1>
-<p>Tutorial that walks the user through how to use bigplanet with an example case (small) creating a filtered file</p>
-<p>assume user has ran vspace + multiplanet, use bigplanet to access the data fast
-this explains how to turn raw data -&gt; BPA file
-create filtered file for fast analysis</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bigplanet bpl.in -a
-</pre></div>
-</div>
-<p>This will create the archive file, but lets first look at the bpl.in file.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sDestFolder GDwarf_exp10000
-sArchiveFile GDwarf_exp10000.bpa
-sOutputFile Test.bpf
-
-saBodyFiles earth.in sun.in
-sPrimaryFile vpl.in
-
-saKeyInclude earth:Obliquity:forward earth:Instellation:final earth:IceBeltLand:final $
-earth:IceBeltSea:final earth:IceCapNorthLand:final earth:IceCapNorthSea:final $
-earth:IceCapSouthLand:final earth:IceCapSouthSea:final earth:IceFree:final earth:Snowball:final
-</pre></div>
-</div>
-<p>On line 1 is the folder where the raw data are located</p>
-<p>On line 2 is the name of archive file</p>
-<p>On line 3 is the Output file which is ignored with the -a option. The output file is the name of the filtered file which will be created later</p>
-<p>On line 5 is a list of body files</p>
-<p>On line 6 is the primary file (in this case its vpl.in)</p>
-<p>On lines 8-10 is the key names that are included in the output file. Similarly to line 3, these lines are ignored when the -a option is passed</p>
-<p>To extract the data from the Archive, run the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bigplanet bpl.in
-</pre></div>
-</div>
-<p>This now <em>does</em> use lines 3 and 7-9 to create the filtered file, which only contains the data the user is interested in.
-From here checkout Scripting with bigplanet page for the next steps in analysing your data.</p>
+  <section id="bigplanet-file-types">
+<h1>Bigplanet File Types<a class="headerlink" href="#bigplanet-file-types" title="Permalink to this headline"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p>Bigplanet has two different file types: the Archive File and Filtered file both with
+their own advantages and usages. Below each file type is explained in depth.</p>
+</section>
+<section id="archive-file-bpa">
+<h2>Archive File (BPA)<a class="headerlink" href="#archive-file-bpa" title="Permalink to this headline"></a></h2>
+<p>The Bigplanet Archive file (uses the .bpa extension) will have everything from
+the parameter sweep.The BPA file does take longer to make than the filtered file,
+but it also builds an MD5 checksum file, which enables users to verfiy your
+data are not corrupted. After building the BPA file, its safe to remove the raw data.
+Every time the BPA file is accessed, the MD5 checksum routine is ran to ensure data integrity.
+To generate an archive file, run bigplanet with the <code class="code docutils literal notranslate"><span class="pre">-a</span></code> option.</p>
+</section>
+<section id="filtered-file-bpf">
+<h2>Filtered File (BPF)<a class="headerlink" href="#filtered-file-bpf" title="Permalink to this headline"></a></h2>
+<p>The Bigplanet Filtered file (uses the .bpf extension) is a subset of the data for a specific analysis.
+To fully utilize this, the user should set up a <code class="code docutils literal notranslate"><span class="pre">bpl.in</span></code> file which is explained more in detail on
+<a class="reference internal" href="inputfile.html#the-bigplanet-input-file"><span class="std std-ref">The Bigplanet Input File</span></a>.
+Using a BPF file enables a much faster data accessing than from the raw data or the archive file.
+There are two ways of creating a filtered file: extracting the data from the archive file or extracting from
+the raw simulation data. Extracting the archive file is the <em>fastest</em> way of accessing the data and creating
+the filtered file, but the option is available to extract from the raw data itself but it will take longer to
+generate that filtered file.</p>
+</section>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="install.html" class="btn btn-neutral float-left" title="Installation Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="examples.html" class="btn btn-neutral float-right" title="Examples Using BigPlanet" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

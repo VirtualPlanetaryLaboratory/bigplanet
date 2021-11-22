@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Understanding Keys &mdash; Bigplanet 2020 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Bigplanet
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples Using BigPlanet</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/VirtualPlanetaryLaboratory/bigplanet">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bigplanet</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Understanding Keys</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Keys.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="understanding-keys">
+<h1>Understanding Keys<a class="headerlink" href="#understanding-keys" title="Permalink to this headline"></a></h1>
+<p>Keys are the bread and butter of BigPlanet. The keys are the names of the various
+variables that BigPlanet has extracted from the various files that are generated
+when VPLanet finishes compiling.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Keys using the following format for naming: body:variable:aggregation</p>
+</div>
+<p>Below is a table of all the various aggregations available at this time:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 8%" />
+<col style="width: 82%" />
+<col style="width: 10%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Aggregation</p></td>
+<td><p>Description</p></td>
+<td><p>Usage</p></td>
+</tr>
+<tr class="row-even"><td><p>Initial</p></td>
+<td><p>returns a list of the <em>initial</em> values of the particular parameter for every simulation. This data is from the .log file</p></td>
+<td><p>body:variable:initial</p></td>
+</tr>
+<tr class="row-odd"><td><p>Final</p></td>
+<td><p>returns a list of the <em>final</em> values of the particular parameter for every simulation. This data is from the .log file</p></td>
+<td><p>body:variable:final</p></td>
+</tr>
+<tr class="row-even"><td><p>Option</p></td>
+<td><p>returns a  list of the <em>option</em> values of the particular parameter for every simulation. This data is from the .in files</p></td>
+<td><p>body:variable:option</p></td>
+</tr>
+<tr class="row-odd"><td><p>Forward</p></td>
+<td><p>returns a nested list of the <em>forward</em> values of the particular parameter for every simulation. This data is from the .forward file</p></td>
+<td><p>body:variable:forward</p></td>
+</tr>
+<tr class="row-even"><td><p>Backward</p></td>
+<td><p>returns a nested list of the <em>backward</em> values of the particular parameter for every simulation. This data is from the .backward file</p></td>
+<td><p>body:variable:backward</p></td>
+</tr>
+<tr class="row-odd"><td><p>Climate</p></td>
+<td><p>returns a nested list of the <em>climate</em> values of the particular parameter for every simulation. This data is from the .climate file (Only valid if the Poise Module was used in the simulations)</p></td>
+<td><p>body:variable:climate</p></td>
+</tr>
+<tr class="row-even"><td><p>Output Order</p></td>
+<td><p>returns a list of the names and units of the forward file values.  This data is from the .log file.</p></td>
+<td><p>body:OutputOrder</p></td>
+</tr>
+<tr class="row-odd"><td><p>Grid Output Order</p></td>
+<td><p>returns a list of the names and units of the climate file values.  This data is from the .log file. (Only valid if the Poise Module was used in the simulations)</p></td>
+<td><p>body:GridOutputOrder</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The following aggregations will <strong>only</strong> work with parameters that are
+from the <em>forward</em> file.
+If you attempt to use it with a value that is <strong>NOT</strong> in the forward file,
+it will produce an error.</p>
+</div>
+<p>Below is a table of all the various stastical available at this time:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 75%" />
+<col style="width: 13%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Aggregation</p></td>
+<td><p>Description</p></td>
+<td><p>Usage</p></td>
+</tr>
+<tr class="row-even"><td><p>Min</p></td>
+<td><p>returns a list of the <em>minimum</em> values from each of the forward files of the particular parameter for every simulation</p></td>
+<td><p>body:variable:min</p></td>
+</tr>
+<tr class="row-odd"><td><p>Max</p></td>
+<td><p>returns a list of the <em>maximum</em> values from each of the forward files of the particular parameter for every simulation</p></td>
+<td><p>body:variable:max</p></td>
+</tr>
+<tr class="row-even"><td><p>Mean</p></td>
+<td><p>returns a list of the <em>mean</em> values from each of the forward files of the particular parameter for every simulation</p></td>
+<td><p>body:variable:mean</p></td>
+</tr>
+<tr class="row-odd"><td><p>Geometric Mean</p></td>
+<td><p>returns a list of the <em>geometric mean</em> values from each of the forward files of the particular parameter for every simulation</p></td>
+<td><p>body:variable:geomean</p></td>
+</tr>
+<tr class="row-even"><td><p>Standard Deviation</p></td>
+<td><p>returns a list of the <em>standard devation</em> values from each of the forward files of the particular parameter for every simulation</p></td>
+<td><p>body:variable:stddev</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, The VPLanet Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
