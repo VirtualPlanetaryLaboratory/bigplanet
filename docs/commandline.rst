@@ -1,4 +1,4 @@
-Command Line
+Command Line Usage
 ==================
 Using BigPlanet on the command line is relatively straight forward. After a suite of
 simulations (set up with `vspace <../vspace>`_) has completed, simply run the following

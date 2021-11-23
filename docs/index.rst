@@ -11,6 +11,10 @@ generate files for use with the `VR Ulysses virtual reality data explorer
 
    install
    quickstart
-   help
+   inputfile
+   filetypes
+   Keys
+   commandline
+   Script
    examples
    GitHub <https://github.com/VirtualPlanetaryLaboratory/bigplanet>
