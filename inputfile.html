@@ -41,6 +41,8 @@
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">The Bigplanet Input File</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#options">Options</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#vr-ulysses-output">VR Ulysses Output</a></li>
 </ul>
 </li>
@@ -78,6 +80,8 @@
              
   <section id="the-bigplanet-input-file">
 <h1>The Bigplanet Input File<a class="headerlink" href="#the-bigplanet-input-file" title="Permalink to this headline"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
 <p>The Bigplanet input file tells bigplanet the various information about your parameter
 sweep. An example bigplanet input file, called <code class="code docutils literal notranslate"><span class="pre">bpl.in</span></code> is described below:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sDestFolder GDwarf_exp10000
@@ -96,6 +100,9 @@ earth:IceCapSouthLand:final earth:IceCapSouthSea:final earth:IceFree:final earth
 </div>
 <p>Where users can use a variety of variables for their bigplanet run. Below is a table of each of the variables
 that can be seen in the input file.</p>
+</section>
+<section id="options">
+<h2>Options<a class="headerlink" href="#options" title="Permalink to this headline"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 16%" />
@@ -181,6 +188,7 @@ saKeyInclude.</p></td>
 </tr>
 </tbody>
 </table>
+</section>
 <section id="vr-ulysses-output">
 <h2>VR Ulysses Output<a class="headerlink" href="#vr-ulysses-output" title="Permalink to this headline"></a></h2>
 <p>WIth bigplanet, the user can output as a VR Ulysses file. To do so, the <code class="code docutils literal notranslate"><span class="pre">bpl.in</span></code> file could look
