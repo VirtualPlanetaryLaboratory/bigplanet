@@ -1,6 +1,9 @@
 The Bigplanet Input File
 ========================
 
+Overview
+--------
+
 The Bigplanet input file tells bigplanet the various information about your parameter 
 sweep. An example bigplanet input file, called :code:`bpl.in` is described below:
 
@@ -21,6 +24,9 @@ sweep. An example bigplanet input file, called :code:`bpl.in` is described below
 
 Where users can use a variety of variables for their bigplanet run. Below is a table of each of the variables
 that can be seen in the input file. 
+
+Options
+-------
 
 +-------------------+------------------------------------+--------------------------------------+------------------------+
 | **Variable**      | **Description**                    | **Example**                          | **Required Arguments** |
