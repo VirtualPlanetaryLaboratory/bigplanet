@@ -1,8 +1,18 @@
 Installation Guide
 ==================
 
-First you have to clone from the `Github Repo <https://github.com/VirtualPlanetaryLaboratory/nigplanet>`_.
-To do that just type in the command line:
+There are two ways to install bigplanet: 1) in conjunction with 
+`VPLanet <https://github.com/VirtualPlanetaryLaboratory/vplanet>`_ and 
+its other support scripts, or 2) as from source.
+
+To install bigplanet and the other ``VPLanet`` packages, use the command:
+
+.. code-block:: bash
+
+    python -m pip install vplanet
+
+To install from source, first close the repo:
+
 
 .. code-block:: bash
 
@@ -17,4 +27,5 @@ Afterwards, go into the directory (bigplanet) and run the setup script:
 
 
 The setup script installs the various dependencies and allows bigplanet to be
-ran from the command line as well as be imported as a module.
+run from the `command line <commandline>`_ as well as be imported as a 
+`module <Script>`_.

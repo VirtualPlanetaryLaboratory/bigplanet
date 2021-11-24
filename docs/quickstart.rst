@@ -1,24 +1,26 @@
 Quickstart Guide
 ================
 
+This tutorial describes how to quickly get started with bigplanet and assumes you
+are already familiar with VPLanet. Furthermore, it assumes you have already performed
+a set of simulations with vspace and multiplanet. In this case, we will build both a 
+bigplanet archive and a bigplanet file.
 
-Tutorial that walks the user through how to use bigplanet with an example case (small) creating a filtered file
-
-assume user has ran vspace + multiplanet, use bigplanet to access the data fast
-this explains how to turn raw data -> BPA file
-create filtered file for fast analysis
+To execute ``bigplanet`` from the command line and build an archive, use the command:
 
 .. code-block:: bash
     
     bigplanet bpl.in -a 
 
-This will create the archive file, but lets first look at the bpl.in file.
+This will read in the instructions in the ``bpl.in`` file and the ``-a`` flag tells
+``bigplanet`` to create an archive file. To see how, let's look inside bpl.in.
 
 .. code-block:: bash
+    :linenos:
 
     sDestFolder GDwarf_exp10000
     sArchiveFile GDwarf_exp10000.bpa
-    sOutputFile Test.bpf
+    sOutputFile ice_states.bpf
 
     saBodyFiles earth.in sun.in
     sPrimaryFile vpl.in
@@ -27,23 +29,33 @@ This will create the archive file, but lets first look at the bpl.in file.
     earth:IceBeltSea:final earth:IceCapNorthLand:final earth:IceCapNorthSea:final $
     earth:IceCapSouthLand:final earth:IceCapSouthSea:final earth:IceFree:final earth:Snowball:final
 
-On line 1 is the folder where the raw data are located
+Line 1 is the folder where the raw data are located and line 2 is the name of archive file 
+to be generated. The remaining lines are all ignored when the -a flag is set. 
 
-On line 2 is the name of archive file
-
-On line 3 is the Output file which is ignored with the -a option. The output file is the name of the filtered file which will be created later
-
-On line 5 is a list of body files
-
-On line 6 is the primary file (in this case its vpl.in)
-
-On lines 8-10 is the key names that are included in the output file. Similarly to line 3, these lines are ignored when the -a option is passed
-
-To extract the data from the Archive, run the following command:
+After the archive is built, it is often convenient to extract a small amount of data from the archive 
+file (GDwarf_exp10000.bpa) for detailed analysis. To create the bigplanet file, run the 
+same command as above, but *without* the -a flag:
 
 .. code-block:: bash
     
     bigplanet bpl.in
 
-This now *does* use lines 3 and 7-9 to create the filtered file, which only contains the data the user is interested in.
-From here checkout Scripting with bigplanet page for the next steps in analysing your data.
+Let's now look at how ``bigplanet`` interprets the bpl.in file without the -a flag.
+
+Since Line 2 provides the name of a bigplanet archive, ``bigplanet`` will not look to
+extract the appropriate columns from the raw data, but from the archive.
+
+Line 3 is the name of the bigplanet file.
+
+Line 5 is the list of body files from which to extract the columns *XXX should sun.in be here?? XXX*
+
+Line 6 is the name of primary file (in this case its vpl.in).
+
+
+Lines 8-10 list the `key <Keys>`_ names that are included in the output file. 
+
+The resulting bigplanet file (ice_states.bpf) contains a set of columns, in HDF5 format,
+that correspond to the listed keys.
+
+You can then use ``bigplanet``'s `scripting <Script>`_ capability to easily convert these 
+columns into plots or perform other types of analyses.
