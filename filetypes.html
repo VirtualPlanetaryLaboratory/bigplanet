@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Understanding Keys" href="Keys.html" />
-    <link rel="prev" title="The Bigplanet Input File" href="inputfile.html" /> 
+    <link rel="prev" title="Options" href="inputfile.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,11 +40,10 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="inputfile.html">The Bigplanet Input File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inputfile.html">Options</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Bigplanet File Types</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#archive-file-bpa">Archive File (BPA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#filtered-file-bpf">Filtered File (BPF)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#archives">Archives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#files">Files</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Keys.html">Understanding Keys</a></li>
@@ -80,30 +79,25 @@
              
   <section id="bigplanet-file-types">
 <h1>Bigplanet File Types<a class="headerlink" href="#bigplanet-file-types" title="Permalink to this headline"></a></h1>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
-<p>Bigplanet has two different file types: the Archive File and Filtered file both with
-their own advantages and usages. Below each file type is explained in depth.</p>
-</section>
-<section id="archive-file-bpa">
-<h2>Archive File (BPA)<a class="headerlink" href="#archive-file-bpa" title="Permalink to this headline"></a></h2>
-<p>The Bigplanet Archive file (uses the .bpa extension) will have everything from
-the parameter sweep.The BPA file does take longer to make than the filtered file,
-but it also builds an MD5 checksum file, which enables users to verfiy your
+<p><code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> generates two different file types: a bigplanet archive and a bigplanet file.
+Below each file type is explained in depth.</p>
+<section id="archives">
+<h2>Archives<a class="headerlink" href="#archives" title="Permalink to this headline"></a></h2>
+<p>The bigplanet archive ontains <em>everything</em> from
+the parameter sweep. The archive can require hours to build, depending on the size of the data set.
+When an archive is built, <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> also performs an MD5 checksum and creates a file with the resultant hash,
+i.e. GDwarf.md5, which is examined every time the archive is accessed to ensure the
 data are not corrupted. After building the BPA file, its safe to remove the raw data.
-Every time the BPA file is accessed, the MD5 checksum routine is ran to ensure data integrity.
-To generate an archive file, run bigplanet with the <code class="code docutils literal notranslate"><span class="pre">-a</span></code> option.</p>
+To generate an archive file, run <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> with the <code class="code docutils literal notranslate"><span class="pre">-a</span></code> option.</p>
 </section>
-<section id="filtered-file-bpf">
-<h2>Filtered File (BPF)<a class="headerlink" href="#filtered-file-bpf" title="Permalink to this headline"></a></h2>
-<p>The Bigplanet Filtered file (uses the .bpf extension) is a subset of the data for a specific analysis.
-To fully utilize this, the user should set up a <code class="code docutils literal notranslate"><span class="pre">bpl.in</span></code> file which is explained more in detail on
-<a class="reference internal" href="inputfile.html#the-bigplanet-input-file"><span class="std std-ref">The Bigplanet Input File</span></a>.
-Using a BPF file enables a much faster data accessing than from the raw data or the archive file.
-There are two ways of creating a filtered file: extracting the data from the archive file or extracting from
-the raw simulation data. Extracting the archive file is the <em>fastest</em> way of accessing the data and creating
-the filtered file, but the option is available to extract from the raw data itself but it will take longer to
-generate that filtered file.</p>
+<section id="files">
+<h2>Files<a class="headerlink" href="#files" title="Permalink to this headline"></a></h2>
+<p>The bigplanet file is a subset of the archive file that is useful for in-depth analyses of a specific
+aspect of the full parameter sweep.
+Bigplanet files enable a much faster data accessing than from the raw data or the archive file.
+There are two ways of creating a filtered file: 1) extracting the data from the archive file or 2) extracting from
+the raw simulation data. Extracting the archive file is always the <em>fastest</em> way
+to create a bigplanet file.</p>
 </section>
 </section>
 
@@ -111,7 +105,7 @@ generate that filtered file.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="inputfile.html" class="btn btn-neutral float-left" title="The Bigplanet Input File" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="inputfile.html" class="btn btn-neutral float-left" title="Options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="Keys.html" class="btn btn-neutral float-right" title="Understanding Keys" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
