@@ -44,8 +44,8 @@
 <li class="toctree-l1"><a class="reference internal" href="filetypes.html">Bigplanet File Types</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Understanding Keys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commandline.html">Command Line Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Script.html">Scripting with BigPlanet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples Using BigPlanet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Script.html">Scripting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Other Resources</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/VirtualPlanetaryLaboratory/bigplanet">GitHub</a></li>
 </ul>
 
@@ -75,100 +75,82 @@
              
   <section id="understanding-keys">
 <h1>Understanding Keys<a class="headerlink" href="#understanding-keys" title="Permalink to this headline"></a></h1>
-<p>Keys are the bread and butter of BigPlanet. The keys are the names of the various
-variables that BigPlanet has extracted from the various files that are generated
-when VPLanet finishes compiling.</p>
+<p>Keys are the bread and butter of <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code>. The keys are the names of the
+variables that can be extracted from a bigplanet archive file.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Keys using the following format for naming: body:variable:aggregation</p>
+<blockquote>
+<div><p>Keys using the following format for naming: body:parameter:aggregation, where “aggregation”</p>
+</div></blockquote>
+<p>is an aspect of the variable.</p>
 </div>
-<p>Below is a table of all the various aggregations available at this time:</p>
+<p>Below is a table of aggregations related to input and output files:</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 8%" />
-<col style="width: 82%" />
-<col style="width: 10%" />
+<col style="width: 21%" />
+<col style="width: 79%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>Aggregation</p></td>
 <td><p>Description</p></td>
-<td><p>Usage</p></td>
 </tr>
 <tr class="row-even"><td><p>Initial</p></td>
-<td><p>returns a list of the <em>initial</em> values of the particular parameter for every simulation. This data is from the .log file</p></td>
-<td><p>body:variable:initial</p></td>
+<td><p>The initial values of a parameter as listed in the log file</p></td>
 </tr>
 <tr class="row-odd"><td><p>Final</p></td>
-<td><p>returns a list of the <em>final</em> values of the particular parameter for every simulation. This data is from the .log file</p></td>
-<td><p>body:variable:final</p></td>
+<td><p>The final values of a parameter as listed in the log file</p></td>
 </tr>
 <tr class="row-even"><td><p>Option</p></td>
-<td><p>returns a  list of the <em>option</em> values of the particular parameter for every simulation. This data is from the .in files</p></td>
-<td><p>body:variable:option</p></td>
+<td><p>The parameter’s argument to an option in the input file</p></td>
 </tr>
 <tr class="row-odd"><td><p>Forward</p></td>
-<td><p>returns a nested list of the <em>forward</em> values of the particular parameter for every simulation. This data is from the .forward file</p></td>
-<td><p>body:variable:forward</p></td>
+<td><p>A list of the parameter’s values in the forward file.</p></td>
 </tr>
 <tr class="row-even"><td><p>Backward</p></td>
-<td><p>returns a nested list of the <em>backward</em> values of the particular parameter for every simulation. This data is from the .backward file</p></td>
-<td><p>body:variable:backward</p></td>
+<td><p>A list of the parameter’s values in the backward file.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Climate</p></td>
-<td><p>returns a nested list of the <em>climate</em> values of the particular parameter for every simulation. This data is from the .climate file (Only valid if the Poise Module was used in the simulations)</p></td>
-<td><p>body:variable:climate</p></td>
+<td><p>A list of the parameter’s climate values (<em>POISE only</em>).</p></td>
 </tr>
-<tr class="row-even"><td><p>Output Order</p></td>
-<td><p>returns a list of the names and units of the forward file values.  This data is from the .log file.</p></td>
-<td><p>body:OutputOrder</p></td>
+<tr class="row-even"><td colspan="2"><p>OutputOrder      | A list of the output parameters and units assoicated with saOutputOrder.</p></td>
 </tr>
-<tr class="row-odd"><td><p>Grid Output Order</p></td>
-<td><p>returns a list of the names and units of the climate file values.  This data is from the .log file. (Only valid if the Poise Module was used in the simulations)</p></td>
-<td><p>body:GridOutputOrder</p></td>
+<tr class="row-odd"><td colspan="2"><p>GridOutput Order | A list of the names and units of the climate file (<em>POISE only</em>).</p></td>
+</tr>
+</tbody>
+</table>
+<p>In addition, variables that are listed in forward or backward files also have a set of statistical
+aggretations. Use one of these to quickly obtain metadata on a particular variable.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 78%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Aggregation</p></td>
+<td><p>Description</p></td>
+</tr>
+<tr class="row-even"><td><p>Min</p></td>
+<td><p>The minimum values of a parameter recorded for each simulations.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Max</p></td>
+<td><p>The maximum values of a parameter recorded for each simulations.</p></td>
+</tr>
+<tr class="row-even"><td><p>Mean</p></td>
+<td><p>The arithmetic means of a parameter recorded for each simulations.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Geometric Mean</p></td>
+<td><p>The geometric means of a parameter recorded for each simulations.</p></td>
+</tr>
+<tr class="row-even"><td><p>Standard Deviation</p></td>
+<td><p>The standard deviations of a parameter recorded for each simulations.</p></td>
 </tr>
 </tbody>
 </table>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The following aggregations will <strong>only</strong> work with parameters that are
-from the <em>forward</em> file.
-If you attempt to use it with a value that is <strong>NOT</strong> in the forward file,
-it will produce an error.</p>
+<p>The preceding aggregations will <strong>only</strong> work with parameters that are
+from the <em>forward</em> or <em>backward</em> file.</p>
 </div>
-<p>Below is a table of all the various stastical available at this time:</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 12%" />
-<col style="width: 75%" />
-<col style="width: 13%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>Aggregation</p></td>
-<td><p>Description</p></td>
-<td><p>Usage</p></td>
-</tr>
-<tr class="row-even"><td><p>Min</p></td>
-<td><p>returns a list of the <em>minimum</em> values from each of the forward files of the particular parameter for every simulation</p></td>
-<td><p>body:variable:min</p></td>
-</tr>
-<tr class="row-odd"><td><p>Max</p></td>
-<td><p>returns a list of the <em>maximum</em> values from each of the forward files of the particular parameter for every simulation</p></td>
-<td><p>body:variable:max</p></td>
-</tr>
-<tr class="row-even"><td><p>Mean</p></td>
-<td><p>returns a list of the <em>mean</em> values from each of the forward files of the particular parameter for every simulation</p></td>
-<td><p>body:variable:mean</p></td>
-</tr>
-<tr class="row-odd"><td><p>Geometric Mean</p></td>
-<td><p>returns a list of the <em>geometric mean</em> values from each of the forward files of the particular parameter for every simulation</p></td>
-<td><p>body:variable:geomean</p></td>
-</tr>
-<tr class="row-even"><td><p>Standard Deviation</p></td>
-<td><p>returns a list of the <em>standard devation</em> values from each of the forward files of the particular parameter for every simulation</p></td>
-<td><p>body:variable:stddev</p></td>
-</tr>
-</tbody>
-</table>
 </section>
 
 

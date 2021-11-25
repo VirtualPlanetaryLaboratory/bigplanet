@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scripting with BigPlanet &mdash; Bigplanet 2020 documentation</title>
+  <title>Scripting &mdash; Bigplanet 2020 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples Using BigPlanet" href="examples.html" />
+    <link rel="next" title="Other Resources" href="examples.html" />
     <link rel="prev" title="Command Line Usage" href="commandline.html" /> 
 </head>
 
@@ -44,7 +44,7 @@
 <li class="toctree-l1"><a class="reference internal" href="filetypes.html">Bigplanet File Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Keys.html">Understanding Keys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commandline.html">Command Line Usage</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Scripting with BigPlanet</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Scripting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#printgroups-and-printdatasets"><strong>PrintGroups and PrintDatasets</strong></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extractcolumn"><strong>ExtractColumn</strong></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extractunits"><strong>ExtractUnits</strong></a></li>
@@ -54,7 +54,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#writeoutput"><strong>WriteOutput</strong></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples Using BigPlanet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Other Resources</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/VirtualPlanetaryLaboratory/bigplanet">GitHub</a></li>
 </ul>
 
@@ -72,7 +72,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Scripting with BigPlanet</li>
+      <li>Scripting</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/Script.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -82,118 +82,122 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="scripting-with-bigplanet">
-<h1>Scripting with BigPlanet<a class="headerlink" href="#scripting-with-bigplanet" title="Permalink to this headline"></a></h1>
-<p>Using BigPlanet as a module is where majority of the <em>magic</em> happens. To start,
-import BigPlanet as a module:</p>
+  <section id="scripting">
+<h1>Scripting<a class="headerlink" href="#scripting" title="Permalink to this headline"></a></h1>
+<p>Iporting <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> as a module in a Python script enables the extraction and reformatting of the data
+from bigplanet archives and files. In this page we describe how to use it for plotting and other analyses.
+To access the functionality described herein, enter this line in your script:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bigplanet</span> <span class="k">as</span> <span class="nn">bp</span>
 </pre></div>
 </div>
-<p>This allows you to use the various functions that are outlined in detail below, such as
-print all the names of the variables (the “keys”) in the bpl file (PrintGroups and PrintDatasets), extract a particular
-variable from its key (ExtractColumn), extract the units of a particular key value
-(ExtractUnits), extract unique values in a particular key (ExtractUniqueValues),
-create a matrix based on two keys (CreateMatrix), and write out a list of keys
-to a file (WriteOutput).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> module allows you to print all the names of the available <a class="reference external" href="Keys">keys</a> with
+the <code class="docutils literal notranslate"><span class="pre">PrintGroups</span></code> and <code class="docutils literal notranslate"><span class="pre">PrintDatasets</span></code> functions, extract a specific key into and array or list
+(<code class="docutils literal notranslate"><span class="pre">ExtractColumn</span></code>), extract the units of a key (<code class="docutils literal notranslate"><span class="pre">ExtractUnits</span></code>), extract only the unique values for
+a particular key (<code class="docutils literal notranslate"><span class="pre">ExtractUniqueValues</span></code>), create a matrix from two keys (<code class="docutils literal notranslate"><span class="pre">CreateMatrix</span></code>), and
+write out a list of keys to a file (<code class="docutils literal notranslate"><span class="pre">WriteOutput</span></code>).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Keys using the following format for naming: body:variable:aggregation</p>
+<p>Keys using the following format for naming: body:parameter:aggregation</p>
 </div>
 <section id="printgroups-and-printdatasets">
 <h2><strong>PrintGroups and PrintDatasets</strong><a class="headerlink" href="#printgroups-and-printdatasets" title="Permalink to this headline"></a></h2>
-<p>PrintGroups, as the name suggests, simply that prints all of the group names in the BPL file (ie test_rand_123)
+<p>To print the contents of an archive or file, <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> provides two utilities.
+HDF5 files are organized by “groups”, so it can sometimes be convenient to see the names of the
+groups in a bigplanet archive. <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> organizes each simulation into a groupTo view them, use the PrintGroups function, which,
+as the name suggests, prints all of the groups in a bigplanet archive or file.
 Groups are the names of various simulation folders (called trials) that can be extracted.</p>
+<p><em>XXX This seems out of date!XXX</em></p>
 <p>PrintDatasets is identical except it prints the dataset names (ie ‘earth:Obliquity:final’)
 datasets are where the actual data is stored in the BPL file.</p>
 <p>PrintGroups takes in the following arguments:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PrintGroups</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>PrintDatasets takes in the following arguments:</p>
+<p>where <em>bpl_File</em> is the name (string) of the archive or file. PrintDatasets takes in the
+following arguments:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PrintDatasets</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>where <em>bpl_File</em> is the name of the bpl file, which is used like so:</p>
+<p>where <em>bpl_File</em> is the name (string) of the archive or file, which is used like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bpl_File</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="extractcolumn">
 <h2><strong>ExtractColumn</strong><a class="headerlink" href="#extractcolumn" title="Permalink to this headline"></a></h2>
-<p>ExtractColumn is a function that returns all of values of a particular column in the
-bpl file. It takes the following arguments:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractColumn</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">,</span><span class="n">Key</span><span class="p">)</span>
+<p>ExtractColumn is a function that returns an array of values for a particular key in an
+archive or file. It takes the following arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractColumn</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">,</span><span class="n">key</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where:</p>
-<p><em>bpl_File</em> is the name of the bpl file</p>
-<p><em>Key</em> is the name of the particular variable you are extracting the units from.</p>
-<p>See the <a href="#id1"><span class="problematic" id="id2">`Understanding Keys`_</span></a> Section for an indepth look at the types of key options available.</p>
+<p><em>bpl_File</em> (string) is the name of the bpl file</p>
+<p><em>key</em> (string) is the name of the <cite>bigplanet key &lt;Keys&gt;</cite> whose values are to be extracted.</p>
 </section>
 <section id="extractunits">
 <h2><strong>ExtractUnits</strong><a class="headerlink" href="#extractunits" title="Permalink to this headline"></a></h2>
-<p>ExtractUnits is a function that returns the units of a particular column in the
-bpl file. It takes the following arguments:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractUnits</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">,</span><span class="n">Key</span><span class="p">)</span>
+<p>ExtractUnits is a function that returns the astropy units associated with a particular key in a
+file or archive. It takes the following arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractUnits</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">,</span><span class="n">key</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where:</p>
-<p><em>bpl_File</em> is the name of the bpl file</p>
-<p><em>Key</em> is the name of the particular variable you are extracting the units from.</p>
-<p>See the <a href="#id3"><span class="problematic" id="id4">`Understanding Keys`_</span></a> Section for an indepth look at the types of key options available.</p>
+<p><em>bpl_File</em> (string) is the name of the bpl file</p>
+<p><em>key</em> (string) is the name of the <cite>bigplanet key &lt;Keys&gt;</cite> whose values are to be extracted.</p>
 </section>
 <section id="extractuniquevalues">
 <h2><strong>ExtractUniqueValues</strong><a class="headerlink" href="#extractuniquevalues" title="Permalink to this headline"></a></h2>
-<p>ExtractUniqueValues is a function that returns a list of unique values in a key provided.
-It takes the following arguments:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractUniqueValues</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">,</span><span class="n">Key</span><span class="p">)</span>
+<p>ExtractUniqueValues is a function that returns a list of unique values in a key provided. The
+returned array is useful for contour plots. It takes the following arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtractUniqueValues</span><span class="p">(</span><span class="n">bpl_File</span><span class="p">,</span><span class="n">key</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where:</p>
-<p><em>bpl_File</em> is the name of the bpl file</p>
-<p><em>Key</em> is the name of the particular variable you are extracting the units from.</p>
+<p><em>bpl_File</em> (string) is the name of the bpl file</p>
+<p><em>key</em> (string) is the name of the <cite>bigplanet key &lt;Keys&gt;</cite> whose values are to be extracted.</p>
 </section>
 <section id="createbplfile">
 <h2><strong>CreatebplFile</strong><a class="headerlink" href="#createbplfile" title="Permalink to this headline"></a></h2>
-<p>CreatebplFile is a function that creates an bpl file from the input file that is passed
-to the function. This is mainly used if you forgot to run bigplanet or want to run all
+<p>CreatebplFile is a function that creates an archive or file from the filename that is passed
+to the function, i.e. ‘bpl.in’. This is mainly used if you forgot to run bigplanet or want to run all
 the code for bigplanet in module format</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CreatebplFile</span><span class="p">(</span><span class="n">inputfile</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CreatebplFile</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where:</p>
-<p><em>inputfile</em> is the same file used to run vspace and multi-planet</p>
+<p><em>filename</em> (string) is the name of a <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> input file.</p>
 </section>
 <section id="creatematrix">
 <h2><strong>CreateMatrix</strong><a class="headerlink" href="#creatematrix" title="Permalink to this headline"></a></h2>
-<p>CreateMatrix is a function that returns the zaxis for a 3D matrix. This is useful
-for plotting Contour Plots of the data extracted. CreateMatrix takes the following
-arguments:</p>
+<p>CreateMatrix is a function that returns a 2 two-dimensional array of values. It is designed to
+work with ExtractColumn and ExtractUniqueValues to generate contour plots from bigplanet files.
+CreateMatrix takes the following arguments:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CreateMatrix</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">,</span><span class="n">zarray</span><span class="p">,</span><span class="n">orientation</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where:</p>
-<p><em>xaxis</em> is the ExtractUniqueValues() of the column you want the xaxis to be</p>
-<p><em>yaxis</em> is the ExtractUniqueValues() of the column you want the xaxis to be</p>
-<p><em>zarray</em> is the ExtractColumn() of what you want the zaxis to be</p>
-<p><em>orientation</em> is the orientation of the data based on a 4 quadrant grid that
-goes counter clockwise in 90 degree interments. The default is 1, or bottom left corner.</p>
+<p><em>xaxis</em> (vector float) is the ExtractUniqueValues() of the x-axis key</p>
+<p><em>yaxis</em> (vector float)is the ExtractUniqueValues() of the column you want the xaxis to be</p>
+<p><em>zarray</em> (matrix float)is the ExtractColumn() of what you want the zaxis to be</p>
+<p><em>orientation</em> (???) is the orientation of the data based on a 4 quadrant grid that
+goes counter clockwise in 90 degree increments. The default is 1, or origin in the
+bottom left corner. <em>XXX What does this mean?XXX</em></p>
 </section>
 <section id="writeoutput">
 <h2><strong>WriteOutput</strong><a class="headerlink" href="#writeoutput" title="Permalink to this headline"></a></h2>
-<p>WriteOutput is a function that writes the list of columns to an output file. Headers
+<p>WriteOutput is a function that writes the list of columns to an output (ASCII) file. Headers
 are optional. WriteOutput takes the following arguments:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">WriteOutput</span><span class="p">(</span><span class="n">inputfile</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="s2">&quot;bigplanet.out&quot;</span><span class="p">,</span> <span class="n">delim</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ulysses</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where:</p>
-<p><em>inputfile</em> is the name of the bpl file</p>
-<p><em>columns</em> is the list of keys you are extracting (Use the same format as ExtractColumn, ExtractUnits and
-ExtractUniqueValues)</p>
-<p><em>File</em> is the name of the output file</p>
-<p><em>delim</em> is the delimiter for the output file (the default is spaces)</p>
-<p><em>header</em> adds the names and units for each column (default is False)</p>
-<p><em>ulysses</em> makes the file compatable with <a class="reference external" href="https://www.vrulysses.com/download-ulysses">VR Ulysses</a> (default is False)</p>
+<p><em>inputfile</em> (string) is the name of the bpl file</p>
+<p><em>columns</em> (???) is the list of keys you are extracting (Use the same format as ExtractColumn, ExtractUnits and
+ExtractUniqueValues) <em>XXX I don’t know what this meansXXX</em></p>
+<p><em>file</em> (string) is the name of the output file</p>
+<p><em>delim</em> (string) is the delimiter for the output file (the default is a space)</p>
+<p><em>header</em> (bool) adds the names and units for each column (default is False)</p>
+<p><em>ulysses</em> (bool) writes the output file in <a class="reference external" href="https://www.vrulysses.com/download-ulysses">VR Ulysses</a>  format (default is False)</p>
 </section>
 </section>
 
@@ -202,7 +206,7 @@ ExtractUniqueValues)</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="commandline.html" class="btn btn-neutral float-left" title="Command Line Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="examples.html" class="btn btn-neutral float-right" title="Examples Using BigPlanet" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="Other Resources" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

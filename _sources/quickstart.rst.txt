@@ -62,3 +62,10 @@ that correspond to the listed keys.
 
 You can then use ``bigplanet``'s `scripting <Script>`_ capability to easily convert these 
 columns into plots or perform other types of analyses.
+
+.. note::
+
+    To maximize bigplanet's power, run ``vspace`` and ``mulit-planet -bp`` which automatically
+    builds the bigplanet archive.  Then create bigplanet files from the archive as needed and
+    use ``bigplanet``'s scripting functions to extract vectors and matrices for plotting, statistical 
+    analyses, etc.
