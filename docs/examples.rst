@@ -1,13 +1,15 @@
-Examples Using BigPlanet
-========================
-Below are links to various repositories showcasing the various uses of BigPlanet:
+Other Resources
+===============
 
+Below are links to other repositories that use ``bigplanet``:
 
-VPLanet Parameter Sweep <https://virtualplanetarylaboratory.github.io/vplanet/parametersweep.html>
+`VPLanet Parameter Sweep <https://virtualplanetarylaboratory.github.io/vplanet/parametersweep.html>`_
 
-Build Archive then build Filtered File From it
+`Ice Coverage (Wilhelm et al. 2022) repository <https://github.com/caitlyn-wilhelm/IceCoverage>`_ 
 
-Build Filtered file from Raw data
+Build Archive, then build a file from it
+
+Build bigplanet file from raw data
 
 Extract archive data for a single simulation <https://github.com/caitlyn-wilhelm/IceCoverage/tree/main/ChaoticExample>
 
