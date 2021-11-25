@@ -14,25 +14,25 @@ variables that can be extracted from a bigplanet archive file.
 Below is a table of aggregations related to input and output files:
 
 
-+-------------------+-------------------------------------------------------------------------+
-| Aggregation       | Description                                                             |
-+-------------------+-------------------------------------------------------------------------+
-| Initial           | The initial values of a parameter as listed in the log file             |
-+-------------------+-------------------------------------------------------------------------+
-| Final             | The final values of a parameter as listed in the log file               |
-+-------------------+-------------------------------------------------------------------------+
-| Option            | The parameter's argument to an option in the input file                 |
-+-------------------+-------------------------------------------------------------------------+
-| Forward           | A list of the parameter's values in the forward file.                   |
-+-------------------+-------------------------------------------------------------------------+
-| Backward          | A list of the parameter's values in the backward file.                  |
-+-------------------+-------------------------------------------------------------------------+
-| Climate           | A list of the parameter's climate values (*POISE only*).                |
-+-------------------+-------------------------------------------------------------------------+
-| OutputOrder      | A list of the output parameters and units assoicated with saOutputOrder. |
-+-------------------+-------------------------------------------------------------------------+
-| GridOutput Order | A list of the names and units of the climate file (*POISE only*).        |
-+-------------------+-------------------------------------------------------------------------+
++-------------------+--------------------------------------------------------------------------+
+| Aggregation       | Description                                                              |
++-------------------+--------------------------------------------------------------------------+
+| Initial           | The initial values of a parameter as listed in the log file              |
++-------------------+--------------------------------------------------------------------------+
+| Final             | The final values of a parameter as listed in the log file                |
++-------------------+--------------------------------------------------------------------------+
+| Option            | The parameter's argument to an option in the input file                  |
++-------------------+--------------------------------------------------------------------------+
+| Forward           | A list of the parameter's values in the forward file.                    |
++-------------------+--------------------------------------------------------------------------+
+| Backward          | A list of the parameter's values in the backward file.                   |
++-------------------+--------------------------------------------------------------------------+
+| Climate           | A list of the parameter's climate values (*POISE only*).                 |
++-------------------+--------------------------------------------------------------------------+
+| OutputOrder       | A list of the output parameters and units assoicated with saOutputOrder. |
++-------------------+--------------------------------------------------------------------------+
+| GridOutput Order  | A list of the names and units of the climate file (*POISE only*).        |
++-------------------+--------------------------------------------------------------------------+
 
 In addition, variables that are listed in forward or backward files also have a set of statistical 
 aggretations. Use one of these to quickly obtain metadata on a particular variable.
@@ -40,15 +40,15 @@ aggretations. Use one of these to quickly obtain metadata on a particular variab
 +--------------------+-----------------------------------------------------------------------+
 | Aggregation        | Description                                                           |
 +--------------------+-----------------------------------------------------------------------+
-| Min                | The minimum values of a parameter recorded for each simulations.      |
+| Min                | The minimum values of a parameter recorded for each simulation.       |
 +--------------------+-----------------------------------------------------------------------+
-| Max                | The maximum values of a parameter recorded for each simulations.      |
+| Max                | The maximum values of a parameter recorded for each simulation.       |
 +--------------------+-----------------------------------------------------------------------+
-| Mean               | The arithmetic means of a parameter recorded for each simulations.    |
+| Mean               | The arithmetic means of a parameter recorded for each simulation.     |
 +--------------------+-----------------------------------------------------------------------+
-| Geometric Mean     | The geometric means of a parameter recorded for each simulations.     |
+| Geometric Mean     | The geometric means of a parameter recorded for each simulation.      |
 +--------------------+-----------------------------------------------------------------------+
-| Standard Deviation | The standard deviations of a parameter recorded for each simulations. |
+| Standard Deviation | The standard deviations of a parameter recorded for each simulation.  |
 +--------------------+-----------------------------------------------------------------------+
 
 .. warning::
