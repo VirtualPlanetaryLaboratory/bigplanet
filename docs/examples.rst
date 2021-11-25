@@ -7,9 +7,9 @@ Below are links to other repositories that use ``bigplanet``:
 
 `Ice Coverage (Wilhelm et al. 2022) repository <https://github.com/caitlyn-wilhelm/IceCoverage>`_ 
 
-Build Archive, then build a file from it
+Build archive, then build a file from it
 
 Build bigplanet file from raw data
 
-Extract archive data for a single simulation <https://github.com/caitlyn-wilhelm/IceCoverage/tree/main/ChaoticExample>
+`Extract archive data for a single simulation <https://github.com/caitlyn-wilhelm/IceCoverage/tree/main/ChaoticExample>`_
 
