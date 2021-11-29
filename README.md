@@ -16,8 +16,3 @@
 </p>
 
 A suite of data analysis and extraction routines for [VPLanet](https://github.com/VirtualPlanetaryLaboratory/vplanet) and designed to be used with [vspace](https://github.com/VirtualPlanetaryLaboratory/vspace) and [multi-planet](https://github.com/VirtualPlanetaryLaboratory/multi-planet) scripts. It can also generate files for use with the free version of the [VR Ulysses data explorer](https://www.vrulysses.com/download-ulysses).
-
-    To maximize bigplanet's power, run ``vspace`` and ``mulit-planet -bp`` to automatically
-    build the bigplanet archive immediately after the simualtions finish.  Then create 
-    bigplanet files from the archive as needed, and use ``bigplanet``'s scripting functions to 
-    extract vectors and matrices for plotting, statistical analyses, etc.
