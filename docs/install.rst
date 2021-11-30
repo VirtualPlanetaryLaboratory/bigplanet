@@ -3,7 +3,7 @@ Installation Guide
 
 There are two ways to install bigplanet: 1) in conjunction with 
 `VPLanet <https://github.com/VirtualPlanetaryLaboratory/vplanet>`_ and 
-its other support scripts, or 2) as from source.
+its other support scripts, or 2) from source.
 
 To install bigplanet and the other ``VPLanet`` packages, use the command:
 
@@ -18,7 +18,7 @@ To install from source, first close the repo:
 
     git clone https://github.com/VirtualPlanetaryLaboratory/bigplanet.git
 
-Afterwards, go into the directory (bigplanet) and run the setup script:
+and then go into the directory (bigplanet) and run the setup script:
 
 .. code-block:: bash
 
@@ -26,6 +26,6 @@ Afterwards, go into the directory (bigplanet) and run the setup script:
     python setup.py install
 
 
-The setup script installs the various dependencies and allows bigplanet to be
+The setup script installs the various dependencies and allows ``bigplanet`` to be
 run from the `command line <commandline>`_ as well as be imported as a 
-`module <Script>`_.
+`Python module <Script>`_.
