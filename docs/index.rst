@@ -19,7 +19,7 @@ has the extension ``.bpa``. As a bigplanet archive contains *all* the data from 
 sweep, you can safely delete
 the raw data once the archive is created. Note that ``bigplanet`` will also create an 
 MD5 checksum file that monitors the integrity of the archive. Accessing data from the archive
-can be 2-10 times faster than from the raw ASCII text data, depending on the raw data.
+is at least 10 times faster than from the raw ASCII text data.
 
 While it is possible to perform analyses and plot outputs from the archive, it is
 often still painfully slow for parameter sweeps consisting of 10,000 simulations or more.

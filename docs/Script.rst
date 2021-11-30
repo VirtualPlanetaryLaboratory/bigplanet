@@ -1,7 +1,7 @@
 Scripting
 =========
 
-Iporting ``bigplanet`` as a module in a Python script enables the extraction and reformatting of the data
+Importing ``bigplanet`` as a module in a Python script enables the extraction and reformatting of the data
 from bigplanet archives and files. In this page we describe how to use it for plotting and other analyses.
 To access the functionality described herein, enter this line in your script:
 
@@ -25,8 +25,8 @@ write out a list of keys to a file (``WriteOutput``).
 ---------------------------------
 
 To print the contents of an archive or file, ``bigplanet`` provides two utilities. 
-HDF5 files are organized by "groups", so it can sometimes be convenient to see the names of the
-groups in a bigplanet archive. ``bigplanet`` organizes each simulation into a groupTo view them, use the PrintGroups function, which, 
+As HDF5 files are organized by "groups", it can be convenient to see the names of the
+groups in a bigplanet archive. ``bigplanet`` organizes each simulation into a group. To view them, use the PrintGroups function, which, 
 as the name suggests, prints all of the groups in a bigplanet archive or file.
 Groups are the names of various simulation folders (called trials) that can be extracted.
 
