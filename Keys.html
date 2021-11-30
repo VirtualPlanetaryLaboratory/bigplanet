@@ -76,13 +76,10 @@
   <section id="understanding-keys">
 <h1>Understanding Keys<a class="headerlink" href="#understanding-keys" title="Permalink to this headline"></a></h1>
 <p>Keys are the bread and butter of <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code>. The keys are the names of the
-variables that can be extracted from a bigplanet archive file.</p>
+variables that can be extracted from a bigplanet archive.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<blockquote>
-<div><p>Keys using the following format for naming: body:parameter:aggregation, where “aggregation”</p>
-</div></blockquote>
-<p>is an aspect of the variable.</p>
+<p>Keys using the following format for naming: body:parameter:aggregation, where “aggregation” is an aspect of the variable.</p>
 </div>
 <p>Below is a table of aggregations related to input and output files:</p>
 <table class="docutils align-default">
@@ -113,15 +110,16 @@ variables that can be extracted from a bigplanet archive file.</p>
 <td><p>A list of the parameter’s climate values (<em>POISE only</em>).</p></td>
 </tr>
 <tr class="row-even"><td><p>OutputOrder</p></td>
-<td><p>A list of the output parameters and units assoicated with saOutputOrder.</p></td>
+<td><p>A list of the parameters and units assoicated with saOutputOrder.</p></td>
 </tr>
 <tr class="row-odd"><td><p>GridOutput Order</p></td>
 <td><p>A list of the names and units of the climate file (<em>POISE only</em>).</p></td>
 </tr>
 </tbody>
 </table>
-<p>In addition, variables that are listed in forward or backward files also have a set of statistical
-aggretations. Use one of these to quickly obtain metadata on a particular variable.</p>
+<p>In addition, variables that are listed in <code class="docutils literal notranslate"><span class="pre">VPLanet</span></code> forward or backward files also have a set of statistical
+aggretations that can be applied. Use one of these to quickly obtain metadata on a particular variable. For
+example, Earth:Eccentricity:Min would return the minimum values of eccentricity recorded for every simulation.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 22%" />

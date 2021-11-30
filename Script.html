@@ -84,7 +84,7 @@
              
   <section id="scripting">
 <h1>Scripting<a class="headerlink" href="#scripting" title="Permalink to this headline"></a></h1>
-<p>Iporting <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> as a module in a Python script enables the extraction and reformatting of the data
+<p>Importing <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> as a module in a Python script enables the extraction and reformatting of the data
 from bigplanet archives and files. In this page we describe how to use it for plotting and other analyses.
 To access the functionality described herein, enter this line in your script:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bigplanet</span> <span class="k">as</span> <span class="nn">bp</span>
@@ -102,8 +102,8 @@ write out a list of keys to a file (<code class="docutils literal notranslate"><
 <section id="printgroups-and-printdatasets">
 <h2><strong>PrintGroups and PrintDatasets</strong><a class="headerlink" href="#printgroups-and-printdatasets" title="Permalink to this headline"></a></h2>
 <p>To print the contents of an archive or file, <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> provides two utilities.
-HDF5 files are organized by “groups”, so it can sometimes be convenient to see the names of the
-groups in a bigplanet archive. <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> organizes each simulation into a groupTo view them, use the PrintGroups function, which,
+As HDF5 files are organized by “groups”, it can be convenient to see the names of the
+groups in a bigplanet archive. <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> organizes each simulation into a group. To view them, use the PrintGroups function, which,
 as the name suggests, prints all of the groups in a bigplanet archive or file.
 Groups are the names of various simulation folders (called trials) that can be extracted.</p>
 <p><em>XXX This seems out of date!XXX</em></p>

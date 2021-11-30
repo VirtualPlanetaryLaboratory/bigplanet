@@ -2,13 +2,12 @@ Understanding Keys
 ==================
 
 Keys are the bread and butter of ``bigplanet``. The keys are the names of the  
-variables that can be extracted from a bigplanet archive file.
+variables that can be extracted from a bigplanet archive.
 
 
 .. note::
 
-	  Keys using the following format for naming: body:parameter:aggregation, where "aggregation"
-      is an aspect of the variable.
+	  Keys using the following format for naming: body:parameter:aggregation, where "aggregation" is an aspect of the variable.
 
 
 Below is a table of aggregations related to input and output files:
@@ -29,13 +28,14 @@ Below is a table of aggregations related to input and output files:
 +-------------------+--------------------------------------------------------------------------+
 | Climate           | A list of the parameter's climate values (*POISE only*).                 |
 +-------------------+--------------------------------------------------------------------------+
-| OutputOrder       | A list of the output parameters and units assoicated with saOutputOrder. |
+| OutputOrder       | A list of the parameters and units assoicated with saOutputOrder.        |
 +-------------------+--------------------------------------------------------------------------+
 | GridOutput Order  | A list of the names and units of the climate file (*POISE only*).        |
 +-------------------+--------------------------------------------------------------------------+
 
-In addition, variables that are listed in forward or backward files also have a set of statistical 
-aggretations. Use one of these to quickly obtain metadata on a particular variable.
+In addition, variables that are listed in ``VPLanet`` forward or backward files also have a set of statistical 
+aggretations that can be applied. Use one of these to quickly obtain metadata on a particular variable. For 
+example, Earth:Eccentricity:Min would return the minimum values of eccentricity recorded for every simulation.
 
 +--------------------+-----------------------------------------------------------------------+
 | Aggregation        | Description                                                           |
