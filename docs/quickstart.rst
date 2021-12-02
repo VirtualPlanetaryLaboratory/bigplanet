@@ -1,5 +1,5 @@
-Quickstart Guide
-================
+Running bigplanet
+=================
 
 This tutorial describes how to quickly get started with ``bigplanet`` and assumes you
 are already familiar with ``VPLanet``. Furthermore, it assumes you have already performed
