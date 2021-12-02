@@ -13,7 +13,7 @@ To execute ``bigplanet`` from the command line and build an archive, use the com
     bigplanet bpl.in -a 
 
 This will read in the instructions in the ``bpl.in`` file and the ``-a`` flag tells
-``bigplanet`` to create an archive file. To see how, let's look inside bpl.in.
+``bigplanet`` to create an archive. To see how, let's look inside bpl.in.
 
 .. code-block:: bash
     :linenos:
@@ -26,23 +26,23 @@ This will read in the instructions in the ``bpl.in`` file and the ``-a`` flag te
     sPrimaryFile vpl.in
 
     saKeyInclude earth:Obliquity:forward earth:Instellation:final earth:IceBeltLand:final $
-    earth:IceBeltSea:final earth:IceCapNorthLand:final earth:IceCapNorthSea:final $
-    earth:IceCapSouthLand:final earth:IceCapSouthSea:final earth:IceFree:final $
-    earth:Snowball:final
+        earth:IceBeltSea:final earth:IceCapNorthLand:final earth:IceCapNorthSea:final $
+        earth:IceCapSouthLand:final earth:IceCapSouthSea:final earth:IceFree:final $
+        earth:Snowball:final
 
-Line 1 is the folder where the raw data are located and line 2 is the name of archive file 
+Line 1 is the folder where the raw data are located and line 2 is the name of archive  
 to be generated. The remaining lines are all ignored when the ``-a`` flag is set. We'll discuss those lines 
 below.
 
 After the archive is built, it is often convenient to extract a small amount of data from the archive 
-file (GDwarf.bpa) for detailed analysis. To create the bigplanet file, run the 
+(GDwarf.bpa) for detailed analysis. To create the bigplanet file, run the 
 same command as above, but *without* the ``-a`` flag:
 
 .. code-block:: bash
     
     bigplanet bpl.in
 
-Let's now look at how ``bigplanet`` interprets the bpl.in file without the -a flag.
+Let's now look at how ``bigplanet`` interprets the bpl.in file without the ``-a`` flag.
 
 Since Line 2 provides the name of a bigplanet archive, ``bigplanet`` will not look to
 extract the appropriate columns from the raw data, but from the archive.
