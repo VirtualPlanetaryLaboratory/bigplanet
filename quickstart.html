@@ -84,7 +84,7 @@ bigplanet archive and a bigplanet file.</p>
 </pre></div>
 </div>
 <p>This will read in the instructions in the <code class="docutils literal notranslate"><span class="pre">bpl.in</span></code> file and the <code class="docutils literal notranslate"><span class="pre">-a</span></code> flag tells
-<code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> to create an archive file. To see how, let’s look inside bpl.in.</p>
+<code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> to create an archive. To see how, let’s look inside bpl.in.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>sDestFolder GDwarf
 <span class="linenos"> 2</span>sArchiveFile GDwarf.bpa
 <span class="linenos"> 3</span>sOutputFile ice_states.bpf
@@ -93,21 +93,21 @@ bigplanet archive and a bigplanet file.</p>
 <span class="linenos"> 6</span>sPrimaryFile vpl.in
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span>saKeyInclude earth:Obliquity:forward earth:Instellation:final earth:IceBeltLand:final $
-<span class="linenos"> 9</span>earth:IceBeltSea:final earth:IceCapNorthLand:final earth:IceCapNorthSea:final $
-<span class="linenos">10</span>earth:IceCapSouthLand:final earth:IceCapSouthSea:final earth:IceFree:final $
-<span class="linenos">11</span>earth:Snowball:final
+<span class="linenos"> 9</span>    earth:IceBeltSea:final earth:IceCapNorthLand:final earth:IceCapNorthSea:final $
+<span class="linenos">10</span>    earth:IceCapSouthLand:final earth:IceCapSouthSea:final earth:IceFree:final $
+<span class="linenos">11</span>    earth:Snowball:final
 </pre></div>
 </div>
-<p>Line 1 is the folder where the raw data are located and line 2 is the name of archive file
+<p>Line 1 is the folder where the raw data are located and line 2 is the name of archive
 to be generated. The remaining lines are all ignored when the <code class="docutils literal notranslate"><span class="pre">-a</span></code> flag is set. We’ll discuss those lines
 below.</p>
 <p>After the archive is built, it is often convenient to extract a small amount of data from the archive
-file (GDwarf.bpa) for detailed analysis. To create the bigplanet file, run the
+(GDwarf.bpa) for detailed analysis. To create the bigplanet file, run the
 same command as above, but <em>without</em> the <code class="docutils literal notranslate"><span class="pre">-a</span></code> flag:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bigplanet bpl.in
 </pre></div>
 </div>
-<p>Let’s now look at how <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> interprets the bpl.in file without the -a flag.</p>
+<p>Let’s now look at how <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> interprets the bpl.in file without the <code class="docutils literal notranslate"><span class="pre">-a</span></code> flag.</p>
 <p>Since Line 2 provides the name of a bigplanet archive, <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> will not look to
 extract the appropriate columns from the raw data, but from the archive.</p>
 <p>Line 3 is the name of the bigplanet file that will contain the data subset.</p>
