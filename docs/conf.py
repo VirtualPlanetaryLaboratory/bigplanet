@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath('sphinx_rtd_theme'))
 
 project = 'Bigplanet'
 copyright = '2021, The VPLanet Team'
-author = 'Caitlyn Wilhelm'
+author = 'Caitlyn Wilhelm, David Fleming, Rory Barnes'
 
 # The full version, including alpha/beta/rc tags
 release = '2020'

@@ -1,26 +1,26 @@
 Command Line Usage
 ==================
-Using BigPlanet on the command line is relatively straight forward. After a suite of
-simulations (set up with `vspace <../vspace>`_) has completed, simply run the following
-command in the in the command line:
+
+Using ``bigplanet`` on the command line is relatively straight forward. After a suite of
+simulations (set up with `vspace <https://github.com/VirtualPlanetaryLaboratory/vspace>`_) 
+has completed, simply run the following command in the in the command line:
 
 .. code-block:: bash
 
-    bigplanet <input file> -c [number of cores] -q -m [email]
+    bigplanet <input file> -c [number of cores] -m [email] -aoqv
 
-where the input file is the bpl.in file, which is explained here.
+where the input file is the bpl.in file, which is explained `here <filetypes>`_.
 
 There are three optional arguments:
 
-:code:`-c` : the number of processors used
+:code:`-a` : create a bigplanet archive
 
-:code:`-q` : quiet mode (nothing is printed to the command line)
+:code:`-c` : set the number of processors to use
 
-:code:`-v` : verbose mode (more output is printed to the command like)
+:code:`-m` : emails the user when ``bigplanet`` is complete
 
-:code:`-m` : emails the user when Bigplanet is complete
+:code:`-o` : overwrite an existing archive
 
-:code:`-o` : overrides the creation of a bigplanet archive file if it already exists
+:code:`-q` : quiet mode (nothing is printed to the terminal)
 
-:code:`-a` : flag for bigplanet filtered file
-
+:code:`-v` : verbose mode (all output is printed to the terminal)
