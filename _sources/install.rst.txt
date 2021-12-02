@@ -5,7 +5,7 @@ There are two ways to install ``bigplanet``: 1) in conjunction with
 `VPLanet <https://github.com/VirtualPlanetaryLaboratory/vplanet>`_ and 
 its other support scripts, or 2) from source.
 
-To install bigplanet and the other ``VPLanet`` packages, use the command:
+To install ``bigplanet`` and the other ``VPLanet`` packages, use the command:
 
 .. code-block:: bash
 

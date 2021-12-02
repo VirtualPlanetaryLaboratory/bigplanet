@@ -1,4 +1,4 @@
-Bigplanet Documentation
+bigplanet Documentation
 =======================
 
 ``bigplanet`` is software to compress a large number of `VPLanet <https://github.com/VirtualPlanetaryLaboratory/vplanet>`_ 
@@ -52,6 +52,6 @@ The following links provide more in-depth explanations on how to get the most ou
 .. note::
 
     To maximize bigplanet's power, run ``vspace`` and ``mulit-planet -bp`` to automatically
-    build the bigplanet archive immediately after the simualtions finish.  Then create 
+    build the bigplanet archive immediately after the simulations finish.  Then create 
     bigplanet files from the archive as needed, and use ``bigplanet``'s scripting functions to 
     extract vectors and matrices for plotting, statistical analyses, etc.
