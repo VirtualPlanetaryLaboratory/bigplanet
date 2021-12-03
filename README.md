@@ -3,7 +3,7 @@
   <img width = "250" src="docs/VPLanetLogo.png?raw=true"/>
 </p>
 
-<h1 align="center">BigPlanet: Big Data with VPLanet</h1>
+<h1 align="center">bigplanet: Big Data with VPLanet</h1>
 
 <p align="center">
   <a href="https://VirtualPlanetaryLaboratory.github.io/bigplanet/"><img src="https://img.shields.io/badge/read-the_docs-blue.svg?style=flat"></a>
