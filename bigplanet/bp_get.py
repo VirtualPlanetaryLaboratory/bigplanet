@@ -125,10 +125,10 @@ def GetDir(vspace_file):
         content = [line.strip().split() for line in vpl.readlines()]
         for line in content:
             if line:
-                if line[0] == 'destfolder':
+                if line[0] == 'sDestFolder':
                     folder_name = line[1]
 
-                if line[0] == 'bodyfile' or line[0] == 'primaryfile':
+                if line[0] == 'sBodyFile' or line[0] == 'sPrimaryFile':
                     infiles.append(line[1])
     if folder_name is None:
         raise IOError("Name of destination folder not provided in file '%s'."
