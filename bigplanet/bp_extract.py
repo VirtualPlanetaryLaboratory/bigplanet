@@ -134,6 +134,7 @@ def ExtractColumn(hf, k):
         else:
             print('ERROR: Uknown aggregation option: ', aggreg)
             exit()
+
     return data
 
 
@@ -192,8 +193,6 @@ def ForwardData(hf, k):
         for d in dataset:
             data.append(d)
 
-    print(len(data))
-    print(data)
     return data
 
 
@@ -249,9 +248,10 @@ def ExtractUniqueValues(hf, k):
     if archive == True:
         for key in key_list:
             dataset = hf[key + '/' + k]
-            if len(dataset.shape) != 1:
-                data = HFD5Decoder(hf, dataset)
-                data.flatten()
+            if len(dataset) != 1:
+                print(len(dataset))
+                for d in dataset:
+                    data.append(d)
             else:
                 for d in dataset:
                     data.append(d)
@@ -260,7 +260,7 @@ def ExtractUniqueValues(hf, k):
             for v in d:
                 data.append(v)
 
-    unique = np.unique(data)
+    unique = np.unique(data).tolist()
     return unique
 
 
@@ -301,7 +301,7 @@ def CreateMatrix(xaxis, yaxis, zarray, orientation=1):
     for i in range(0, orientation):
         zmatrix = rotate90Clockwise(zmatrix)
 
-    zmatrix = np.flipud(zmatrix)
+    zmatrix = np.flipud(zmatrix).tolist()
 
     return zmatrix
 
