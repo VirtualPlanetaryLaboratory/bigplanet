@@ -9,7 +9,7 @@ setup(
     description="VPLANET Data Analysis Tools",
     long_description=open("README.md", "r").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/VirtualPlanetaryLaboratory/bigplanet",
+    url="https://github.com/VirtualPlanetaryLaboratory/BigPlanet",
     author="Caitlyn Wilhelm",
     author_email="cwilhelm@uw.edu",
     license="MIT",
@@ -20,7 +20,7 @@ setup(
         "write_to_template": '__version__ = "{version}"\n',
     },
     install_requires=["numpy", "h5py", "argparse",
-                      "scipy", "pandas", "vspace", "multiplanet"],
+                      "scipy", "pandas"],
     entry_points={
         "console_scripts": [
             "bigplanet = bigplanet.bigplanet:Arguments",
