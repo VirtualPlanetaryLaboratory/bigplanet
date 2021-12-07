@@ -5,7 +5,7 @@ import os
 
 # Setup!
 setup(
-    name="BigPl",
+    name="bigplanet",
     description="VPLANET Data Analysis Tools",
     long_description=open("README.md", "r").read(),
     long_description_content_type="text/markdown",
@@ -13,7 +13,7 @@ setup(
     author="Caitlyn Wilhelm",
     author_email="cwilhelm@uw.edu",
     license="MIT",
-    packages=["BigPlanet"],
+    packages=["bigplanet"],
     include_package_data=True,
     use_scm_version={
         "write_to": os.path.join("bigplanet", "bigplanet_version.py"),
@@ -23,8 +23,8 @@ setup(
                       "scipy", "pandas"],
     entry_points={
         "console_scripts": [
-            "BigPlanet = BigPlanet.BigPlanet:Arguments",
-            "bpstatus = BigPlanet.bpstatus:main",
+            "bigplanet = bigplanet.bigplanet:Arguments",
+            "bpstatus = bigplanet.bpstatus:main",
         ],
     },
     setup_requires=["setuptools_scm"],
