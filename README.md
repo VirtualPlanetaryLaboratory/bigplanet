@@ -1,4 +1,3 @@
-
 <p align="center">
   <img width = "250" src="docs/VPLanetLogo.png?raw=true"/>
 </p>
@@ -15,4 +14,4 @@
   </a>
 </p>
 
-A suite of data analysis and extraction routines for [VPLanet](https://github.com/VirtualPlanetaryLaboratory/vplanet) and designed to be used with [vspace](https://github.com/VirtualPlanetaryLaboratory/vspace) and [multi-planet](https://github.com/VirtualPlanetaryLaboratory/multi-planet) scripts. It can also generate files for use with the free version of the [VR Ulysses data explorer](https://www.vrulysses.com/download-ulysses).
+A suite of data analysis and extraction routines for [VPLanet](https://github.com/VirtualPlanetaryLaboratory/vplanet) and designed to be used with [VSPACE](https://github.com/VirtualPlanetaryLaboratory/vspace) and [MultiPlanet](https://github.com/VirtualPlanetaryLaboratory/multi-planet) scripts. It can also generate files for use with the free version of the [VR Ulysses data explorer](https://www.vrulysses.com/download-ulysses).

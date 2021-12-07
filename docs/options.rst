@@ -1,7 +1,7 @@
 Options
 =======
 
-Here is a table of each of the options that can be set in the ``bigplanet`` input file. 
+Here is a table of each of the options that can be set in the ``BigPlanet`` input file. 
 
 +-------------------+------------------------------------+--------------------------------------+------------------------+
 | **Variable**      | **Description**                    | **Example**                          | **Required Arguments** |
@@ -14,7 +14,7 @@ Here is a table of each of the options that can be set in the ``bigplanet`` inpu
 +-------------------+------------------------------------+--------------------------------------+------------------------+
 | sOutputFile       | The name of the Output file.       | sOutputFile Test.bpf                 |                        |
 |                   | Note that this can be either       |                                      |                        |
-|                   | a bigplanet file (.bpf) or a csv   | OR                                   |                        |
+|                   | a BigPlanet file (.bpf) or a csv   | OR                                   |                        |
 |                   | (.csv)                             |                                      |                        |
 |                   |                                    | sOutputFile Test.csv                 |                        |
 +-------------------+------------------------------------+--------------------------------------+------------------------+
@@ -33,7 +33,7 @@ Here is a table of each of the options that can be set in the ``bigplanet`` inpu
 |                   | (usually is called vpl.in)         |                                      |                        |
 +-------------------+------------------------------------+--------------------------------------+------------------------+
 | saKeyInclude      | The list of keys to export to the  | saKeyInclude earth:obliquity:forward |                        |
-|                   | bigplanet file. Multiple line      |                                      |                        |
+|                   | BigPlanet file. Multiple line      |                                      |                        |
 |                   | arguments can be input with a      |                                      |                        |
 |                   | trailing `$`.                      |                                      |                        |
 +-------------------+------------------------------------+--------------------------------------+------------------------+

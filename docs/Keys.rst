@@ -1,8 +1,8 @@
 Understanding Keys
 ==================
 
-Keys are the bread and butter of ``bigplanet``. The keys are the names of the  
-variables that can be extracted from a bigplanet archive.
+Keys are the bread and butter of ``BigPlanet``. The keys are the names of the  
+variables that can be extracted from a BigPlanet archive.
 
 
 .. note::
