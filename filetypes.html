@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bigplanet File Types &mdash; Bigplanet 2020 documentation</title>
+  <title>BigPlanet File Types &mdash; Bigplanet 2020 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -39,18 +39,18 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Running bigplanet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Running BigPlanet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="options.html">Options</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Bigplanet File Types</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BigPlanet File Types</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#archives">Archives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#files">Files</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Keys.html">Understanding Keys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commandline.html">Command Line Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Script.html">Scripting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Script.html">Scripting with BigPlanet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Other Resources</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/VirtualPlanetaryLaboratory/bigplanet">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/VirtualPlanetaryLaboratory/BigPlanet">GitHub</a></li>
 </ul>
 
         </div>
@@ -67,7 +67,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Bigplanet File Types</li>
+      <li>BigPlanet File Types</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/filetypes.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -78,27 +78,27 @@
            <div itemprop="articleBody">
              
   <section id="bigplanet-file-types">
-<h1>Bigplanet File Types<a class="headerlink" href="#bigplanet-file-types" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> generates two different file types: a bigplanet archive and a bigplanet file.
+<h1>BigPlanet File Types<a class="headerlink" href="#bigplanet-file-types" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">BigPlanet</span></code> generates two different file types: a BigPlanet archive and a BigPlanet file.
 Below each file type is explained in depth.</p>
 <section id="archives">
 <h2>Archives<a class="headerlink" href="#archives" title="Permalink to this headline"></a></h2>
-<p>The bigplanet archive ontains <em>everything</em> from
+<p>The BigPlanet archive ontains <em>everything</em> from
 the parameter sweep. The archive can require hours to build, depending on the size of the data set and number of cores
 employed to build it.
-When an archive is built, <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> also performs an MD5 checksum and creates a file with the resultant hash,
+When an archive is built, <code class="docutils literal notranslate"><span class="pre">BigPlanet</span></code> also performs an MD5 checksum and creates a file with the resultant hash,
 i.e. GDwarf.md5, which is examined every time the archive is accessed to ensure the
 data are not corrupted. After building the BPA file, it is safe to remove the raw data.
-To generate an archive, run <code class="docutils literal notranslate"><span class="pre">bigplanet</span></code> with the <code class="code docutils literal notranslate"><span class="pre">-a</span></code> option.</p>
+To generate an archive, run <code class="docutils literal notranslate"><span class="pre">BigPlanet</span></code> with the <code class="code docutils literal notranslate"><span class="pre">-a</span></code> option.</p>
 </section>
 <section id="files">
 <h2>Files<a class="headerlink" href="#files" title="Permalink to this headline"></a></h2>
-<p>The bigplanet file is a subset of the archive that is useful for rapid and in-depth analyses of a specific
+<p>The BigPlanet file is a subset of the archive that is useful for rapid and in-depth analyses of a specific
 aspect of the full parameter sweep.
-Bigplanet files enable much faster data access than from the raw data or the archive itself.
-There are two ways of creating a bigplanet file: 1) extracting the data from the archive, or 2) extracting from
+BigPlanet files enable much faster data access than from the raw data or the archive itself.
+There are two ways of creating a BigPlanet file: 1) extracting the data from the archive, or 2) extracting from
 the raw simulation data. Extracting from the archive is always the <em>fastest</em> way
-to create a bigplanet file.</p>
+to create a BigPlanet file.</p>
 </section>
 </section>
 
