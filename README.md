@@ -10,6 +10,10 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-purple.svg"/></a>
     <a href="https://github.com/VirtualPlanetaryLaboratory/bigplanet/actions/workflows/tests.yml">
   <img src="https://github.com/VirtualPlanetaryLaboratory/bigplanet/actions/workflows/tests.yml/badge.svg"/>
+      <a href="https://codecov.io/gh/VirtualPlanetaryLaboratory/bigplanet">
+        <img src="https://codecov.io/gh/VirtualPlanetaryLaboratory/bigplanet/branch/main/graph/badge.svg?token=FQEJBL185K"/>
+      </a>
+    
       
   </a>
 </p>
