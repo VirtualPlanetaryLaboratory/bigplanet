@@ -54,6 +54,7 @@ def ExtractColumn(hf, k):
     if ":" not in key_list[0]:
         archive = True
 
+    print(k.split())
     var = k.split(":")[1]
 
     if var == 'OutputOrder' or var == 'GridOutputOrder':
@@ -61,13 +62,11 @@ def ExtractColumn(hf, k):
             dataset = hf[key_list[0] + '/' + k]
             for d in dataset:
                 for value in d:
-                    value = value.decode('UTF-8')
-                    data.append(value)
+                    data.append(value.decode('UTF-8'))
         else:
             for v in hf[k]:
                 for item in v:
-                    item = item.decode('UTF-8')
-                    data.append(item)
+                    data.append(item.decode('UTF-8'))
 
     else:
         aggreg = k.split(":")[2]
@@ -124,12 +123,10 @@ def ExtractColumn(hf, k):
                 for key in key_list:
                     dataset = hf[key + '/' + k]
                     for d in dataset:
-                        d = float(d)
-                        data.append(d)
+                        data.append(float(d))
             else:
                 for d in hf[k]:
-                    d = float(d)
-                    data.append(d)
+                    data.append(float(d))
 
         else:
             print('ERROR: Uknown aggregation option: ', aggreg)
@@ -243,22 +240,14 @@ def ExtractUniqueValues(hf, k):
     if ":" not in key_list[0]:
         archive = True
 
-    var = k.split(":")[1]
-
     if archive == True:
         for key in key_list:
             dataset = hf[key + '/' + k]
-            if len(dataset) != 1:
-                print(len(dataset))
-                for d in dataset:
-                    data.append(d)
-            else:
-                for d in dataset:
-                    data.append(d)
+            for d in dataset:
+                data.append(float(d.decode("UTF-8")))
     else:
         for d in hf[k]:
-            for v in d:
-                data.append(v)
+            data.append(float(d.decode("UTF-8")))
 
     unique = np.unique(data).tolist()
     return unique
