@@ -8,6 +8,8 @@ from scipy import stats
 import statistics as st
 import csv
 import pandas as pd
+import hashlib
+import os
 from .bp_get import GetVplanetHelp
 from .bp_process import DictToBP
 
@@ -16,7 +18,7 @@ def BPLFile(hf):
     return h5py.File(hf, 'r')
 
 
-def ExtractColumn(hf, k):
+def ExtractColumn(file, k):
     """
     Returns all the data for a single key (column) in a given HDF5 file.
 
@@ -49,6 +51,7 @@ def ExtractColumn(hf, k):
     """
     data = []
     archive = False
+    hf = h5py.File(file, 'r')
     key_list = list(hf.keys())
 
     if ":" not in key_list[0]:
@@ -59,6 +62,7 @@ def ExtractColumn(hf, k):
 
     if var == 'OutputOrder' or var == 'GridOutputOrder':
         if archive == True:
+            Md5CheckSum(file)
             dataset = hf[key_list[0] + '/' + k]
             for d in dataset:
                 for value in d:
@@ -73,6 +77,7 @@ def ExtractColumn(hf, k):
 
         if aggreg == 'forward' or aggreg == "backward" or aggreg == "climate":
             if archive == True:
+                Md5CheckSum(file)
                 for key in key_list:
                     dataset = hf[key + '/' + k]
                     for d in dataset:
@@ -120,6 +125,7 @@ def ExtractColumn(hf, k):
 
         elif aggreg == 'initial' or aggreg == 'final' or aggreg == 'option':
             if archive == True:
+                Md5CheckSum(file)
                 for key in key_list:
                     dataset = hf[key + '/' + k]
                     for d in dataset:
@@ -135,7 +141,7 @@ def ExtractColumn(hf, k):
     return data
 
 
-def ExtractUnits(hf, k):
+def ExtractUnits(file, k):
     """
     Returns all the data for a single key (column) in a given HDF5 file.
 
@@ -164,21 +170,25 @@ def ExtractUnits(hf, k):
     units : string
         A string value of the units
     """
+    hf = h5py.File(file, 'r')
     key_list = list(hf.keys())
 
     if ":" not in key_list[0]:
+        Md5CheckSum(file)
         dataset = hf[key_list[0] + '/' + k]
     else:
         dataset = hf[k]
     return dataset.attrs.get('Units')
 
 
-def ForwardData(hf, k):
+def ForwardData(file, k):
     data = []
+    hf = h5py.File(file, 'r')
     key_list = list(hf.keys())
     forward = k.rpartition(':')[0] + ':forward'
     # if hf is an archive file
     if ":" not in key_list[0]:
+        Md5CheckSum(file)
         for key in key_list:
             dataset = hf[key + '/' + forward]
             for d in dataset:
@@ -214,7 +224,7 @@ def HFD5Decoder(dataset):
     return d
 
 
-def ExtractUniqueValues(hf, k):
+def ExtractUniqueValues(file, k):
     """
     Extracts unique values from a key in an HDF5 file.
     Returns a numpy array of the dataset
@@ -233,12 +243,14 @@ def ExtractUniqueValues(hf, k):
     unique : np.array
         A numpy array of the unique values in key
     """
+    hf = h5py.File(file, 'r')
     key_list = list(hf.keys())
     data = []
     archive = False
 
     if ":" not in key_list[0]:
         archive = True
+        Md5CheckSum(file)
 
     if archive == True:
         for key in key_list:
@@ -346,15 +358,9 @@ def ArchiveToFiltered(inputfile, columns, exportfile):
         units[i] = ExtractUnits(inputfile, i)
 
         with h5py.File(exportfile, "a") as f_dest:
-            print(i)
-            print(export[i])
-            print(units[i])
             f_dest.create_dataset(
                 i, data=export[i], compression='gzip', fletcher32=True)
             f_dest[i].attrs['Units'] = units[i]
-
-        with h5py.File(exportfile, "r") as f:
-            print(f.keys())
 
 
 def ArchiveToCSV(inputfile, columns, exportfile, delim=" ", header=False, ulysses=0, group=None):
@@ -503,3 +509,38 @@ def CSVToDict(CSV_File, ulysses=0):
     df_dict = df.to_dict()
 
     return df_dict
+
+
+def Md5CheckSum(archivefile):
+    # create md5checksum file
+    if isinstance(archivefile, str) == True:
+        name = archivefile.split(".")[0]
+        bpa = archivefile
+    else:
+        name = os.path.basename(archivefile.name).split(".")[0]
+        bpa = archivefile.name
+    md5file = name + ".md5"
+    # if it doesn't exist, we need to create it
+    if os.path.isfile(md5file) == False:
+        with open(md5file, "w") as md5:
+            with open(bpa, "rb") as f:
+                file_hash = hashlib.md5()
+                while chunk := f.read(32768):
+                    file_hash.update(chunk)
+
+            print(file_hash.hexdigest())
+            md5.write(file_hash.hexdigest())
+    else:
+        with open(md5file, "r") as md5:
+            md5_old = md5.readline()
+            print(md5_old)
+            with open(bpa, "rb") as f:
+                file_hash = hashlib.md5()
+                while chunk := f.read(32768):
+                    file_hash.update(chunk)
+            new_md5 = file_hash.hexdigest()
+            print(new_md5)
+        if md5_old == new_md5:
+            print("Md5 Checksum verified")
+        else:
+            print("Md5 Checksum failed")
