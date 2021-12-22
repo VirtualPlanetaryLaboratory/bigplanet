@@ -88,37 +88,37 @@ def ExtractColumn(file, k):
                     data.append(d)
 
         elif aggreg == 'mean':
-            argument = ForwardData(hf, k)
+            argument = ForwardData(file, k)
             # print(argument)
             for i in argument:
                 data.append((st.mean(i)))
 
         elif aggreg == 'stddev':
-            argument = ForwardData(hf, k)
+            argument = ForwardData(file, k)
             # print(argument)
             for i in argument:
                 data.append((st.stdev(i)))
 
         elif aggreg == 'min':
-            argument = ForwardData(hf, k)
+            argument = ForwardData(file, k)
             # print(argument)
             for i in argument:
                 data.append((min(i)))
 
         elif aggreg == 'max':
-            argument = ForwardData(hf, k)
+            argument = ForwardData(file, k)
             # print(argument)
             for i in argument:
                 data.append((max(i)))
 
         elif aggreg == 'mode':
-            argument = ForwardData(hf, k)
+            argument = ForwardData(file, k)
             # print(argument)
             for i in argument:
                 data.append((stats.mode(i)))
 
         elif aggreg == 'geomean':
-            argument = ForwardData(hf, k)
+            argument = ForwardData(file, k)
             # print(argument)
             for i in argument:
                 data.append((stats.gmean(i)))
@@ -514,8 +514,9 @@ def CSVToDict(CSV_File, ulysses=0):
 def Md5CheckSum(archivefile):
     # create md5checksum file
     if isinstance(archivefile, str) == True:
+
         name = archivefile.split(".")[0]
-        bpa = archivefile
+        bpa = os.path.abspath(archivefile)
     else:
         name = os.path.basename(archivefile.name).split(".")[0]
         bpa = archivefile.name
@@ -533,13 +534,13 @@ def Md5CheckSum(archivefile):
     else:
         with open(md5file, "r") as md5:
             md5_old = md5.readline()
-            print(md5_old)
+            print("MD5 from " + md5file + ":", md5_old)
             with open(bpa, "rb") as f:
                 file_hash = hashlib.md5()
                 while chunk := f.read(32768):
                     file_hash.update(chunk)
             new_md5 = file_hash.hexdigest()
-            print(new_md5)
+            print("MD5 from " + bpa + ": " + new_md5)
         if md5_old == new_md5:
             print("Md5 Checksum verified")
         else:
