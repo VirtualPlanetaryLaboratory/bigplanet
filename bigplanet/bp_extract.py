@@ -519,7 +519,10 @@ def Md5CheckSum(archivefile):
         bpa = os.path.abspath(archivefile)
     else:
         name = os.path.basename(archivefile.name).split(".")[0]
-        bpa = archivefile.name
+        bpa = archivefile
+
+    print(bpa)
+
     md5file = name + ".md5"
     # if it doesn't exist, we need to create it
     if os.path.isfile(md5file) == False:
@@ -540,7 +543,7 @@ def Md5CheckSum(archivefile):
                 while chunk := f.read(32768):
                     file_hash.update(chunk)
             new_md5 = file_hash.hexdigest()
-            print("MD5 from " + bpa + ": " + new_md5)
+            print("MD5 from " + name + ": " + new_md5)
         if md5_old == new_md5:
             print("Md5 Checksum verified")
         else:
