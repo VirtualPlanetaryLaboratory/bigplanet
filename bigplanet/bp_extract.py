@@ -530,12 +530,12 @@ def Md5CheckSum(archivefile):
         with open(md5file, "w") as md5:
             with open(bpa, "rb") as f:
                 file_hash = hashlib.md5()
-                if sys.version_info >= (3, 8):
-                    while chunk := f.read(32768):
-                        file_hash.update(chunk)
-                if sys.version_info <= (3, 7):
-                    for chunk in iter(lambda: f.read(32768), b''):
-                        file_hash.update(chunk)
+                # if sys.version_info >= (3, 8):
+                # while chunk := f.read(32768):
+                # file_hash.update(chunk)
+                # if sys.version_info <= (3, 7):
+                for chunk in iter(lambda: f.read(32768), b''):
+                    file_hash.update(chunk)
 
             print(file_hash.hexdigest())
             md5.write(file_hash.hexdigest())
@@ -545,12 +545,12 @@ def Md5CheckSum(archivefile):
             print("MD5 from " + md5file + ":", md5_old)
             with open(bpa, "rb") as f:
                 file_hash = hashlib.md5()
-                if sys.version_info >= (3, 8):
-                    while chunk := f.read(32768):
-                        file_hash.update(chunk)
-                if sys.version_info <= (3, 7):
-                    for chunk in iter(lambda: f.read(32768), b''):
-                        file_hash.update(chunk)
+                # if sys.version_info >= (3, 8):
+                # while chunk := f.read(32768):
+                # file_hash.update(chunk)
+                # if sys.version_info <= (3, 7):
+                for chunk in iter(lambda: f.read(32768), b''):
+                    file_hash.update(chunk)
 
             new_md5 = file_hash.hexdigest()
             print("MD5 from " + name + ".bpa : " + new_md5)
