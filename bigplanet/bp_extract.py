@@ -360,7 +360,7 @@ def ArchiveToFiltered(inputfile, columns, exportfile):
 
         with h5py.File(exportfile, "a") as f_dest:
             f_dest.create_dataset(
-                i, data=export[i], compression='gzip', fletcher32=True)
+                i, data=export[i], compression='gzip')
             f_dest[i].attrs['Units'] = units[i]
 
 
