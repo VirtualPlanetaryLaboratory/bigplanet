@@ -31,7 +31,7 @@ def test_bpextract():
         if not (path / ".BP_Extract_BPL").exists():
             subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
-        file = bp.BPLFile(path / "BP_Extract.bpa")
+        file = path / "BP_Extract.bpa"
 
         earth_Instellation_final = bp.ExtractColumn(
             file, 'earth:Instellation:final')

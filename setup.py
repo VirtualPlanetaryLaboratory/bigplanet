@@ -16,7 +16,7 @@ setup(
     packages=["bigplanet"],
     include_package_data=True,
     use_scm_version={
-    	"version_scheme":"post-release",
+        "version_scheme": "post-release",
         "write_to": os.path.join("bigplanet", "bigplanet_version.py"),
         "write_to_template": '__version__ = "{version}"\n',
     },

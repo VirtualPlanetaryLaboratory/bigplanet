@@ -179,4 +179,4 @@ def Filter(file, quiet, verbose):
                 ArchiveToCSV(archive, IncludeList, output, ulysses=1)
         else:
             # Change this to ArchiveToBPF <- this reads from Archive to Filterd File
-            ArchiveToFiltered(archive, IncludeList, output)
+            ArchiveToFiltered(bplArchive, IncludeList, output)

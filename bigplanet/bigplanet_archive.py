@@ -48,7 +48,7 @@ def Archive(bpInputFile, cores, quiet, force, verbose):
 
     # now that we have everything we need
     # we save the name of the Master HDF5 file
-    master_hdf5_file = os.path.abspath(dest_folder + '.bpa')
+    master_hdf5_file = os.path.abspath(bpl_file)
 
     # creates the lock and workers for the parallel processes
     lock = mp.Lock()
@@ -62,6 +62,8 @@ def Archive(bpInputFile, cores, quiet, force, verbose):
         w.start()
     for w in workers:
         w.join()
+
+    Md5CheckSum(archivefile=bpl_file)
 
 
 def CreateCP(checkpoint_file, input_file, sims):
@@ -184,26 +186,3 @@ def par_worker(checkpoint_file, system_name, body_list, log_file, in_files, quie
                 f.writelines(' '.join(newline)+'\n')
 
         lock.release()
-
-
-# def Arguments():
-#     max_cores = mp.cpu_count()
-#     parser = argparse.ArgumentParser(description="Extract data from Vplanet simulations")
-#     parser.add_argument("bpInputFile", help="Name of the biugplanet input file")
-#     parser.add_argument("-c","--cores", type=int, default=max_cores, help="Number of processors used")
-#     parser.add_argument("-f","--force",action="store_true", help="Forces creation of BPL file if it already exists")
-#     parser.add_argument("-s","--split",action="store_true",help="flag for filtered creation of file")
-#
-#     #adds the quiet and verbose as mutually exclusive groups
-#     group = parser.add_mutually_exclusive_group()
-#     group.add_argument("-q","--quiet", action="store_true", help="no output for bigplanet")
-#     group.add_argument("-v","--verbose",action="store_true", help="Prints out excess output for bigplanet")
-#
-#
-#     args = parser.parse_args()
-#
-#     Main(args.bpInputFile,args.cores,args.quiet,args.force,args.verbose,args.split)
-#
-#
-# if __name__ == "__main__":
-#     Arguments()

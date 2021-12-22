@@ -40,6 +40,7 @@ def ReadFile(bplSplitFile, verbose=False, archive=False):
                 if line[0] == 'sDestFolder':
                     folder_name = line[1]
                     outputFile = folder_name.split('/')[-1] + "_filtered.bpf"
+                    bpl_file = folder_name.split('/')[-1] + ".bpa"
                 if line[0] == 'sArchiveFile':
                     bpl_file = line[1]
                 if line[0] == 'sOutputFile':

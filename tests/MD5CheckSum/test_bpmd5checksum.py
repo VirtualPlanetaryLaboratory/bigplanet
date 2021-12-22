@@ -7,6 +7,7 @@ import h5py
 import multiprocessing as mp
 import sys
 import bigplanet as bp
+import hashlib
 
 
 def test_bpextract():
@@ -31,10 +32,17 @@ def test_bpextract():
         if not (path / ".BP_Extract_BPL").exists():
             subprocess.check_output(["bigplanet", "bpl.in", '-a'], cwd=path)
 
-        file = bp.BPLFile(path / "BP_Extract.bpa")
-        eif = bp.ExtractColumn(file, "earth:Instellation:final")
+        bpa = path / "BP_Extract.bpa"
 
-        assert np.isclose(eif[0], 1367.635318)
+        md5file = path / "BP_Extract.md5"
+        with open(md5file, "r") as md5:
+            md5_old = md5.readline()
+            with open(bpa, "rb") as f:
+                file_hash = hashlib.md5()
+                for chunk in iter(lambda: f.read(32768), b''):
+                    file_hash.update(chunk)
+            new_md5 = file_hash.hexdigest()
+        assert md5_old == new_md5
 
 
 if __name__ == "__main__":

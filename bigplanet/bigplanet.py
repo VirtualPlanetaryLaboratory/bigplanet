@@ -10,6 +10,7 @@ import pandas as pd
 from .bigplanet_archive import Archive
 from .bigplanet_filter import Filter
 from .bp_get import ReadFile
+from .bp_extract import Md5CheckSum
 
 
 def Main(bpInputFile, cores, quiet, overwrite, verbose, archive, remove):
@@ -26,6 +27,7 @@ def Main(bpInputFile, cores, quiet, overwrite, verbose, archive, remove):
         folder, bplArchive, output, bodyFileList, primaryFile, IncludeList, ExcludeList, Ulysses, simname = ReadFile(
             bpInputFile, verbose, archive)
         if os.path.exists(bplArchive) == True:
+            Md5CheckSum(bplArchive)
             reply = None
             question = ("Archive file is verified and secured. This will delete all raw data./n This includes:" +
                         folder + " and all its contents, along with any checkpoint files generated from MultiPlanet")
