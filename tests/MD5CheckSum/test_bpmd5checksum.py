@@ -39,7 +39,7 @@ def test_bpextract():
             md5_old = md5.readline()
             with open(bpa, "rb") as f:
                 file_hash = hashlib.md5()
-                while chunk := f.read(32768):
+                for chunk in iter(lambda: f.read(32768), b''):
                     file_hash.update(chunk)
             new_md5 = file_hash.hexdigest()
         assert md5_old == new_md5
