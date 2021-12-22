@@ -56,13 +56,13 @@ def ExtractColumn(file, k):
 
     if ":" not in key_list[0]:
         archive = True
+        Md5CheckSum(file)
 
     print(k.split())
     var = k.split(":")[1]
 
     if var == 'OutputOrder' or var == 'GridOutputOrder':
         if archive == True:
-            Md5CheckSum(file)
             dataset = hf[key_list[0] + '/' + k]
             for d in dataset:
                 for value in d:
@@ -77,7 +77,6 @@ def ExtractColumn(file, k):
 
         if aggreg == 'forward' or aggreg == "backward" or aggreg == "climate":
             if archive == True:
-                Md5CheckSum(file)
                 for key in key_list:
                     dataset = hf[key + '/' + k]
                     for d in dataset:
@@ -125,7 +124,6 @@ def ExtractColumn(file, k):
 
         elif aggreg == 'initial' or aggreg == 'final' or aggreg == 'option':
             if archive == True:
-                Md5CheckSum(file)
                 for key in key_list:
                     dataset = hf[key + '/' + k]
                     for d in dataset:
@@ -188,7 +186,6 @@ def ForwardData(file, k):
     forward = k.rpartition(':')[0] + ':forward'
     # if hf is an archive file
     if ":" not in key_list[0]:
-        Md5CheckSum(file)
         for key in key_list:
             dataset = hf[key + '/' + forward]
             for d in dataset:
@@ -543,7 +540,7 @@ def Md5CheckSum(archivefile):
                 while chunk := f.read(32768):
                     file_hash.update(chunk)
             new_md5 = file_hash.hexdigest()
-            print("MD5 from " + name + ": " + new_md5)
+            print("MD5 from " + name + ".bpa : " + new_md5)
         if md5_old == new_md5:
             print("Md5 Checksum verified")
         else:
