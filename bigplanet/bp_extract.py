@@ -51,6 +51,9 @@ def ExtractColumn(file, k):
     """
     data = []
     archive = False
+
+    if isinstance(file, str) == False:
+        str(file)
     hf = h5py.File(file, 'r')
     key_list = list(hf.keys())
 
