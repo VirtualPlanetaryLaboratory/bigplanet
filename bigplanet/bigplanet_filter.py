@@ -53,7 +53,7 @@ def SplitsaKey(saKeylist, verbose):
     return loglist, bodylist, forwardlist, climatelist, backwardlist
 
 
-def Filter(file, quiet, verbose):
+def Filter(file, quiet, verbose, ignore_corrupt, override):
     folder, bplArchive, output, bodyFileList, primaryFile, IncludeList, ExcludeList, Ulysses, SimName = ReadFile(
         file, verbose=True, archive=False)
 
@@ -64,6 +64,13 @@ def Filter(file, quiet, verbose):
         infile_list.append(i)
     infile_list = bodyFileList
     infile_list.append(primaryFile)
+
+    if os.path.exists(output) and Ulysses == 0:
+        print("ERROR:", output, "already exists. Please delete",
+              output, "and try again")
+    elif os.path.exists(output) and override == True:
+        print("Overriding output file...")
+        sub.run(["rm", output])
 
     # if the bpl archive file does NOT exist, we have to get the data manually
     if os.path.isfile(bplArchive) == False:
@@ -168,6 +175,7 @@ def Filter(file, quiet, verbose):
                              group_name=None, archive=False)
     # if the bpl file DOES exist, we just need to open it and extract the data to put it in the filter file
     else:
+        Md5CheckSum(bplArchive, ignore_corrupt)
         print("Extracting data from BPA File. Please wait...")
         archive = BPLFile(bplArchive)
         if Ulysses == 1:
