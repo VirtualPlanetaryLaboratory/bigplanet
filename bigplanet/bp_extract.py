@@ -173,11 +173,9 @@ def ExtractUnits(hf, k):
     units : string
         A string value of the units
     """
-    hf = h5py.File(file, 'r')
     key_list = list(hf.keys())
 
     if ":" not in key_list[0]:
-        Md5CheckSum(file)
         dataset = hf[key_list[0] + '/' + k]
     else:
         dataset = hf[k]
