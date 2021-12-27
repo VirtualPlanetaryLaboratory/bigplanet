@@ -175,7 +175,6 @@ def Filter(file, quiet, verbose, ignore_corrupt, override):
                              group_name=None, archive=False)
     # if the bpl file DOES exist, we just need to open it and extract the data to put it in the filter file
     else:
-        Md5CheckSum(bplArchive, ignore_corrupt)
         print("Extracting data from BPA File. Please wait...")
         archive = BPLFile(bplArchive)
         if Ulysses == 1:
@@ -187,4 +186,4 @@ def Filter(file, quiet, verbose, ignore_corrupt, override):
                 ArchiveToCSV(archive, IncludeList, output, ulysses=1)
         else:
             # Change this to ArchiveToBPF <- this reads from Archive to Filterd File
-            ArchiveToFiltered(bplArchive, IncludeList, output)
+            ArchiveToFiltered(archive, IncludeList, output)

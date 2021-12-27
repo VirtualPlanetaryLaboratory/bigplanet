@@ -510,7 +510,6 @@ def CSVToDict(CSV_File, ulysses=0):
 def Md5CheckSum(archivefile, ignore_corrupt=False):
     # create md5checksum file
     if isinstance(archivefile, str) == True:
-
         name = archivefile.split(".")[0]
         bpa = os.path.abspath(archivefile)
     else:
