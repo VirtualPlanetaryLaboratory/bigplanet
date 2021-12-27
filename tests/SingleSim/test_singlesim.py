@@ -31,7 +31,7 @@ def test_singlesim():
         if not (path / "Test.bpf").exists():
             subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
 
-        file = path / "Test.bpf"
+        file = bp.BPLFile(path / "Test.bpf")
 
         earth_Tman_forward = bp.ExtractColumn(file, 'earth:TMan:forward')
         earth_Tcore_inital = bp.ExtractColumn(file, 'earth:TCore:initial')

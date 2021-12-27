@@ -13,7 +13,7 @@ from .bp_get import ReadFile
 from .bp_extract import Md5CheckSum
 
 
-def Main(bpInputFile, cores, quiet, overwrite, verbose, archive, remove):
+def Main(bpInputFile, cores, quiet, overwrite, verbose, archive, deleterawdata, ignorecorrupt):
     # folder,bplArchive,output,bodyFileList,primaryFile,IncludeList,ExcludeList,Ulysses = ReadFile(file,verbose)
     #
     # if if IncludeList != [] and ExcludeList != [] and os.path.isfile(bplArchive) == False:
@@ -22,14 +22,14 @@ def Main(bpInputFile, cores, quiet, overwrite, verbose, archive, remove):
     # else:
     #     print("Creating filtered BPF file...")
     #     MainMethodF(bpInputFile,quiet,verbose)
-    if remove == True:
+    if deleterawdata == True:
         #folder_name, bpl_file, outputFile, bodylist, primaryFile, includelist, excludelist, Ulysses, SimName
         folder, bplArchive, output, bodyFileList, primaryFile, IncludeList, ExcludeList, Ulysses, simname = ReadFile(
             bpInputFile, verbose, archive)
         if os.path.exists(bplArchive) == True:
-            Md5CheckSum(bplArchive)
+            Md5CheckSum(bplArchive, ignorecorrupt)
             reply = None
-            question = ("Archive file is verified and secured. This will delete all raw data./n This includes:" +
+            question = ("Archive file is verified and secured. This will delete all raw data. \n This includes:" +
                         folder + " and all its contents, along with any checkpoint files generated from MultiPlanet")
             while reply not in ("y", "n"):
                 reply = str(input(question + " (y/n): ")).lower().strip()
@@ -38,17 +38,18 @@ def Main(bpInputFile, cores, quiet, overwrite, verbose, archive, remove):
                     if os.path.isfile("." + folder) == True:
                         sub.run(["rm", "." + folder])
                     print("Raw data has been deleted")
+                    exit()
                 if reply[:1] == "n":
                     exit()
         else:
             print("ERROR: The archive file, " + bplArchive + ",does not exist")
 
     if archive == True:
-        print("Creating Archive BPA file...")
+        print("Creating BPA file...")
         Archive(bpInputFile, cores, quiet, overwrite, verbose)
     else:
-        print("Creating filtered BPF file...")
-        Filter(bpInputFile, quiet, verbose)
+        print("Creating BPF file...")
+        Filter(bpInputFile, quiet, verbose, ignorecorrupt, overwrite)
 
 
 def Arguments():
@@ -60,11 +61,13 @@ def Arguments():
     parser.add_argument("-c", "--cores", type=int,
                         default=max_cores, help="Number of processors used")
     parser.add_argument("-o", "--overwrite", action="store_true",
-                        help="overwrite archive file if it already exists")
+                        help="overwrite file if it already exists")
     parser.add_argument("-a", "--archive", action="store_true",
                         help="flag for archive file creation")
-    parser.add_argument("-r", "--remove", action="store_true",
+    parser.add_argument("-deleterawdata", "--deleterawdata", action="store_true",
                         help="removes source files after creation of Bigplanet files")
+    parser.add_argument("-ignorecorrupt", "--ignorecorrupt", action="store_true",
+                        help="ignore data corruption for MD5 Checksum")
     # adds the quiet and verbose as mutually exclusive groups
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-q", "--quiet", action="store_true",
@@ -75,4 +78,4 @@ def Arguments():
     args = parser.parse_args()
 
     Main(args.bpInputFile, args.cores, args.quiet,
-         args.overwrite, args.verbose, args.archive, args.remove)
+         args.overwrite, args.verbose, args.archive, args.deleterawdata, args.ignorecorrupt)

@@ -16,10 +16,16 @@ from .bp_process import DictToBP
 
 
 def BPLFile(hf):
+    file = h5py.File(hf, 'r')
+    key_list = list(file.keys())
+
+    if ":" not in key_list[0]:
+        Md5CheckSum(hf, ignore_corrupt=False)
+
     return h5py.File(hf, 'r')
 
 
-def ExtractColumn(file, k):
+def ExtractColumn(hf, k):
     """
     Returns all the data for a single key (column) in a given HDF5 file.
 
@@ -53,16 +59,11 @@ def ExtractColumn(file, k):
     data = []
     archive = False
 
-    if isinstance(file, str) == False:
-        str(file)
-    hf = h5py.File(file, 'r')
     key_list = list(hf.keys())
 
     if ":" not in key_list[0]:
         archive = True
-        Md5CheckSum(file)
 
-    print(k.split())
     var = k.split(":")[1]
 
     if var == 'OutputOrder' or var == 'GridOutputOrder':
@@ -91,37 +92,37 @@ def ExtractColumn(file, k):
                     data.append(d)
 
         elif aggreg == 'mean':
-            argument = ForwardData(file, k)
+            argument = ForwardData(hf, k)
             # print(argument)
             for i in argument:
                 data.append((st.mean(i)))
 
         elif aggreg == 'stddev':
-            argument = ForwardData(file, k)
+            argument = ForwardData(hf, k)
             # print(argument)
             for i in argument:
                 data.append((st.stdev(i)))
 
         elif aggreg == 'min':
-            argument = ForwardData(file, k)
+            argument = ForwardData(hf, k)
             # print(argument)
             for i in argument:
                 data.append((min(i)))
 
         elif aggreg == 'max':
-            argument = ForwardData(file, k)
+            argument = ForwardData(hf, k)
             # print(argument)
             for i in argument:
                 data.append((max(i)))
 
         elif aggreg == 'mode':
-            argument = ForwardData(file, k)
+            argument = ForwardData(hf, k)
             # print(argument)
             for i in argument:
                 data.append((stats.mode(i)))
 
         elif aggreg == 'geomean':
-            argument = ForwardData(file, k)
+            argument = ForwardData(hf, k)
             # print(argument)
             for i in argument:
                 data.append((stats.gmean(i)))
@@ -143,7 +144,7 @@ def ExtractColumn(file, k):
     return data
 
 
-def ExtractUnits(file, k):
+def ExtractUnits(hf, k):
     """
     Returns all the data for a single key (column) in a given HDF5 file.
 
@@ -172,20 +173,17 @@ def ExtractUnits(file, k):
     units : string
         A string value of the units
     """
-    hf = h5py.File(file, 'r')
     key_list = list(hf.keys())
 
     if ":" not in key_list[0]:
-        Md5CheckSum(file)
         dataset = hf[key_list[0] + '/' + k]
     else:
         dataset = hf[k]
     return dataset.attrs.get('Units')
 
 
-def ForwardData(file, k):
+def ForwardData(hf, k):
     data = []
-    hf = h5py.File(file, 'r')
     key_list = list(hf.keys())
     forward = k.rpartition(':')[0] + ':forward'
     # if hf is an archive file
@@ -225,7 +223,7 @@ def HFD5Decoder(dataset):
     return d
 
 
-def ExtractUniqueValues(file, k):
+def ExtractUniqueValues(hf, k):
     """
     Extracts unique values from a key in an HDF5 file.
     Returns a numpy array of the dataset
@@ -244,14 +242,12 @@ def ExtractUniqueValues(file, k):
     unique : np.array
         A numpy array of the unique values in key
     """
-    hf = h5py.File(file, 'r')
     key_list = list(hf.keys())
     data = []
     archive = False
 
     if ":" not in key_list[0]:
         archive = True
-        Md5CheckSum(file)
 
     if archive == True:
         for key in key_list:
@@ -353,7 +349,6 @@ def ArchiveToFiltered(inputfile, columns, exportfile):
     """
     export = {}
     units = {}
-
     for i in columns:
         export[i] = ExtractColumn(inputfile, i)
         units[i] = ExtractUnits(inputfile, i)
@@ -512,17 +507,14 @@ def CSVToDict(CSV_File, ulysses=0):
     return df_dict
 
 
-def Md5CheckSum(archivefile):
+def Md5CheckSum(archivefile, ignore_corrupt=False):
     # create md5checksum file
     if isinstance(archivefile, str) == True:
-
         name = archivefile.split(".")[0]
         bpa = os.path.abspath(archivefile)
     else:
         name = os.path.basename(archivefile.name).split(".")[0]
         bpa = archivefile
-
-    print(bpa)
 
     md5file = name + ".md5"
     # if it doesn't exist, we need to create it
@@ -537,7 +529,7 @@ def Md5CheckSum(archivefile):
                 for chunk in iter(lambda: f.read(32768), b''):
                     file_hash.update(chunk)
 
-            print(file_hash.hexdigest())
+            print("MD5 Checksum:", file_hash.hexdigest())
             md5.write(file_hash.hexdigest())
     else:
         with open(md5file, "r") as md5:
@@ -553,8 +545,13 @@ def Md5CheckSum(archivefile):
                     file_hash.update(chunk)
 
             new_md5 = file_hash.hexdigest()
-            print("MD5 from " + name + ".bpa : " + new_md5)
+            print("MD5 from " + name + ".bpa: " + new_md5)
         if md5_old == new_md5:
-            print("Md5 Checksum verified")
+            print("MD5 Checksum verified")
         else:
-            print("Md5 Checksum failed")
+            if ignore_corrupt == True:
+                print("WARNING: MD5 Checksum failed")
+            else:
+                print("ERROR: MD5 Checksum failed")
+                print("set flag --ignorecorrupt to still use corrupted data")
+                exit()

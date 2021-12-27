@@ -31,7 +31,7 @@ def test_bpstats():
         if not (path / "BP_Stats.bpa").exists():
             subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
-        file = path / "BP_Stats.bpa"
+        file = bp.BPLFile(path / "BP_Stats.bpa")
 
         earth_TMan_min = bp.ExtractColumn(file, 'earth:TMan:min')
         earth_235UNumMan_max = bp.ExtractColumn(file, 'earth:235UNumMan:max')
