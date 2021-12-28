@@ -15,12 +15,12 @@ from .bp_get import GetVplanetHelp
 from .bp_process import DictToBP
 
 
-def BPLFile(hf):
+def BPLFile(hf, ignore_corrupt=False):
     file = h5py.File(hf, 'r')
     key_list = list(file.keys())
 
     if ":" not in key_list[0]:
-        Md5CheckSum(hf, ignore_corrupt=False)
+        Md5CheckSum(hf, ignore_corrupt)
 
     return h5py.File(hf, 'r')
 
@@ -529,12 +529,12 @@ def Md5CheckSum(archivefile, ignore_corrupt=False):
                 for chunk in iter(lambda: f.read(32768), b''):
                     file_hash.update(chunk)
 
-            print("MD5 Checksum:", file_hash.hexdigest())
+            #print("MD5 Checksum:", file_hash.hexdigest())
             md5.write(file_hash.hexdigest())
     else:
         with open(md5file, "r") as md5:
             md5_old = md5.readline()
-            print("MD5 from " + md5file + ":", md5_old)
+            #print("MD5 from " + md5file + ":", md5_old)
             with open(bpa, "rb") as f:
                 file_hash = hashlib.md5()
                 # if sys.version_info >= (3, 8):
@@ -545,7 +545,7 @@ def Md5CheckSum(archivefile, ignore_corrupt=False):
                     file_hash.update(chunk)
 
             new_md5 = file_hash.hexdigest()
-            print("MD5 from " + name + ".bpa: " + new_md5)
+            #print("MD5 from " + name + ".bpa: " + new_md5)
         if md5_old == new_md5:
             print("MD5 Checksum verified")
         else:

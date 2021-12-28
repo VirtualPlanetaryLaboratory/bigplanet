@@ -29,29 +29,29 @@ def Main(bpInputFile, cores, quiet, overwrite, verbose, archive, deleterawdata, 
         if os.path.exists(bplArchive) == True:
             Md5CheckSum(bplArchive, ignorecorrupt)
             reply = None
-            question = ("Archive file is verified and secured. This will delete all raw data.\nThis includes: " +
-                        folder + " and all its contents, along with any checkpoint files generated from MultiPlanet.")
+            question = ("WARNING: This command will delete the " +
+                        folder + " directory along with any MultiPlanet checkpoint files.")
             while reply not in ("y", "n"):
                 reply = str(input(question + " (y/n): ")).lower().strip()
                 if reply[:1] == "y":
                     sub.run(["rm", "-rf", folder])
                     if os.path.isfile("." + folder) == True:
                         sub.run(["rm", "." + folder])
-                    print("Raw data has been deleted")
+                    print("Files deleted.")
                     exit()
                 if reply[:1] == "n":
-                    print("Understood. Exiting.")
+                    print("Files NOT deleted. Exiting.")
                     exit()
                 if reply[:1] != "n" or reply[:1] != "y":
                     print("User input was not valid. Exiting.")
                     exit()
 
         else:
-            print("ERROR: The archive file, " + bplArchive + ",does not exist")
+            print("ERROR: The archive file " + bplArchive + " does not exist")
 
     if archive == True:
         print("Creating BPA file...")
-        Archive(bpInputFile, cores, quiet, overwrite, verbose)
+        Archive(bpInputFile, cores, quiet, overwrite, ignorecorrupt, verbose)
     else:
         print("Creating BPF file...")
         Filter(bpInputFile, quiet, verbose, ignorecorrupt, overwrite)

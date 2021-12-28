@@ -53,7 +53,7 @@ def SplitsaKey(saKeylist, verbose):
     return loglist, bodylist, forwardlist, climatelist, backwardlist
 
 
-def Filter(file, quiet, verbose, ignore_corrupt, override):
+def Filter(file, quiet, verbose, ignorecorrupt, override):
     folder, bplArchive, output, bodyFileList, primaryFile, IncludeList, ExcludeList, Ulysses, SimName = ReadFile(
         file, verbose=True, archive=False)
 
@@ -90,6 +90,7 @@ def Filter(file, quiet, verbose, ignore_corrupt, override):
 
             log_file = GetLogName(infile_list, simList, system_name)
             data = {}
+
             for sim in simList:
                 if loglist:
                     if verbose:
@@ -176,7 +177,7 @@ def Filter(file, quiet, verbose, ignore_corrupt, override):
     # if the bpl file DOES exist, we just need to open it and extract the data to put it in the filter file
     else:
         print("Extracting data from BPA File. Please wait...")
-        archive = BPLFile(bplArchive)
+        archive = BPLFile(bplArchive, ignorecorrupt)
         if Ulysses == 1:
             if SimName:
                 ArchiveToCSV(archive, IncludeList, output,
