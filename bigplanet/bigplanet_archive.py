@@ -12,7 +12,7 @@ from .bp_get import *
 from .bp_extract import *
 
 
-def Archive(bpInputFile, cores, quiet, force, verbose):
+def Archive(bpInputFile, cores, quiet, force, ignorecorrupt, verbose):
 
     # Get the directory and list of  from the bpl file
     dest_folder, bpl_file, outputFile, bodylist, primaryFile, includelist, excludelist, ulysses, SimName = ReadFile(
@@ -63,7 +63,7 @@ def Archive(bpInputFile, cores, quiet, force, verbose):
     for w in workers:
         w.join()
 
-    Md5CheckSum(archivefile=bpl_file)
+    Md5CheckSum(bpl_file, ignorecorrupt)
 
 
 def CreateCP(checkpoint_file, input_file, sims):
