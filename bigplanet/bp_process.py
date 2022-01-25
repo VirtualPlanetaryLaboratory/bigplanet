@@ -40,7 +40,7 @@ def ProcessLogFile(logfile, data, folder, verbose, incl=None, excl=None):
         # if the line starts with a '(' that means its a variable we need to grab the units
         if line.startswith('('):
             fv_param = line[1:line.find(')')].strip()
-            units = line[line.find('[')+1:line.find(']')].strip()
+            units = line[line.rfind('[')+1:line.rfind(']')].strip()
 
             if not units:
                 units = 'nd'
@@ -463,7 +463,6 @@ def DictToBP(data, vplanet_help, h5_file, verbose=False, group_name="", archive=
     for k, v in data.items():
 
         var = k.split(":")[1]
-        end = k.split(':')[-1]
 
         if "OutputOrder" in var or "GridOutput" in var:
             v_value = v

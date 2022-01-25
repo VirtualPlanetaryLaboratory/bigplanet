@@ -42,7 +42,7 @@ def Main(bpInputFile, cores, quiet, overwrite, verbose, archive, deleterawdata, 
                 if reply[:1] == "n":
                     print("Files NOT deleted. Exiting.")
                     exit()
-                if reply[:1] != "n" or reply[:1] != "y":
+                else:
                     print("User input was not valid. Exiting.")
                     exit()
 

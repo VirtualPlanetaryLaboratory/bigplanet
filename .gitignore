@@ -89,3 +89,4 @@ junit/test-results.xml
 coverage.xml
 tests/UlyssesAggregated/User.csv
 
+htmlcov/
