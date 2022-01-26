@@ -40,8 +40,7 @@ jobs:
         #env:
         #ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         #python -m pip install git+https://$ACCESS_TOKEN@github.com/VirtualPlanetaryLaboratory/vplanet-private.git@main#egg=vplanet
-        run: |
-          python -m pip install vplanet
+        run: python -m pip install vplanet
 
       - name: Install bigplanet
         id: tools
