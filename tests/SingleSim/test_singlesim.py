@@ -1,11 +1,13 @@
-import subprocess
-import numpy as np
+import multiprocessing as mp
 import os
 import pathlib
-import warnings
-import h5py
-import multiprocessing as mp
+import subprocess
 import sys
+import warnings
+
+import h5py
+import numpy as np
+
 import bigplanet as bp
 
 
@@ -33,8 +35,8 @@ def test_singlesim():
 
         file = bp.BPLFile(path / "Test.bpf")
 
-        earth_Tman_forward = bp.ExtractColumn(file, 'earth:TMan:forward')
-        earth_Tcore_inital = bp.ExtractColumn(file, 'earth:TCore:initial')
+        earth_Tman_forward = bp.ExtractColumn(file, "earth:TMan:forward")
+        earth_Tcore_inital = bp.ExtractColumn(file, "earth:TCore:initial")
 
         assert np.isclose(earth_Tman_forward[0][-1], 2257.850930)
         assert np.isclose(earth_Tcore_inital[0], 6000.00000)

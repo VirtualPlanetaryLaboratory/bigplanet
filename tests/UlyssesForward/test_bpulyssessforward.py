@@ -1,11 +1,13 @@
-import subprocess
-import numpy as np
+import multiprocessing as mp
 import os
 import pathlib
-import warnings
-import h5py
-import multiprocessing as mp
+import subprocess
 import sys
+import warnings
+
+import h5py
+import numpy as np
+
 import bigplanet as bp
 
 
@@ -35,10 +37,9 @@ def test_ulyssesforward():
 
         data = bp.CSVToDict(file, 1)
 
-        value = float(data['earth:TCore:forward'][451])
+        value = float(data["earth:TCore:forward"][451])
 
-        assert np.isclose(
-            value, 4999.131849)
+        assert np.isclose(value, 4999.131849)
 
 
 if __name__ == "__main__":

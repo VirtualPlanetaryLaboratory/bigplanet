@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from setuptools import setup
 import os
 
+from setuptools import setup
 
 # Setup!
 setup(
@@ -20,8 +20,7 @@ setup(
         "write_to": os.path.join("bigplanet", "bigplanet_version.py"),
         "write_to_template": '__version__ = "{version}"\n',
     },
-    install_requires=["numpy", "h5py", "argparse",
-                      "scipy", "pandas"],
+    install_requires=["numpy", "h5py", "argparse", "scipy", "pandas"],
     entry_points={
         "console_scripts": [
             "bigplanet = bigplanet.bigplanet:Arguments",

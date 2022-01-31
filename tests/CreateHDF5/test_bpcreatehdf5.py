@@ -1,10 +1,11 @@
-import subprocess
-import numpy as np
+import multiprocessing as mp
 import os
 import pathlib
-import multiprocessing as mp
-import warnings
+import subprocess
 import sys
+import warnings
+
+import numpy as np
 
 
 def test_bpcreatehdf5():
@@ -29,7 +30,7 @@ def test_bpcreatehdf5():
         if not (path / ".BP_CreateHDF5_BPL").exists():
             subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
-        file = (path / "BP_CreateHDF5.bpa")
+        file = path / "BP_CreateHDF5.bpa"
 
         # checks if the bpl files exist
         assert os.path.isfile(file) == True

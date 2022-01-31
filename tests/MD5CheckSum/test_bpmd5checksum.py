@@ -1,13 +1,15 @@
-import subprocess
-import numpy as np
+import hashlib
+import multiprocessing as mp
 import os
 import pathlib
-import warnings
-import h5py
-import multiprocessing as mp
+import subprocess
 import sys
+import warnings
+
+import h5py
+import numpy as np
+
 import bigplanet as bp
-import hashlib
 
 
 def test_bpextract():
@@ -30,7 +32,7 @@ def test_bpextract():
 
         # Run bigplanet
         if not (path / ".BP_Extract_BPL").exists():
-            subprocess.check_output(["bigplanet", "bpl.in", '-a'], cwd=path)
+            subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
         bpa = path / "BP_Extract.bpa"
 
@@ -39,7 +41,7 @@ def test_bpextract():
             md5_old = md5.readline()
             with open(bpa, "rb") as f:
                 file_hash = hashlib.md5()
-                for chunk in iter(lambda: f.read(32768), b''):
+                for chunk in iter(lambda: f.read(32768), b""):
                     file_hash.update(chunk)
             new_md5 = file_hash.hexdigest()
         assert md5_old == new_md5
