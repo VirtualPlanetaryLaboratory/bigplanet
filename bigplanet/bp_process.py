@@ -498,6 +498,6 @@ def DictToBP(data, vplanet_help, h5_file, verbose=False, group_name="", archive=
             print("Value:", v_value)
             print()
 
-        h5_file.create_dataset(dataset_name, data=v_value)
+        h5_file.create_dataset(dataset_name, data=np.array([v_value], dtype=tp))
 
         h5_file[dataset_name].attrs['Units'] = v_attr
