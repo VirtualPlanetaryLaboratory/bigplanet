@@ -37,7 +37,7 @@ where:
 
 *Key* is the name of the particular variable you are extracting the units from.
 
-See the `Understanding Keys`_ Section for an indepth look at the types of key options available.
+See the `Understanding Keys <Keys>`_ Section for an indepth look at the types of key options available.
 
 
 
@@ -56,7 +56,7 @@ where:
 
 *Key* is the name of the particular variable you are extracting the units from.
 
-See the `Understanding Keys`_ Section for an indepth look at the types of key options available.
+See the `Understanding Keys <Keys>`_ Section for an indepth look at the types of key options available.
 
 
 
