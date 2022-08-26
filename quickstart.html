@@ -89,7 +89,7 @@ BigPlanet archive and a BigPlanet file.</p>
 <span class="linenos"> 2</span>sArchiveFile GDwarf.bpa
 <span class="linenos"> 3</span>sOutputFile ice_states.bpf
 <span class="linenos"> 4</span>
-<span class="linenos"> 5</span>saBodyFiles earth.in sun.in
+<span class="linenos"> 5</span>saBodyFiles earth.in
 <span class="linenos"> 6</span>sPrimaryFile vpl.in
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span>saKeyInclude earth:Obliquity:forward earth:Instellation:final earth:IceBeltLand:final $
@@ -111,7 +111,7 @@ same command as above, but <em>without</em> the <code class="docutils literal no
 <p>Since Line 2 provides the name of a BigPlanet archive, <code class="docutils literal notranslate"><span class="pre">BigPlanet</span></code> will not look to
 extract the appropriate columns from the raw data, but from the archive.</p>
 <p>Line 3 is the name of the BigPlanet file that will contain the data subset.</p>
-<p>Line 5 is the list of body files from which to extract the columns <em>XXX should sun.in be here?? XXX</em></p>
+<p>Line 5 is the list of body files from which to extract the columns.</p>
 <p>Line 6 is the name of primary file (in this case its vpl.in).</p>
 <p>Lines 8-11 list the <a class="reference external" href="Keys">key names</a> that are included in the output file. Note that your list of keys
 can span multiple lines by ending the line with a <code class="docutils literal notranslate"><span class="pre">$</span></code> symbol, just as with <code class="docutils literal notranslate"><span class="pre">VPLanet</span></code>.</p>
