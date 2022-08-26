@@ -22,7 +22,7 @@ This will read in the instructions in the ``bpl.in`` file and the ``-a`` flag te
     sArchiveFile GDwarf.bpa
     sOutputFile ice_states.bpf
 
-    saBodyFiles earth.in sun.in
+    saBodyFiles earth.in
     sPrimaryFile vpl.in
 
     saKeyInclude earth:Obliquity:forward earth:Instellation:final earth:IceBeltLand:final $
@@ -49,7 +49,7 @@ extract the appropriate columns from the raw data, but from the archive.
 
 Line 3 is the name of the BigPlanet file that will contain the data subset.
 
-Line 5 is the list of body files from which to extract the columns *XXX should sun.in be here?? XXX*
+Line 5 is the list of body files from which to extract the columns.
 
 Line 6 is the name of primary file (in this case its vpl.in).
 
