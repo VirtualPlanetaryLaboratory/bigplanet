@@ -6,11 +6,14 @@
 
 <p align="center">
   <a href="https://VirtualPlanetaryLaboratory.github.io/bigplanet/"><img src="https://img.shields.io/badge/read-the_docs-blue.svg?style=flat"></a>
-    <img src="https://img.shields.io/badge/Python-3.6--3.9-orange.svg"/></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-purple.svg"/></a>
+  <a href="https://github.com/VirtualPlanetaryLaboratory/bigplanet/actions/workflows/docs.yml">
+  <img src="https://github.com/VirtualPlanetaryLaboratory/bigplanet/actions/workflows/docs.yml/badge.svg">
+    <img src="https://img.shields.io/badge/Python-3.6--3.9-orange.svg"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-purple.svg"></a>
     <a href="https://github.com/VirtualPlanetaryLaboratory/bigplanet/actions/workflows/tests.yml">
-  <img src="https://github.com/VirtualPlanetaryLaboratory/bigplanet/actions/workflows/tests.yml/badge.svg"/>
-
+  <img src="https://github.com/VirtualPlanetaryLaboratory/bigplanet/actions/workflows/tests.yml/badge.svg">
+<a href="https://github.com/VirtualPlanetaryLaboratory/bigplanet/actions/workflows/wheels.yml">
+  <img src="https://github.com/VirtualPlanetaryLaboratory/bigplanet/actions/workflows/wheels.yml/badge.svg">
   </a>
 </p>
 
