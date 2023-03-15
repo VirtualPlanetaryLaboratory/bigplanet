@@ -1,28 +1,30 @@
 #!/usr/bin/env python
 
 
+import csv
+import hashlib
 import multiprocessing as mp
+import os
+import statistics as st
+import sys
+
 import h5py
 import numpy as np
-from scipy import stats
-import statistics as st
-import csv
 import pandas as pd
-import hashlib
-import os
-import sys
+from scipy import stats
+
 from .bp_get import GetVplanetHelp
 from .bp_process import DictToBP
 
 
 def BPLFile(hf, ignore_corrupt=False):
-    file = h5py.File(hf, 'r')
+    file = h5py.File(hf, "r")
     key_list = list(file.keys())
 
     if ":" not in key_list[0]:
         Md5CheckSum(hf, ignore_corrupt)
 
-    return h5py.File(hf, 'r')
+    return h5py.File(hf, "r")
 
 
 def ExtractColumn(hf, k):
@@ -66,24 +68,24 @@ def ExtractColumn(hf, k):
 
     var = k.split(":")[1]
 
-    if var == 'OutputOrder' or var == 'GridOutputOrder':
+    if var == "OutputOrder" or var == "GridOutputOrder":
         if archive == True:
-            dataset = hf[key_list[0] + '/' + k]
+            dataset = hf[key_list[0] + "/" + k]
             for d in dataset:
                 for value in d:
-                    data.append(value.decode('UTF-8'))
+                    data.append(value.decode("UTF-8"))
         else:
             for v in hf[k]:
                 for item in v:
-                    data.append(item.decode('UTF-8'))
+                    data.append(item.decode("UTF-8"))
 
     else:
         aggreg = k.split(":")[2]
 
-        if aggreg == 'forward' or aggreg == "backward" or aggreg == "climate":
+        if aggreg == "forward" or aggreg == "backward" or aggreg == "climate":
             if archive == True:
                 for key in key_list:
-                    dataset = hf[key + '/' + k]
+                    dataset = hf[key + "/" + k]
                     for d in dataset:
                         data.append(d)
             else:
@@ -91,46 +93,46 @@ def ExtractColumn(hf, k):
                 for d in dataset:
                     data.append(d)
 
-        elif aggreg == 'mean':
+        elif aggreg == "mean":
             argument = ForwardData(hf, k)
             # print(argument)
             for i in argument:
                 data.append((st.mean(i)))
 
-        elif aggreg == 'stddev':
+        elif aggreg == "stddev":
             argument = ForwardData(hf, k)
             # print(argument)
             for i in argument:
                 data.append((st.stdev(i)))
 
-        elif aggreg == 'min':
+        elif aggreg == "min":
             argument = ForwardData(hf, k)
             # print(argument)
             for i in argument:
                 data.append((min(i)))
 
-        elif aggreg == 'max':
+        elif aggreg == "max":
             argument = ForwardData(hf, k)
             # print(argument)
             for i in argument:
                 data.append((max(i)))
 
-        elif aggreg == 'mode':
+        elif aggreg == "mode":
             argument = ForwardData(hf, k)
             # print(argument)
             for i in argument:
                 data.append((stats.mode(i)))
 
-        elif aggreg == 'geomean':
+        elif aggreg == "geomean":
             argument = ForwardData(hf, k)
             # print(argument)
             for i in argument:
                 data.append((stats.gmean(i)))
 
-        elif aggreg == 'initial' or aggreg == 'final' or aggreg == 'option':
+        elif aggreg == "initial" or aggreg == "final" or aggreg == "option":
             if archive == True:
                 for key in key_list:
-                    dataset = hf[key + '/' + k]
+                    dataset = hf[key + "/" + k]
                     for d in dataset:
                         data.append(float(d))
             else:
@@ -138,7 +140,7 @@ def ExtractColumn(hf, k):
                     data.append(float(d))
 
         else:
-            print('ERROR: Uknown aggregation option: ', aggreg)
+            print("ERROR: Uknown aggregation option: ", aggreg)
             exit()
 
     return data
@@ -176,20 +178,20 @@ def ExtractUnits(hf, k):
     key_list = list(hf.keys())
 
     if ":" not in key_list[0]:
-        dataset = hf[key_list[0] + '/' + k]
+        dataset = hf[key_list[0] + "/" + k]
     else:
         dataset = hf[k]
-    return dataset.attrs.get('Units')
+    return dataset.attrs.get("Units")
 
 
 def ForwardData(hf, k):
     data = []
     key_list = list(hf.keys())
-    forward = k.rpartition(':')[0] + ':forward'
+    forward = k.rpartition(":")[0] + ":forward"
     # if hf is an archive file
     if ":" not in key_list[0]:
         for key in key_list:
-            dataset = hf[key + '/' + forward]
+            dataset = hf[key + "/" + forward]
             for d in dataset:
                 data.append(d)
                 # for v in d:
@@ -210,13 +212,13 @@ def HFD5Decoder(dataset):
         if "forward" in dataset.name:
             for value in d:
                 for num in value:
-                    num = num.astype(float, casting='safe')
-                #data.append(value.astype(float, casting='safe'))
+                    num = num.astype(float, casting="safe")
+                # data.append(value.astype(float, casting='safe'))
         else:
-            d = d.astype(float, casting='safe')
-   # and now we reshape it the same shape as the original dataset
-    #shape = dataset.shape
-    #data = np.reshape(data, shape)
+            d = d.astype(float, casting="safe")
+    # and now we reshape it the same shape as the original dataset
+    # shape = dataset.shape
+    # data = np.reshape(data, shape)
     # print(data)
     # data.tolist()
 
@@ -251,7 +253,7 @@ def ExtractUniqueValues(hf, k):
 
     if archive == True:
         for key in key_list:
-            dataset = hf[key + '/' + k]
+            dataset = hf[key + "/" + k]
             for d in dataset:
                 data.append(float(d.decode("UTF-8")))
     else:
@@ -290,7 +292,9 @@ def CreateMatrix(xaxis, yaxis, zarray, orientation=1):
     ynum = len(yaxis)
 
     if xnum * ynum != len(zarray):
-        print("ERROR: Cannot reshape zarray into shape (", xnum, ",", ynum, ")")
+        print(
+            "ERROR: Cannot reshape zarray into shape (", xnum, ",", ynum, ")"
+        )
         exit()
 
     zmatrix = np.reshape(zarray, (ynum, xnum))
@@ -354,12 +358,19 @@ def ArchiveToFiltered(inputfile, columns, exportfile):
         units[i] = ExtractUnits(inputfile, i)
 
         with h5py.File(exportfile, "a") as f_dest:
-            f_dest.create_dataset(
-                i, data=export[i])
-            f_dest[i].attrs['Units'] = units[i]
+            f_dest.create_dataset(i, data=export[i])
+            f_dest[i].attrs["Units"] = units[i]
 
 
-def ArchiveToCSV(inputfile, columns, exportfile, delim=" ", header=False, ulysses=0, group=None):
+def ArchiveToCSV(
+    inputfile,
+    columns,
+    exportfile,
+    delim=" ",
+    header=False,
+    ulysses=0,
+    group=None,
+):
     """
     Writes an Output file in csv format
 
@@ -402,11 +413,11 @@ def ArchiveToCSV(inputfile, columns, exportfile, delim=" ", header=False, ulysse
                 export.append(i)
 
     if ulysses == 1:
-        delim = ','
-        exportfile = 'User.csv'
+        delim = ","
+        exportfile = "User.csv"
 
     if delim == "":
-        print('ERROR: Delimiter cannot be empty')
+        print("ERROR: Delimiter cannot be empty")
         exit()
 
     with open(exportfile, "w", newline="") as f:
@@ -421,13 +432,15 @@ def ArchiveToCSV(inputfile, columns, exportfile, delim=" ", header=False, ulysse
         if header == True:
             writer.writerow(columns)
 
-        export = np.array(export, dtype='object').T.tolist()
+        export = np.array(export, dtype="object").T.tolist()
         for name in export:
             for data in name:
                 writer.writerow([data])
 
 
-def DictToCSV(dictData, exportfile="bigplanet.csv", delim=" ", header=False, ulysses=0):
+def DictToCSV(
+    dictData, exportfile="bigplanet.csv", delim=" ", header=False, ulysses=0
+):
     """
     Writes an Output file in csv format
 
@@ -459,9 +472,9 @@ def DictToCSV(dictData, exportfile="bigplanet.csv", delim=" ", header=False, uly
     """
 
     if ulysses == 1:
-        delim = ','
+        delim = ","
         # headers.append("")
-        exportfile = 'User.csv'
+        exportfile = "User.csv"
 
     headers = []
     for k in dictData.keys():
@@ -475,10 +488,10 @@ def DictToCSV(dictData, exportfile="bigplanet.csv", delim=" ", header=False, uly
                 dictData[k] = [item for sublist in v for item in sublist]
 
     if delim == "":
-        print('ERROR: Delimiter cannot be empty')
+        print("ERROR: Delimiter cannot be empty")
         exit()
 
-    df = pd.DataFrame.from_dict(dictData, orient='index').transpose()
+    df = pd.DataFrame.from_dict(dictData, orient="index").transpose()
 
     if header == True or ulysses == 1:
         df.to_csv(exportfile, index=False, header=True)
@@ -526,26 +539,26 @@ def Md5CheckSum(archivefile, ignore_corrupt=False):
                 # while chunk := f.read(32768):
                 # file_hash.update(chunk)
                 # if sys.version_info <= (3, 7):
-                for chunk in iter(lambda: f.read(32768), b''):
+                for chunk in iter(lambda: f.read(32768), b""):
                     file_hash.update(chunk)
 
-            #print("MD5 Checksum:", file_hash.hexdigest())
+            # print("MD5 Checksum:", file_hash.hexdigest())
             md5.write(file_hash.hexdigest())
     else:
         with open(md5file, "r") as md5:
             md5_old = md5.readline()
-            #print("MD5 from " + md5file + ":", md5_old)
+            # print("MD5 from " + md5file + ":", md5_old)
             with open(bpa, "rb") as f:
                 file_hash = hashlib.md5()
                 # if sys.version_info >= (3, 8):
                 # while chunk := f.read(32768):
                 # file_hash.update(chunk)
                 # if sys.version_info <= (3, 7):
-                for chunk in iter(lambda: f.read(32768), b''):
+                for chunk in iter(lambda: f.read(32768), b""):
                     file_hash.update(chunk)
 
             new_md5 = file_hash.hexdigest()
-            #print("MD5 from " + name + ".bpa: " + new_md5)
+            # print("MD5 from " + name + ".bpa: " + new_md5)
         if md5_old == new_md5:
             print("MD5 Checksum verified")
         else:

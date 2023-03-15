@@ -1,10 +1,11 @@
-import subprocess
-import numpy as np
+import multiprocessing as mp
 import os
 import pathlib
-import multiprocessing as mp
-import warnings
+import subprocess
 import sys
+import warnings
+
+import numpy as np
 
 
 def test_bpstatus():
@@ -30,7 +31,7 @@ def test_bpstatus():
             subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
             subprocess.check_output(["bpstatus", "vspace.in"], cwd=path)
 
-        file = (path / "BP_Status.bpa")
+        file = path / "BP_Status.bpa"
 
         # checks if the bpl files exist
         assert os.path.isfile(file) == True

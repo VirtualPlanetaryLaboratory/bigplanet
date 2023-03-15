@@ -1,11 +1,13 @@
-import subprocess
-import numpy as np
+import multiprocessing as mp
 import os
 import pathlib
-import warnings
-import h5py
-import multiprocessing as mp
+import subprocess
 import sys
+import warnings
+
+import h5py
+import numpy as np
+
 import bigplanet as bp
 
 
@@ -34,12 +36,14 @@ def test_bpextract():
         file = bp.BPLFile(path / "Test.bpf")
 
         earth_Instellation_final = bp.ExtractColumn(
-            file, 'earth:Instellation:final')
+            file, "earth:Instellation:final"
+        )
         sun_Luminosity_option = bp.ExtractColumn(
-            file, 'sun:dLuminosity:option')
-        earth_Mass_option = bp.ExtractColumn(file, 'earth:dMass:option')
-        vpl_stoptime_option = bp.ExtractColumn(file, 'vpl:dStopTime:option')
-        earth_tman_forward = bp.ExtractColumn(file, 'earth:TMan:forward')
+            file, "sun:dLuminosity:option"
+        )
+        earth_Mass_option = bp.ExtractColumn(file, "earth:dMass:option")
+        vpl_stoptime_option = bp.ExtractColumn(file, "vpl:dStopTime:option")
+        earth_tman_forward = bp.ExtractColumn(file, "earth:TMan:forward")
 
         assert np.isclose(earth_Instellation_final[1], 341.90883)
         assert np.isclose(sun_Luminosity_option[0], 3.846e26)

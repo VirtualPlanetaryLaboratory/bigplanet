@@ -1,11 +1,13 @@
-import subprocess
-import numpy as np
-import os
-import pathlib
-import warnings
 import csv
 import multiprocessing as mp
+import os
+import pathlib
+import subprocess
 import sys
+import warnings
+
+import numpy as np
+
 import bigplanet.bp_extract as bp
 
 
@@ -35,7 +37,8 @@ def test_ulyssesaggregated():
 
         data = bp.CSVToDict(file, 1)
         assert np.isclose(
-            float(data['earth:Instellation:final'][0]), 1367.635318)
+            float(data["earth:Instellation:final"][0]), 1367.635318
+        )
 
 
 if __name__ == "__main__":
