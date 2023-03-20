@@ -38,7 +38,8 @@ def test_bpextract():
 
         md5file = path / "BP_Extract.md5"
         with open(md5file, "r") as md5:
-            md5_old = md5.readline()
+            array = md5.read().splitlines()
+            md5_old = array[0]
             with open(bpa, "rb") as f:
                 file_hash = hashlib.md5()
                 for chunk in iter(lambda: f.read(32768), b""):
