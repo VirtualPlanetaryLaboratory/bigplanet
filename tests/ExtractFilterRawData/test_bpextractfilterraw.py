@@ -4,7 +4,7 @@ import pathlib
 import subprocess
 import sys
 import warnings
-
+import shutil
 import h5py
 import numpy as np
 
@@ -21,17 +21,23 @@ def test_bpextract():
     if cores == 1:
         warnings.warn("There is only 1 core on the machine", stacklevel=3)
     else:
-        # Run vspace
-        if not (path / "BP_Extract").exists():
-            subprocess.check_output(["vspace", "vspace.in"], cwd=path)
+        # If present, remove files from previous run
+        if (path / "BP_Extract").exists():
+            print("Removing BP_Extract")
+            shutil.rmtree(path / "BP_Extract")
+        if (path / ".BP_Extract").exists():
+            print("Removing .BP_Extract")
+            os.remove(path / ".BP_Extract")
+        if (path / "Test.bpf").exists():
+            print("Removing Test.bpf")
+            os.remove(path / "Test.bpf")
 
-        # Run multi-planet
-        if not (path / ".BP_Extract").exists():
-            subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
-
-        # Run bigplanet
-        if not (path / "Test.bpf").exists():
-            subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
+        print("Running vspace")
+        subprocess.check_output(["vspace", "vspace.in"], cwd=path)
+        print("Running multiplanet")
+        subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
+        print("Running bigplanet")
+        subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
 
         file = bp.BPLFile(path / "Test.bpf")
 
@@ -45,6 +51,7 @@ def test_bpextract():
         vpl_stoptime_option = bp.ExtractColumn(file, "vpl:dStopTime:option")
         earth_tman_forward = bp.ExtractColumn(file, "earth:TMan:forward")
 
+        print(earth_Instellation_final[1])
         assert np.isclose(earth_Instellation_final[1], 341.90883)
         assert np.isclose(sun_Luminosity_option[0], 3.846e26)
         assert np.isclose(earth_Mass_option[1], -1.5)
