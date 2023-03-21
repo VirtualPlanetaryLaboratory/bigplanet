@@ -529,9 +529,11 @@ def Md5CheckSum(archivefile, ignore_corrupt=False):
         name = os.path.basename(archivefile.name).split(".")[0]
         bpa = archivefile
 
+    #print("Name: "+name)
     md5file = name + ".md5"
     # if it doesn't exist, we need to create it
     if os.path.isfile(md5file) == False:
+        print(md5file+" file not found. Generating.")
         with open(md5file, "w") as md5:
             with open(bpa, "rb") as f:
                 file_hash = hashlib.md5()
@@ -546,8 +548,9 @@ def Md5CheckSum(archivefile, ignore_corrupt=False):
             md5.write(file_hash.hexdigest())
     else:
         with open(md5file, "r") as md5:
+            #print("Found "+md5file)
             md5_old = md5.readline()
-            # print("MD5 from " + md5file + ":", md5_old)
+            #print("MD5 from " + md5file + ":", md5_old)
             with open(bpa, "rb") as f:
                 file_hash = hashlib.md5()
                 # if sys.version_info >= (3, 8):
@@ -558,7 +561,7 @@ def Md5CheckSum(archivefile, ignore_corrupt=False):
                     file_hash.update(chunk)
 
             new_md5 = file_hash.hexdigest()
-            # print("MD5 from " + name + ".bpa: " + new_md5)
+            #print("MD5 from " + name + ".bpa: " + new_md5)
         if md5_old == new_md5:
             print("MD5 Checksum verified")
         else:
@@ -566,5 +569,7 @@ def Md5CheckSum(archivefile, ignore_corrupt=False):
                 print("WARNING: MD5 Checksum failed")
             else:
                 print("ERROR: MD5 Checksum failed")
+                print("MD5 from " + md5file + ":", md5_old)
+                print("MD5 from " + name + ".bpa: " + new_md5)
                 print("set flag --ignorecorrupt to still use corrupted data")
                 exit()
