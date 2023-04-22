@@ -11,7 +11,7 @@ import numpy as np
 import bigplanet as bp
 
 
-def test_bpextract():
+def test_ExtractFilterRaw():
     # gets current path
     path = pathlib.Path(__file__).parents[0].absolute()
     sys.path.insert(1, str(path.parents[0]))
@@ -23,20 +23,25 @@ def test_bpextract():
     else:
         # If present, remove files from previous run
         if (path / "BP_Extract").exists():
-            print("Removing BP_Extract")
             shutil.rmtree(path / "BP_Extract")
         if (path / ".BP_Extract").exists():
-            print("Removing .BP_Extract")
             os.remove(path / ".BP_Extract")
         if (path / "Test.bpf").exists():
-            print("Removing Test.bpf")
             os.remove(path / "Test.bpf")
 
+        # Run vspace
         print("Running vspace")
+        sys.stdout.flush()
         subprocess.check_output(["vspace", "vspace.in"], cwd=path)
+
+        # Run multiplanet
         print("Running multiplanet")
+        sys.stdout.flush()
         subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
+
+        # Run BigPlanet
         print("Running bigplanet")
+        sys.stdout.flush()
         subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
 
         file = bp.BPLFile(path / "Test.bpf")
@@ -60,4 +65,4 @@ def test_bpextract():
 
 
 if __name__ == "__main__":
-    test_bpextract()
+    test_ExtractFilterRaw()

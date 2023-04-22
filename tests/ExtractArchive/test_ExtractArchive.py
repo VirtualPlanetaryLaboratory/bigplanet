@@ -4,14 +4,12 @@ import pathlib
 import subprocess
 import sys
 import warnings
-
-import h5py
+import shutil
 import numpy as np
-
 import bigplanet as bp
 
 
-def test_bpextract():
+def test_ExtractArchive():
     # gets current path
     path = pathlib.Path(__file__).parents[0].absolute()
     sys.path.insert(1, str(path.parents[0]))
@@ -21,17 +19,32 @@ def test_bpextract():
     if cores == 1:
         warnings.warn("There is only 1 core on the machine", stacklevel=3)
     else:
+        # Remove anything from previous tests
+        if (path / "BP_Extract").exists():
+            shutil.rmtree(path / "BP_Extract")
+        if (path / ".BP_Extract").exists():
+            os.remove(path / ".BP_Extract")
+        if (path / ".BP_Extract_BPL").exists():
+            os.remove(path / ".BP_Extract_BPL")
+        if (path / "BP_Extract.bpa").exists():
+            os.remove(path / "BP_Extract.bpa")
+        if (path / "BP_Extract.md5").exists():
+            os.remove(path / "BP_Extract.md5")
+
         # Run vspace
-        if not (path / "BP_Extract").exists():
-            subprocess.check_output(["vspace", "vspace.in"], cwd=path)
+        print("Running vspace.")
+        sys.stdout.flush()
+        subprocess.check_output(["vspace", "vspace.in"], cwd=path)
 
         # Run multi-planet
-        if not (path / ".BP_Extract").exists():
-            subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
+        print("Running MultiPlanet.")
+        sys.stdout.flush()
+        subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
-        if not (path / ".BP_Extract_BPL").exists():
-            subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
+        print("Running BigPlanet.")
+        sys.stdout.flush()
+        subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
         file = bp.BPLFile(path / "BP_Extract.bpa")
 
@@ -47,4 +60,4 @@ def test_bpextract():
 
 
 if __name__ == "__main__":
-    test_bpextract()
+    test_ExtractArchive()

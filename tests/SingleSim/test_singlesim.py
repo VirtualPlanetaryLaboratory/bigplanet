@@ -4,14 +4,11 @@ import pathlib
 import subprocess
 import sys
 import warnings
-
-import h5py
+import shutil
 import numpy as np
-
 import bigplanet as bp
 
-
-def test_singlesim():
+def test_SingleSim():
     # gets current path
     path = pathlib.Path(__file__).parents[0].absolute()
     sys.path.insert(1, str(path.parents[0]))
@@ -21,17 +18,30 @@ def test_singlesim():
     if cores == 1:
         warnings.warn("There is only 1 core on the machine", stacklevel=3)
     else:
+        # If present, remove files from previous run
+        if (path / "BP_Extract").exists():
+            shutil.rmtree(path / "BP_Extract")
+        if (path / ".BP_Extract").exists():
+            os.remove(path / ".BP_Extract")
+        if (path / ".BP_Extract_BPL").exists():
+            os.remove(path / ".BP_Extract_BPL")
+        if (path / "BP_Extract.md5").exists():
+            os.remove(path / "BP_Extract.md5")
+
         # Run vspace
-        if not (path / "BP_Extract").exists():
-            subprocess.check_output(["vspace", "vspace.in"], cwd=path)
+        print("Running vspace")
+        sys.stdout.flush()
+        subprocess.check_output(["vspace", "vspace.in"], cwd=path)
 
         # Run multi-planet
-        if not (path / ".BP_Extract").exists():
-            subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
+        print("Running multiplanet")
+        sys.stdout.flush()
+        subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
-        if not (path / "Test.bpf").exists():
-            subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
+        print("Running bigplanet")
+        sys.stdout.flush()
+        subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
 
         file = bp.BPLFile(path / "Test.bpf")
 
@@ -43,4 +53,4 @@ def test_singlesim():
 
 
 if __name__ == "__main__":
-    test_singlesim()
+    test_SingleSim()

@@ -563,13 +563,13 @@ def Md5CheckSum(archivefile, ignore_corrupt=False):
             new_md5 = file_hash.hexdigest()
             #print("MD5 from " + name + ".bpa: " + new_md5)
         if md5_old == new_md5:
-            print("MD5 Checksum verified")
+            print("MD5 Checksum verified.")
         else:
             if ignore_corrupt == True:
-                print("WARNING: MD5 Checksum failed")
+                print("WARNING: MD5 Checksum failed!")
             else:
-                print("ERROR: MD5 Checksum failed")
+                print("ERROR: MD5 Checksum failed!")
                 print("MD5 from " + md5file + ":", md5_old)
                 print("MD5 from " + name + ".bpa: " + new_md5)
-                print("set flag --ignorecorrupt to still use corrupted data")
+                print("Set flag --ignorecorrupt to still use corrupted data.")
                 exit()
