@@ -529,7 +529,6 @@ def Md5CheckSum(archivefile, ignore_corrupt=False):
         name = os.path.basename(archivefile.name).split(".")[0]
         bpa = archivefile
 
-    #print("Name: "+name)
     md5file = name + ".md5"
     # if it doesn't exist, we need to create it
     if os.path.isfile(md5file) == False:

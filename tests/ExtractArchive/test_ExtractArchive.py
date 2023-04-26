@@ -28,6 +28,8 @@ def test_ExtractArchive():
             os.remove(path / ".BP_Extract_BPL")
         if (path / "BP_Extract.bpa").exists():
             os.remove(path / "BP_Extract.bpa")
+        if (path / "../BP_Extract.md5").exists():
+            os.remove(path / "../BP_Extract.md5")
         if (path / "BP_Extract.md5").exists():
             os.remove(path / "BP_Extract.md5")
 

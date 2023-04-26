@@ -30,6 +30,10 @@ def test_ExtractFilterArchive():
             os.remove(path / "BP_Extract.bpa")
         if (path / "Test.bpf").exists():
             os.remove(path / "Test.bpf")
+        if (path / "../BP_Extract.md5").exists():
+            os.remove(path / "../BP_Extract.md5")
+        if (path / "BP_Extract.md5").exists():
+            os.remove(path / "BP_Extract.md5")
 
         # Run vspace
         print("Running vspace.")

@@ -13,6 +13,11 @@ def test_Stats():
     path = pathlib.Path(__file__).parents[0].absolute()
     sys.path.insert(1, str(path.parents[0]))
 
+    # up = os.path.normpath("../")
+    # if (up / "*.md5").exists:
+    #     os.remove(path / "*.md5")
+
+
     # gets the number of cores on the machine
     cores = mp.cpu_count()
     if cores == 1:
@@ -25,10 +30,12 @@ def test_Stats():
             os.remove(path / ".BP_Stats")
         if (path / ".BP_Stats_BPL").exists():
             os.remove(path / ".BP_Stats_BPL")
-        if (path / "BP_Stats.md5").exists():
-            os.remove(path / "BP_Stats.md5")
         if (path / "BP_Stats.bpa").exists():
             os.remove(path / "BP_Stats.bpa")
+        if (path / "../BP_Stats.md5").exists():
+            os.remove(path / "../BP_Stats.md5")
+        if (path / "BP_Stats.md5").exists():
+            os.remove(path / "BP_Stats.md5")
 
         # Run vspace
         print("Running vspace")
