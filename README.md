@@ -17,4 +17,4 @@
   </a>
 </p>
 
-A suite of data analysis and extraction routines for [VPLanet](https://github.com/VirtualPlanetaryLaboratory/vplanet) and designed to be used with [VSPACE](https://github.com/VirtualPlanetaryLaboratory/vspace) and [MultiPlanet](https://github.com/VirtualPlanetaryLaboratory/multi-planet) scripts. It can also generate files for use with the free version of the [VR Ulysses data explorer](https://www.vrulysses.com/download-ulysses). [Read the docs](https://VirtualPlanetaryLaboratory.github.io/bigplanet/) to learn how to get the most out of your VPLanet parameter sweeps.
+A suite of data analysis and extraction routines for [VPLanet](https://github.com/VirtualPlanetaryLaboratory/vplanet) and designed to be used with [VSPACE](https://github.com/VirtualPlanetaryLaboratory/vspace) and [MultiPlanet](https://github.com/VirtualPlanetaryLaboratory/multi-planet) scripts. It can also generate files for use with the free version of the [VR Ulysses data explorer](https://www.vrulysses.com/download-ulysses). [Read the docs](https://VirtualPlanetaryLaboratory.github.io/bigplanet/) to learn how to get the most out of your `VPLanet` parameter sweeps.
