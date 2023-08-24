@@ -1,4 +1,3 @@
-import csv
 import multiprocessing as mp
 import os
 import pathlib
@@ -7,10 +6,9 @@ import sys
 import warnings
 import shutil
 import numpy as np
-import bigplanet.bp_extract as bp
+import bigplanet as bp
 
-
-def test_UlyssesAggregated():
+def test_UlyssesForward():
     # gets current path
     path = pathlib.Path(__file__).parents[0].absolute()
     sys.path.insert(1, str(path.parents[0]))
@@ -46,10 +44,11 @@ def test_UlyssesAggregated():
         file = path / "User.csv"
 
         data = bp.CSVToDict(file, 1)
-        assert np.isclose(
-            float(data["earth:Instellation:final"][0]), 1367.635318
-        )
+
+        value = float(data["earth:TCore:forward"][451])
+
+        assert np.isclose(value, 4999.131849)
 
 
 if __name__ == "__main__":
-    test_UlyssesAggregated()
+    test_UlyssesForward()

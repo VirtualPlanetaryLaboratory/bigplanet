@@ -21,29 +21,6 @@ SeasonalClimateFiles
 *.csv
 *.md5
 
-#files created from running tests
-tests/Bpstatus/BP_Status/
-tests/Bpstatus/.*
-tests/CreateHDF5/BP_CreateHDF5/
-tests/CreateHDF5/.*
-tests/ExtractArchive/BP_Extract/
-tests/ExtractArchive/.*
-tests/Stats/BP_Stats/
-tests/Stats/.*
-tests/ExtractFilterArchive/BP_Extract/
-tests/ExtractFilterArchive/.*
-tests/ExtractFilterRawData/BP_Extract/
-tests/ExtractFilterRawData/.*
-tests/MD5CheckSum/BP_Extract/
-tests/MD5CheckSum/.*
-tests/UlyssesAggregated/BP_Extract/
-tests/UlyssesAggregated/.*
-tests/UlyssesForward/BP_Extract/
-tests/UlyssesForward/.*
-tests/SingleSim/BP_Extract/
-tests/SingleSim/.*
-
-
 .coverage
 
 # Aux files / build info / garbage

@@ -252,33 +252,38 @@ def GetVplanetHelp():
         ):
 
             option = line.strip("** ")
-            # print("Option:",option)
+            #print("Option: ",option,repr(count))
             vplanet_dict[option] = {}
             num = count + 1
             while num != count:
+                #print("num,count: ",repr(num),repr(len(output)))
+                #print("Output[num]: ",repr(output[num]))
+                if (num >= len(output)):
+                    print("ERROR: Unable to gather VPLanet help information!")
+                    assert(0)
                 if "Type" in output[num]:
                     tp = output[num].rpartition("|")[-1].strip()
                     vplanet_dict[option]["Type"] = tp
-                    # print("Type:",tp)
+                    #print("Type:",tp)
                     num += 1
 
                 elif "Custom unit" in output[num]:
                     custom_unit = output[num].rpartition("|")[-1].strip()
                     vplanet_dict[option]["Custom Unit"] = custom_unit
-                    # print("Custom Unit:",custom_unit)
+                    #print("Custom Unit:",custom_unit)
                     num += 1
 
                 elif "Dimension(s)" in output[num]:
                     dim = output[num].rpartition("|")[-1].strip()
                     vplanet_dict[option]["Dimension"] = dim
-                    # print("Dimension:",dim)
+                    #print("Dimension:",dim)
                     num += 1
 
                 elif "Default value" in output[num]:
                     default = output[num].rpartition("|")[-1].strip()
                     vplanet_dict[option]["Default Value"] = default
-                    # print("Default Value",default)
-                    # print()
+                    #print("Default Value",default)
+                    #print()
 
                     num += 1
 
