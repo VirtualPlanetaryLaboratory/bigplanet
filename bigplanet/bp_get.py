@@ -252,10 +252,15 @@ def GetVplanetHelp():
         ):
 
             option = line.strip("** ")
-            # print("Option:",option)
+            # print("Option: ",option,repr(count))
             vplanet_dict[option] = {}
             num = count + 1
             while num != count:
+                #print("num,count: ",repr(num),repr(len(output)))
+                #print("Output[num]: ",repr(output[num]))
+                if (num >= len(output)):
+                    print("ERROR: Unable to gather VPLanet help information!")
+                    assert(0)
                 if "Type" in output[num]:
                     tp = output[num].rpartition("|")[-1].strip()
                     vplanet_dict[option]["Type"] = tp
