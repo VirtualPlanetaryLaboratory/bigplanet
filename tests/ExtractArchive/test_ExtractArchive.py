@@ -8,7 +8,8 @@ import shutil
 import numpy as np
 import bigplanet as bp
 
-def test_SingleSim():
+
+def test_ExtractArchive():
     # gets current path
     path = pathlib.Path(__file__).parents[0].absolute()
     sys.path.insert(1, str(path.parents[0]))
@@ -18,39 +19,47 @@ def test_SingleSim():
     if cores == 1:
         warnings.warn("There is only 1 core on the machine", stacklevel=3)
     else:
-        # If present, remove files from previous run
+        # Remove anything from previous tests
         if (path / "BP_Extract").exists():
             shutil.rmtree(path / "BP_Extract")
         if (path / ".BP_Extract").exists():
             os.remove(path / ".BP_Extract")
         if (path / ".BP_Extract_BPL").exists():
             os.remove(path / ".BP_Extract_BPL")
+        if (path / "BP_Extract.bpa").exists():
+            os.remove(path / "BP_Extract.bpa")
+        if (path / "../BP_Extract.md5").exists():
+            os.remove(path / "../BP_Extract.md5")
         if (path / "BP_Extract.md5").exists():
             os.remove(path / "BP_Extract.md5")
 
         # Run vspace
-        print("Running vspace")
+        print("Running vspace.")
         sys.stdout.flush()
         subprocess.check_output(["vspace", "vspace.in"], cwd=path)
 
         # Run multi-planet
-        print("Running multiplanet")
+        print("Running MultiPlanet.")
         sys.stdout.flush()
         subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
-        print("Running bigplanet")
+        print("Running BigPlanet.")
         sys.stdout.flush()
-        subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
+        subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
-        file = bp.BPLFile(path / "Test.bpf")
+        file = bp.BPLFile(path / "BP_Extract.bpa")
 
-        earth_Tman_forward = bp.ExtractColumn(file, "earth:TMan:forward")
-        earth_Tcore_inital = bp.ExtractColumn(file, "earth:TCore:initial")
+        earth_Instellation_final = bp.ExtractColumn(
+            file, "earth:Instellation:final"
+        )
+        sun_RotPer_initial = bp.ExtractColumn(file, "sun:RotPer:initial")
 
-        assert np.isclose(earth_Tman_forward[0][-1], 2257.850930)
-        assert np.isclose(earth_Tcore_inital[0], 6000.00000)
+        assert np.isclose(earth_Instellation_final[0], 1367.635318)
+        assert np.isclose(earth_Instellation_final[1], 341.90883)
+
+        assert np.isclose(sun_RotPer_initial[0], 86400.0)
 
 
 if __name__ == "__main__":
-    test_SingleSim()
+    test_ExtractArchive()
