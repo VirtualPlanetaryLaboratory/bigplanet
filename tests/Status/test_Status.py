@@ -4,7 +4,7 @@ import pathlib
 import subprocess
 import sys
 import warnings
-
+import shutil
 import numpy as np
 
 
@@ -18,18 +18,28 @@ def test_bpstatus():
     if cores == 1:
         warnings.warn("There is only 1 core on the machine", stacklevel=3)
     else:
+        if (path / "BP_Status").exists():
+            shutil.rmtree(path / "BP_Status")
+        if (path / ".BP_Status").exists():
+            os.remove(path / ".BP_Status")
+        if (path / ".BP_Status_BPL").exists():
+            os.remove(path / ".BP_Status_BPL")
+        if (path / "BP_Status.bpa").exists():
+            os.remove(path / "BP_Status.bpa")
+        if (path / "../BP_Status.md5").exists():
+            os.remove(path / "../BP_Status.md5")
+        if (path / "BP_Status.md5").exists():
+            os.remove(path / "BP_Status.md5")
+
         # Run vspace
-        if not (path / "BP_Status").exists():
-            subprocess.check_output(["vspace", "vspace.in"], cwd=path)
+        subprocess.check_output(["vspace", "vspace.in"], cwd=path)
 
         # Run multi-planet
-        if not (path / ".BP_Status").exists():
-            subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
+        subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
-        if not (path / ".BP_Status_BPL").exists():
-            subprocess.check_output(["bigplanet", "-ignorecorrupt", "bpl.in", "-a"], cwd=path)
-            subprocess.check_output(["bpstatus", "vspace.in"], cwd=path)
+        subprocess.check_output(["bigplanet", "-ignorecorrupt", "bpl.in", "-a"], cwd=path)
+        subprocess.check_output(["bpstatus", "vspace.in"], cwd=path)
 
         file = path / "BP_Status.bpa"
 
