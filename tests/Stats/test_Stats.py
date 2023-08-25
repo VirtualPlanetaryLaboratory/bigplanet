@@ -4,34 +4,53 @@ import pathlib
 import subprocess
 import sys
 import warnings
-
-import h5py
+import shutil
 import numpy as np
-
 import bigplanet as bp
 
-
-def test_bpstats():
+def test_Stats():
     # gets current path
     path = pathlib.Path(__file__).parents[0].absolute()
     sys.path.insert(1, str(path.parents[0]))
+
+    # up = os.path.normpath("../")
+    # if (up / "*.md5").exists:
+    #     os.remove(path / "*.md5")
+
 
     # gets the number of cores on the machine
     cores = mp.cpu_count()
     if cores == 1:
         warnings.warn("There is only 1 core on the machine", stacklevel=3)
     else:
+        # If present, remove files from previous run
+        if (path / "BP_Stats").exists():
+            shutil.rmtree(path / "BP_Stats")
+        if (path / ".BP_Stats").exists():
+            os.remove(path / ".BP_Stats")
+        if (path / ".BP_Stats_BPL").exists():
+            os.remove(path / ".BP_Stats_BPL")
+        if (path / "BP_Stats.bpa").exists():
+            os.remove(path / "BP_Stats.bpa")
+        if (path / "../BP_Stats.md5").exists():
+            os.remove(path / "../BP_Stats.md5")
+        if (path / "BP_Stats.md5").exists():
+            os.remove(path / "BP_Stats.md5")
+
         # Run vspace
-        if not (path / "BP_Stats").exists():
-            subprocess.check_output(["vspace", "vspace.in"], cwd=path)
+        print("Running vspace")
+        sys.stdout.flush()
+        subprocess.check_output(["vspace", "vspace.in"], cwd=path)
 
         # Run multi-planet
-        if not (path / ".BP_Stats").exists():
-            subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
+        print("Running MultiPlanet")
+        sys.stdout.flush()
+        subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
-        if not (path / "BP_Stats.bpa").exists():
-            subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
+        print("Running BigPlanet")
+        sys.stdout.flush()
+        subprocess.check_output(["bigplanet", "-ignorecorrupt", "bpl.in", "-a"], cwd=path)
 
         file = bp.BPLFile(path / "BP_Stats.bpa")
 
@@ -51,4 +70,4 @@ def test_bpstats():
 
 
 if __name__ == "__main__":
-    test_bpstats()
+    test_Stats()

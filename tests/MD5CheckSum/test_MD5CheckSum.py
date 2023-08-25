@@ -1,4 +1,4 @@
-import csv
+import hashlib
 import multiprocessing as mp
 import os
 import pathlib
@@ -6,11 +6,8 @@ import subprocess
 import sys
 import warnings
 import shutil
-import numpy as np
-import bigplanet.bp_extract as bp
 
-
-def test_UlyssesAggregated():
+def test_MD5CheckSum():
     # gets current path
     path = pathlib.Path(__file__).parents[0].absolute()
     sys.path.insert(1, str(path.parents[0]))
@@ -25,8 +22,10 @@ def test_UlyssesAggregated():
             shutil.rmtree(path / "BP_Extract")
         if (path / ".BP_Extract").exists():
             os.remove(path / ".BP_Extract")
-        if (path / "User.csv").exists():
-            os.remove(path / "User.csv")
+        if (path / ".BP_Extract_BPL").exists():
+            os.remove(path / ".BP_Extract_BPL")
+        if (path / "BP_Extract.md5").exists():
+            os.remove(path / "BP_Extract.md5")
 
         # Run vspace
         print("Running vspace")
@@ -41,15 +40,21 @@ def test_UlyssesAggregated():
         # Run bigplanet
         print("Running bigplanet")
         sys.stdout.flush()
-        subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
+        subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
-        file = path / "User.csv"
+        bpa = path / "BP_Extract.bpa"
 
-        data = bp.CSVToDict(file, 1)
-        assert np.isclose(
-            float(data["earth:Instellation:final"][0]), 1367.635318
-        )
+        md5file = path / "BP_Extract.md5"
+        with open(md5file, "r") as md5:
+            array = md5.read().splitlines()
+            md5_old = array[0]
+            with open(bpa, "rb") as f:
+                file_hash = hashlib.md5()
+                for chunk in iter(lambda: f.read(32768), b""):
+                    file_hash.update(chunk)
+            new_md5 = file_hash.hexdigest()
+        assert md5_old == new_md5
 
 
 if __name__ == "__main__":
-    test_UlyssesAggregated()
+    test_MD5CheckSum()

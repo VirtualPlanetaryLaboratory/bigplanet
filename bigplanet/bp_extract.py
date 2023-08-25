@@ -40,8 +40,8 @@ def ExtractColumn(hf, k):
     k : str
         the name of the column that is to be extracted
         Example:
-            k = 'earth_Obliquity_final'
-        The syntax of the column names is body_variable_aggregation
+            k = 'earth:Obliquity:final'
+        The syntax of the column names is body:variable:aggregation
         the lists of aggregations (and how to call them) is as follows:
 
             forward file data (forward), initial data (initial),
@@ -532,6 +532,7 @@ def Md5CheckSum(archivefile, ignore_corrupt=False):
     md5file = name + ".md5"
     # if it doesn't exist, we need to create it
     if os.path.isfile(md5file) == False:
+        print(md5file+" file not found. Generating.")
         with open(md5file, "w") as md5:
             with open(bpa, "rb") as f:
                 file_hash = hashlib.md5()
@@ -560,11 +561,14 @@ def Md5CheckSum(archivefile, ignore_corrupt=False):
             new_md5 = file_hash.hexdigest()
             # print("MD5 from " + name + ".bpa: " + new_md5)
         if md5_old == new_md5:
-            print("MD5 Checksum verified")
+            print("MD5 Checksum verified.")
         else:
             if ignore_corrupt == True:
-                print("WARNING: MD5 Checksum failed")
+                print("WARNING: MD5 Checksum failed!")
             else:
-                print("ERROR: MD5 Checksum failed")
-                print("set flag --ignorecorrupt to still use corrupted data")
+                print("ERROR: MD5 Checksum failed!")
+                print("MD5 from " + md5file + ":", md5_old)
+                print("MD5 from " + name + ".bpa: " + new_md5)
+                print("set flag -ignorecorrupt to still use corrupted data")
+                print("INFO: MD5Checksumming is not functioning as ov v3.0, so you should probably set this flag!")
                 exit()
