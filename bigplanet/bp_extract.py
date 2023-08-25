@@ -569,5 +569,6 @@ def Md5CheckSum(archivefile, ignore_corrupt=False):
                 print("ERROR: MD5 Checksum failed!")
                 print("MD5 from " + md5file + ":", md5_old)
                 print("MD5 from " + name + ".bpa: " + new_md5)
-                print("set flag --ignorecorrupt to still use corrupted data")
+                print("set flag -ignorecorrupt to still use corrupted data")
+                print("INFO: MD5Checksumming is not functioning as ov v3.0, so you should probably set this flag!")
                 exit()

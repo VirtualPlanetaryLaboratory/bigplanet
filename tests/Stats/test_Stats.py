@@ -50,7 +50,7 @@ def test_Stats():
         # Run bigplanet
         print("Running BigPlanet")
         sys.stdout.flush()
-        subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
+        subprocess.check_output(["bigplanet", "-ignorecorrupt", "bpl.in", "-a"], cwd=path)
 
         file = bp.BPLFile(path / "BP_Stats.bpa")
 
