@@ -28,8 +28,6 @@ def test_ExtractArchive():
             os.remove(path / ".BP_Extract_BPL")
         if (path / "BP_Extract.bpa").exists():
             os.remove(path / "BP_Extract.bpa")
-        if (path / "../BP_Extract.md5").exists():
-            os.remove(path / "../BP_Extract.md5")
         if (path / "BP_Extract.md5").exists():
             os.remove(path / "BP_Extract.md5")
 
@@ -46,9 +44,7 @@ def test_ExtractArchive():
         # Run bigplanet
         print("Running BigPlanet.")
         sys.stdout.flush()
-
-        ######## SOMETHING IS WRONG WITH MD5CHECKSUMS! #######
-        subprocess.check_output(["bigplanet", "-ignorecorrupt", "bpl.in", "-a"], cwd=path)
+        subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
         file = bp.BPLFile(path / "BP_Extract.bpa")
 
@@ -59,9 +55,13 @@ def test_ExtractArchive():
 
         assert np.isclose(earth_Instellation_final[0], 1367.635318)
         assert np.isclose(earth_Instellation_final[1], 341.90883)
-
         assert np.isclose(sun_RotPer_initial[0], 86400.0)
 
+        shutil.rmtree(path / "BP_Extract")
+        os.remove(path / ".BP_Extract")
+        os.remove(path / ".BP_Extract_BPL")
+        os.remove(path / "BP_Extract.bpa")
+        os.remove(path / "BP_Extract.md5")
 
 if __name__ == "__main__":
     test_ExtractArchive()

@@ -38,7 +38,8 @@ def test_bpstatus():
         subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
-        subprocess.check_output(["bigplanet", "-ignorecorrupt", "bpl.in", "-a"], cwd=path)
+#        subprocess.check_output(["bigplanet", "-ignorecorrupt", "bpl.in", "-a"], cwd=path)
+        subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
         subprocess.check_output(["bpstatus", "vspace.in"], cwd=path)
 
         file = path / "BP_Status.bpa"
@@ -46,6 +47,11 @@ def test_bpstatus():
         # checks if the bpl files exist
         assert os.path.isfile(file) == True
 
+        shutil.rmtree(path / "BP_Status")
+        os.remove(path / ".BP_Status")
+        os.remove(path / ".BP_Status_BPL")
+        os.remove(path / "BP_Status.bpa")
+        os.remove(path / "BP_Status.md5")
 
 if __name__ == "__main__":
     test_bpstatus()

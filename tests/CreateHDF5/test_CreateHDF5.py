@@ -51,6 +51,11 @@ def test_CreateHDF5():
         # checks if the bpl files exist
         assert os.path.isfile(file) == True
 
+        shutil.rmtree(path / "BP_CreateHDF5")
+        os.remove(path / ".BP_CreateHDF5")
+        os.remove(path / ".BP_CreateHDF5_BPL")
+        os.remove(path / "BP_CreateHDF5.bpa")
+        os.remove(path / "BP_CreateHDF5.md5")
 
 if __name__ == "__main__":
     test_CreateHDF5()

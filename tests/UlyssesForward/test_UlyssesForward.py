@@ -49,6 +49,9 @@ def test_UlyssesForward():
 
         assert np.isclose(value, 4999.131849)
 
+        shutil.rmtree(path / "BP_Extract")
+        os.remove(path / ".BP_Extract")
+        os.remove(path / "User.csv")
 
 if __name__ == "__main__":
     test_UlyssesForward()
