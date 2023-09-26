@@ -13,8 +13,8 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-from .bp_get import GetVplanetHelp
-from .bp_process import DictToBP
+from .read import GetVplanetHelp
+from .process import DictToBP
 
 
 def BPLFile(hf, ignore_corrupt=False):

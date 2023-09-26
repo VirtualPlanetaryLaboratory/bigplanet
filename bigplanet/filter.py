@@ -12,9 +12,9 @@ import h5py
 import numpy as np
 import pandas as pd
 
-from .bp_extract import *
-from .bp_get import *
-from .bp_process import *
+from .extract import *
+from .read import *
+from .process import *
 
 
 def SplitsaKey(saKeylist, verbose):

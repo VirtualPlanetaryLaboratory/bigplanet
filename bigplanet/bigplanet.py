@@ -9,10 +9,10 @@ import h5py
 import numpy as np
 import pandas as pd
 
-from .bigplanet_archive import Archive
-from .bigplanet_filter import Filter
-from .bp_extract import Md5CheckSum
-from .bp_get import ReadFile
+from .archive import Archive
+from .filter import Filter
+from .extract import Md5CheckSum
+from .read import ReadFile
 
 
 def Main(
