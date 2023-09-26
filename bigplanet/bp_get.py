@@ -177,6 +177,9 @@ def GetDir(vspace_file):
 
 def GetSims(folder_name, simname=""):
     """Pass it folder name where simulations are and returns list of simulation folders."""
+    if not os.path.isdir(folder_name):
+        raise IOError("Folder "+folder_name+" does not exist.")
+
     # gets the list of sims
     sims = sorted(
         [
