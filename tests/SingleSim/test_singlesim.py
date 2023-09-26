@@ -23,10 +23,8 @@ def test_SingleSim():
             shutil.rmtree(path / "BP_Extract")
         if (path / ".BP_Extract").exists():
             os.remove(path / ".BP_Extract")
-        if (path / ".BP_Extract_BPL").exists():
-            os.remove(path / ".BP_Extract_BPL")
-        if (path / "BP_Extract.md5").exists():
-            os.remove(path / "BP_Extract.md5")
+        if (path / "Test.bpf").exists():
+            os.remove(path / "Test.bpf")
 
         # Run vspace
         print("Running vspace")
@@ -51,6 +49,10 @@ def test_SingleSim():
         assert np.isclose(earth_Tman_forward[0][-1], 2257.850930)
         assert np.isclose(earth_Tcore_inital[0], 6000.00000)
 
+
+        shutil.rmtree(path / "BP_Extract")
+        os.remove(path / ".BP_Extract")
+        os.remove(path / "Test.bpf")
 
 if __name__ == "__main__":
     test_SingleSim()

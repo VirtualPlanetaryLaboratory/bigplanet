@@ -20,6 +20,8 @@ def test_MD5CheckSum():
         # If present, remove files from previous run
         if (path / "BP_Extract").exists():
             shutil.rmtree(path / "BP_Extract")
+        if (path / "BP_Extract.bpa").exists():
+            os.remove(path / "BP_Extract.bpa")
         if (path / ".BP_Extract").exists():
             os.remove(path / ".BP_Extract")
         if (path / ".BP_Extract_BPL").exists():
@@ -55,6 +57,11 @@ def test_MD5CheckSum():
             new_md5 = file_hash.hexdigest()
         assert md5_old == new_md5
 
+        shutil.rmtree(path / "BP_Extract")
+        os.remove(path / "BP_Extract.bpa")
+        os.remove(path / ".BP_Extract")
+        os.remove(path / ".BP_Extract_BPL")
+        os.remove(path / "BP_Extract.md5")
 
 if __name__ == "__main__":
     test_MD5CheckSum()

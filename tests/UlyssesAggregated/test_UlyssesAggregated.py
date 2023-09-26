@@ -7,7 +7,7 @@ import sys
 import warnings
 import shutil
 import numpy as np
-import bigplanet.bp_extract as bp
+import bigplanet.extract as bp
 
 
 def test_UlyssesAggregated():
@@ -50,6 +50,9 @@ def test_UlyssesAggregated():
             float(data["earth:Instellation:final"][0]), 1367.635318
         )
 
+        shutil.rmtree(path / "BP_Extract")
+        os.remove(path / ".BP_Extract")
+        os.remove(path / "User.csv")
 
 if __name__ == "__main__":
     test_UlyssesAggregated()

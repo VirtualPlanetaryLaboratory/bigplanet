@@ -63,6 +63,10 @@ def test_ExtractFilterRaw():
         assert np.isclose(vpl_stoptime_option[0], 4.5e9)
         assert np.isclose(earth_tman_forward[0][0], 3000.0)
 
+        shutil.rmtree(path / "BP_Extract")
+        os.remove(path / ".BP_Extract")
+        os.remove(path / "Test.bpf")
+
 
 if __name__ == "__main__":
     test_ExtractFilterRaw()

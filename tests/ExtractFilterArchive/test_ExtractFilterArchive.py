@@ -30,8 +30,6 @@ def test_ExtractFilterArchive():
             os.remove(path / "BP_Extract.bpa")
         if (path / "Test.bpf").exists():
             os.remove(path / "Test.bpf")
-        if (path / "../BP_Extract.md5").exists():
-            os.remove(path / "../BP_Extract.md5")
         if (path / "BP_Extract.md5").exists():
             os.remove(path / "BP_Extract.md5")
 
@@ -73,6 +71,12 @@ def test_ExtractFilterArchive():
         assert np.isclose(vpl_stoptime_option[0], 4.5e9)
         assert np.isclose(earth_tman_forward[0][0], 3000.0)
 
+        shutil.rmtree(path / "BP_Extract")
+        os.remove(path / ".BP_Extract")
+        os.remove(path / ".BP_Extract_BPL")
+        os.remove(path / "BP_Extract.bpa")
+        os.remove(path / "Test.bpf")
+        os.remove(path / "BP_Extract.md5")
 
 if __name__ == "__main__":
     test_ExtractFilterArchive()

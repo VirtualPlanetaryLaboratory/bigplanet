@@ -13,5 +13,5 @@ __version__ = "1.0"
 __author__ = "Caitlyn Wilhelm (cwilhelm@uw.edu)"
 __copyright__ = "Copyright 2020  Caitlyn Wilhelm"
 
-from .bp_extract import *
+from .extract import *
 from .bigplanet import *

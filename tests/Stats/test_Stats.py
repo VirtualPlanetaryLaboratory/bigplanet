@@ -50,7 +50,8 @@ def test_Stats():
         # Run bigplanet
         print("Running BigPlanet")
         sys.stdout.flush()
-        subprocess.check_output(["bigplanet", "-ignorecorrupt", "bpl.in", "-a"], cwd=path)
+#        subprocess.check_output(["bigplanet", "-ignorecorrupt", "bpl.in", "-a"], cwd=path)
+        subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
         file = bp.BPLFile(path / "BP_Stats.bpa")
 
@@ -68,6 +69,11 @@ def test_Stats():
         assert np.isclose(earth_FMeltUMan_geomean[0], 0.20819565439935903)
         assert np.isclose(earth_BLUMan_stddev[0], 18.285373298439122)
 
+        shutil.rmtree(path / "BP_Stats")
+        os.remove(path / ".BP_Stats")
+        os.remove(path / ".BP_Stats_BPL")
+        os.remove(path / "BP_Stats.bpa")
+        os.remove(path / "BP_Stats.md5")
 
 if __name__ == "__main__":
     test_Stats()
