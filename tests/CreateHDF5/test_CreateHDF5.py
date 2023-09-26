@@ -38,24 +38,24 @@ def test_CreateHDF5():
 
         # Run multi-planet
         print("Running MultiPlanet.")
-        # sys.stdout.flush()
-        # subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
+        sys.stdout.flush()
+        subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
-        # print("Running BigPlanet.")
-        # sys.stdout.flush()
-        # subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
+        print("Running BigPlanet.")
+        sys.stdout.flush()
+        subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
-        # file = path / "BP_CreateHDF5.bpa"
+        file = path / "BP_CreateHDF5.bpa"
 
-        # # checks if the bpl files exist
-        # assert os.path.isfile(file) == True
+        # checks if the bpl files exist
+        assert os.path.isfile(file) == True
 
-        # shutil.rmtree(path / "BP_CreateHDF5")
-        # os.remove(path / ".BP_CreateHDF5")
-        # os.remove(path / ".BP_CreateHDF5_BPL")
-        # os.remove(path / "BP_CreateHDF5.bpa")
-        # os.remove(path / "BP_CreateHDF5.md5")
+        shutil.rmtree(path / "BP_CreateHDF5")
+        os.remove(path / ".BP_CreateHDF5")
+        os.remove(path / ".BP_CreateHDF5_BPL")
+        os.remove(path / "BP_CreateHDF5.bpa")
+        os.remove(path / "BP_CreateHDF5.md5")
 
 if __name__ == "__main__":
     test_CreateHDF5()
