@@ -1,14 +1,9 @@
 #!/usr/bin/env python
 
-import argparse
 import multiprocessing as mp
 import os
 import subprocess as sub
-
 import h5py
-import numpy as np
-import pandas as pd
-
 from .extract import *
 from .read import *
 from .process import *
