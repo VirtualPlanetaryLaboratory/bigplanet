@@ -26,21 +26,32 @@ def BPLFile(hf, ignore_corrupt=False):
 
     return h5py.File(hf, "r")
 
+# Unused for now, but this function can be used to print all keys. Should be part of a bigplanet.log file
+def allkeys(obj):
+    print("Recursively find all keys in an h5py.Group.")
+    keys = (obj.name,)
+    if isinstance(obj, h5py.Group):
+        for key, value in obj.items():
+            if isinstance(value, h5py.Group):
+                keys = keys + allkeys(value)
+            else:
+                keys = keys + (value.name,)
+    return keys
 
-def ExtractColumn(hf, k):
+def ExtractColumn(hdf5File, column):
     """
     Returns all the data for a single key (column) in a given HDF5 file.
 
     Parameters
     ----------
-    hf : File
+    hdf5File : File
         The HDF5 where the data is stored.
         Example:
             HDF5_File = h5py.File(filename, 'r')
-    k : str
+    column : str
         the name of the column that is to be extracted
         Example:
-            k = 'earth:Obliquity:final'
+            column = 'earth:Obliquity:final'
         The syntax of the column names is body:variable:aggregation
         the lists of aggregations (and how to call them) is as follows:
 
@@ -61,70 +72,70 @@ def ExtractColumn(hf, k):
     data = []
     archive = False
 
-    key_list = list(hf.keys())
+    key_list = list(hdf5File.keys())
 
     if ":" not in key_list[0]:
         archive = True
 
-    var = k.split(":")[1]
+    var = column.split(":")[1]
 
     if var == "OutputOrder" or var == "GridOutputOrder":
         if archive == True:
-            dataset = hf[key_list[0] + "/" + k]
+            dataset = hdf5File[key_list[0] + "/" + column]
             for d in dataset:
                 for value in d:
                     data.append(value.decode("UTF-8"))
         else:
-            for v in hf[k]:
+            for v in hdf5File[column]:
                 for item in v:
                     data.append(item.decode("UTF-8"))
 
     else:
-        aggreg = k.split(":")[2]
+        aggreg = column.split(":")[2]
 
         if aggreg == "forward" or aggreg == "backward" or aggreg == "climate":
             if archive == True:
-                for key in key_list:
-                    dataset = hf[key + "/" + k]
+                for column in key_list:
+                    dataset = hdf5File[column + "/" + column]
                     for d in dataset:
                         data.append(d)
             else:
-                dataset = hf[k]
+                dataset = hdf5File[column]
                 for d in dataset:
                     data.append(d)
 
         elif aggreg == "mean":
-            argument = ForwardData(hf, k)
+            argument = ForwardData(hdf5File, column)
             # print(argument)
             for i in argument:
                 data.append((st.mean(i)))
 
         elif aggreg == "stddev":
-            argument = ForwardData(hf, k)
+            argument = ForwardData(hdf5File, column)
             # print(argument)
             for i in argument:
                 data.append((st.stdev(i)))
 
         elif aggreg == "min":
-            argument = ForwardData(hf, k)
+            argument = ForwardData(hdf5File, column)
             # print(argument)
             for i in argument:
                 data.append((min(i)))
 
         elif aggreg == "max":
-            argument = ForwardData(hf, k)
+            argument = ForwardData(hdf5File, column)
             # print(argument)
             for i in argument:
                 data.append((max(i)))
 
         elif aggreg == "mode":
-            argument = ForwardData(hf, k)
+            argument = ForwardData(hdf5File, column)
             # print(argument)
             for i in argument:
                 data.append((stats.mode(i)))
 
         elif aggreg == "geomean":
-            argument = ForwardData(hf, k)
+            argument = ForwardData(hdf5File, column)
             # print(argument)
             for i in argument:
                 data.append((stats.gmean(i)))
@@ -132,11 +143,15 @@ def ExtractColumn(hf, k):
         elif aggreg == "initial" or aggreg == "final" or aggreg == "option":
             if archive == True:
                 for key in key_list:
-                    dataset = hf[key + "/" + k]
+                    fullKey = key + "/" + column
+                    if not fullKey in hdf5File:
+                        print("ERROR: The key \""+fullKey+"\" does not exist in the archive.")
+                        exit()
+                    dataset = hdf5File[fullKey]
                     for d in dataset:
                         data.append(float(d))
             else:
-                for d in hf[k]:
+                for d in hdf5File[column]:
                     data.append(float(d))
 
         else:
@@ -353,6 +368,11 @@ def ArchiveToFiltered(inputfile, columns, exportfile):
     """
     export = {}
     units = {}
+
+    if os.path.isfile(exportfile):
+        print("ERROR: File "+exportfile+" already exists.")
+        exit()
+
     for i in columns:
         export[i] = ExtractColumn(inputfile, i)
         units[i] = ExtractUnits(inputfile, i)
