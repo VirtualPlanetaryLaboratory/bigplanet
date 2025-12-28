@@ -224,7 +224,7 @@ def GetSNames(bodyfiles, sims):
 
 
 def GetVplanetHelp():
-    command = "vplanet -H | egrep -v '^$|^\+' | cut -f 2,4 -d '|' | egrep '^ \*\*|^ Cust|^ Type|^ Dim|^ Defa|^Output Parameters'"
+    command = r"vplanet -H | egrep -v '^$|^\+' | cut -f 2,4 -d '|' | egrep '^ \*\*|^ Cust|^ Type|^ Dim|^ Defa|^Output Parameters'"
     py_ver = sys.version.split()[0]
     if "3.6" in py_ver:
         proc = sub.run(
