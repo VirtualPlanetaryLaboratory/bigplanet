@@ -15,11 +15,11 @@ matplotlib.
 
 ``BigPlanet`` compresses your parameter sweep into a formatted HDF5 file that
 can be 50% smaller than the raw data. This file is called a BigPlanet archive and typically
-has the extension ``.bpa``. As a BigPlanet archive contains *all* the data from your parameter 
+has the extension ``.bpa``. As a BigPlanet archive contains *all* the data from your parameter
 sweep, you can safely delete
-the raw data once the archive is created. Note that ``BigPlanet`` will also create an 
-MD5 checksum file that monitors the integrity of the archive. Accessing data from the archive
-is at least 10 times faster than from the raw ASCII text data.
+the raw data once the archive is created. The archive uses HDF5's built-in Fletcher32 checksums
+for automatic data integrity verification on numeric datasets, ensuring your data remains uncorrupted.
+Accessing data from the archive is at least 10 times faster than from the raw ASCII text data.
 
 While it is possible to perform analyses and plot outputs from the archive, it is
 often still painfully slow for parameter sweeps consisting of 10,000 simulations or more.
