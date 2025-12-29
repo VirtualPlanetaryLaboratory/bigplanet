@@ -51,18 +51,26 @@ def test_Fletcher32CheckSum():
 
         bpa = path / "BP_Extract.bpa"
 
-        # Verify that datasets have Fletcher32 checksums enabled
+        # Verify that non-scalar datasets have Fletcher32 checksums enabled
+        # Note: Fletcher32 only works on datasets with at least one dimension (not scalars)
         with h5py.File(bpa, "r") as f:
             # Get first simulation group
             first_group = list(f.keys())[0]
             group = f[first_group]
 
-            # Get first dataset
-            first_dataset_name = list(group.keys())[0]
-            dataset = group[first_dataset_name]
+            # Find a non-scalar dataset to test (scalars can't have Fletcher32)
+            test_dataset_name = None
+            for dataset_name in group.keys():
+                dataset = group[dataset_name]
+                if dataset.ndim > 0:  # Non-scalar dataset
+                    test_dataset_name = dataset_name
+                    break
+
+            assert test_dataset_name is not None, "No non-scalar datasets found to test"
+
+            dataset = group[test_dataset_name]
 
             # Check if Fletcher32 filter is in the filter pipeline
-            # The fletcher32 property is accessible via the dataset's creation property list
             plist = dataset.id.get_create_plist()
             nfilters = plist.get_nfilters()
 
@@ -74,8 +82,8 @@ def test_Fletcher32CheckSum():
                     has_fletcher32 = True
                     break
 
-            assert has_fletcher32, "Fletcher32 checksum should be enabled on datasets"
-            print(f"Verified: Fletcher32 checksum enabled on dataset {first_group}/{first_dataset_name}")
+            assert has_fletcher32, f"Fletcher32 checksum should be enabled on non-scalar dataset {test_dataset_name}"
+            print(f"Verified: Fletcher32 checksum enabled on dataset {first_group}/{test_dataset_name}")
 
         shutil.rmtree(path / "BP_Extract")
         os.remove(path / "BP_Extract.bpa")

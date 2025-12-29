@@ -564,6 +564,14 @@ def DictToBP(
             print()
 
         # Enable Fletcher32 checksum for data integrity verification
-        h5_file.create_dataset(dataset_name, data=v_value, fletcher32=True)
+        # Note: Fletcher32 only works on datasets with at least one dimension (not scalars)
+        # We need to check if the data will result in a non-scalar dataset
+        import numpy as np
+
+        # Convert to numpy array to check dimensions
+        arr = np.asarray(v_value)
+        bUseFletcherChecksum = arr.ndim > 0
+
+        h5_file.create_dataset(dataset_name, data=v_value, fletcher32=bUseFletcherChecksum)
 
         h5_file[dataset_name].attrs["Units"] = v_attr
