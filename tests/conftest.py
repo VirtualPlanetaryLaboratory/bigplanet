@@ -209,7 +209,7 @@ def sample_vplanet_help_dict():
             "Type": "Double",
             "Dimension": "length",
             "Default Value": "0.0",
-            "Custom Unit": "AU"
+            "Custom Units": "AU"
         },
         "dObliquity": {
             "Type": "Double",

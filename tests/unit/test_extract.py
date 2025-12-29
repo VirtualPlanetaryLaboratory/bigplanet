@@ -139,7 +139,10 @@ class TestCreateMatrix:
         """
         Given: X, Y axes and Z array
         When: CreateMatrix is called
-        Then: Matrix is reshaped correctly
+        Then: Matrix is reshaped correctly as a list
+
+        Note: CreateMatrix returns a Python list (not numpy array) because
+        it calls .tolist() at the end (extract.py:306).
         """
         xaxis = np.array([1, 2, 3])
         yaxis = np.array([10, 20])
@@ -147,7 +150,10 @@ class TestCreateMatrix:
 
         result = extract.CreateMatrix(xaxis, yaxis, zarray, orientation=0)
 
-        assert result.shape == (2, 3)
+        # Result is a list, not numpy array
+        assert isinstance(result, list)
+        assert len(result) == 2  # 2 rows (yaxis length)
+        assert len(result[0]) == 3  # 3 columns (xaxis length)
 
     def test_create_matrix_wrong_size(self):
         """
