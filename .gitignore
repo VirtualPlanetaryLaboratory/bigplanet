@@ -63,7 +63,12 @@ build/
 bigplanet/bigplanet_version.py
 .vscode/settings.json
 junit/test-results.xml
+junit/test-results-*.xml
 coverage.xml
 tests/UlyssesAggregated/User.csv
 
 htmlcov/
+
+# Test output directories (generated during test runs)
+tests/*/BP_*/
+tests/*/.BP_*/

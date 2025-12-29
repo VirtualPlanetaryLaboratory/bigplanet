@@ -458,7 +458,11 @@ def GatherData(
 
             Outfile = body + ":sOutFile:option"
             if Outfile in data:
-                file_name = data[Outfile]
+                # data[Outfile] is stored as [units, value] from ProcessInputfile
+                # Extract just the filename (second element)
+                file_name = data[Outfile][1]
+                # Assume forward if explicit outfile is specified
+                prefix = ":forward"
             else:
                 # need to figure out if its forward file or backwards file
                 forwardOption = (
@@ -473,6 +477,10 @@ def GatherData(
                 elif backwardOption in data:
                     file_name = system_name + "." + body + ".backward"
                     prefix = ":backward"
+                else:
+                    # Default to forward if neither flag is set
+                    file_name = system_name + "." + body + ".forward"
+                    prefix = ":forward"
 
             data = ProcessOutputfile(
                 file_name, data, body, OutputOrder, prefix, folder, verbose
@@ -555,6 +563,20 @@ def DictToBP(
             print("Value:", v_value)
             print()
 
-        h5_file.create_dataset(dataset_name, data=v_value)
+        # Enable Fletcher32 checksum for data integrity verification
+        # Note: Fletcher32 only works on:
+        # 1. Datasets with at least one dimension (not scalars)
+        # 2. Numeric data types (not strings or objects)
+        import numpy as np
+
+        # Convert to numpy array to check dimensions and dtype
+        arr = np.asarray(v_value)
+        # Fletcher32 requires non-scalar numeric data
+        bUseFletcherChecksum = (
+            arr.ndim > 0 and
+            arr.dtype.kind in ('i', 'u', 'f', 'c')  # integer, unsigned, float, complex
+        )
+
+        h5_file.create_dataset(dataset_name, data=v_value, fletcher32=bUseFletcherChecksum)
 
         h5_file[dataset_name].attrs["Units"] = v_attr

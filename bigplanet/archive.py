@@ -85,7 +85,7 @@ def Archive(bpInputFile, cores, quiet, force, ignorecorrupt, verbose):
     for w in workers:
         w.join()
 
-    Md5CheckSum(bpl_file, ignorecorrupt)
+    print("Archive created with Fletcher32 checksums enabled for data integrity verification.")
 
 
 def CreateCP(checkpoint_file, input_file, sims):

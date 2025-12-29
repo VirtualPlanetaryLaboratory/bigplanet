@@ -18,12 +18,25 @@ from .process import DictToBP
 
 
 def BPLFile(hf, ignore_corrupt=False):
-    file = h5py.File(hf, "r")
-    key_list = list(file.keys())
+    """
+    Open a BigPlanet HDF5 file for reading.
 
-    if ":" not in key_list[0]:
-        Md5CheckSum(hf, ignore_corrupt)
+    Note: The ignore_corrupt parameter is deprecated and no longer used.
+    Data integrity is now verified using HDF5's built-in Fletcher32 checksums
+    on individual datasets rather than file-level MD5 checksums.
 
+    Parameters
+    ----------
+    hf : str
+        Path to the HDF5 file
+    ignore_corrupt : bool, optional
+        Deprecated. Kept for backward compatibility. (default: False)
+
+    Returns
+    -------
+    h5py.File
+        Opened HDF5 file handle
+    """
     return h5py.File(hf, "r")
 
 
