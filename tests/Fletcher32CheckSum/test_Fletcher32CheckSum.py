@@ -58,15 +58,17 @@ def test_Fletcher32CheckSum():
             first_group = list(f.keys())[0]
             group = f[first_group]
 
-            # Find a non-scalar dataset to test (scalars can't have Fletcher32)
+            # Find a non-scalar numeric dataset to test
+            # Fletcher32 only works on non-scalar datasets with numeric dtypes
             test_dataset_name = None
             for dataset_name in group.keys():
                 dataset = group[dataset_name]
-                if dataset.ndim > 0:  # Non-scalar dataset
+                # Must be non-scalar AND numeric (not object/string)
+                if dataset.ndim > 0 and dataset.dtype.kind in ('i', 'u', 'f', 'c'):
                     test_dataset_name = dataset_name
                     break
 
-            assert test_dataset_name is not None, "No non-scalar datasets found to test"
+            assert test_dataset_name is not None, "No non-scalar numeric datasets found to test"
 
             dataset = group[test_dataset_name]
 
