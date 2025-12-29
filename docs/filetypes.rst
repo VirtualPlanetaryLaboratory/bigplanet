@@ -12,9 +12,11 @@ Archives
 The BigPlanet archive contains *everything* from
 the parameter sweep. The archive can require hours to build, depending on the size of the data set and number of cores
 employed to build it.
-When an archive is built, ``BigPlanet`` enables Fletcher32 checksums on all datasets within the HDF5 file,
+When an archive is built, ``BigPlanet`` enables Fletcher32 checksums on numeric datasets within the HDF5 file,
 providing automatic data integrity verification. HDF5 validates these checksums whenever data is read,
-ensuring the data are not corrupted. After building the BPA file, it is safe to remove the raw data.
+ensuring the data are not corrupted. (Note: Fletcher32 checksums are applied only to numeric array data;
+scalar values and string data do not receive checksum protection due to HDF5 limitations.)
+After building the BPA file, it is safe to remove the raw data.
 To generate an archive, run ``BigPlanet`` with the :code:`-a` option.
 
 
