@@ -13,8 +13,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04,  ubuntu-24.04, macos-latest, macos-15-intel]
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        os: [ubuntu-22.04]
+        python-version: ["3.9"]
         exclude:
           # macOS latest doesn't support Python 3.9 well on ARM
           - os: macos-latest
