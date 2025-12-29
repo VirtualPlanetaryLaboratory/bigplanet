@@ -563,6 +563,7 @@ def DictToBP(
             print("Value:", v_value)
             print()
 
-        h5_file.create_dataset(dataset_name, data=v_value)
+        # Enable Fletcher32 checksum for data integrity verification
+        h5_file.create_dataset(dataset_name, data=v_value, fletcher32=True)
 
         h5_file[dataset_name].attrs["Units"] = v_attr

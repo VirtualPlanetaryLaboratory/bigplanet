@@ -1,4 +1,3 @@
-import hashlib
 import multiprocessing as mp
 import os
 import pathlib
@@ -6,8 +5,16 @@ import subprocess
 import sys
 import warnings
 import shutil
+import h5py
 
-def test_MD5CheckSum():
+def test_Fletcher32CheckSum():
+    """
+    Test that HDF5 datasets are created with Fletcher32 checksums enabled.
+
+    This replaces the old MD5 checksum test. Fletcher32 is HDF5's built-in
+    checksum mechanism that provides per-dataset data integrity verification,
+    which is more reliable than file-level MD5 checksums for HDF5 files.
+    """
     # gets current path
     path = pathlib.Path(__file__).parents[0].absolute()
     sys.path.insert(1, str(path.parents[0]))
@@ -26,8 +33,6 @@ def test_MD5CheckSum():
             os.remove(path / ".BP_Extract")
         if (path / ".BP_Extract_BPL").exists():
             os.remove(path / ".BP_Extract_BPL")
-        if (path / "BP_Extract.md5").exists():
-            os.remove(path / "BP_Extract.md5")
 
         # Run vspace
         print("Running vspace")
@@ -46,22 +51,36 @@ def test_MD5CheckSum():
 
         bpa = path / "BP_Extract.bpa"
 
-        md5file = path / "BP_Extract.md5"
-        with open(md5file, "r") as md5:
-            array = md5.read().splitlines()
-            md5_old = array[0]
-            with open(bpa, "rb") as f:
-                file_hash = hashlib.md5()
-                for chunk in iter(lambda: f.read(32768), b""):
-                    file_hash.update(chunk)
-            new_md5 = file_hash.hexdigest()
-        assert md5_old == new_md5
+        # Verify that datasets have Fletcher32 checksums enabled
+        with h5py.File(bpa, "r") as f:
+            # Get first simulation group
+            first_group = list(f.keys())[0]
+            group = f[first_group]
+
+            # Get first dataset
+            first_dataset_name = list(group.keys())[0]
+            dataset = group[first_dataset_name]
+
+            # Check if Fletcher32 filter is in the filter pipeline
+            # The fletcher32 property is accessible via the dataset's creation property list
+            plist = dataset.id.get_create_plist()
+            nfilters = plist.get_nfilters()
+
+            # Check each filter to see if Fletcher32 is present
+            has_fletcher32 = False
+            for i in range(nfilters):
+                filter_info = plist.get_filter(i)
+                if filter_info[0] == h5py.h5z.FILTER_FLETCHER32:
+                    has_fletcher32 = True
+                    break
+
+            assert has_fletcher32, "Fletcher32 checksum should be enabled on datasets"
+            print(f"Verified: Fletcher32 checksum enabled on dataset {first_group}/{first_dataset_name}")
 
         shutil.rmtree(path / "BP_Extract")
         os.remove(path / "BP_Extract.bpa")
         os.remove(path / ".BP_Extract")
         os.remove(path / ".BP_Extract_BPL")
-        os.remove(path / "BP_Extract.md5")
 
 if __name__ == "__main__":
-    test_MD5CheckSum()
+    test_Fletcher32CheckSum()

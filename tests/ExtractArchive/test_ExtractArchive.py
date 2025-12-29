@@ -28,8 +28,6 @@ def test_ExtractArchive():
             os.remove(path / ".BP_Extract_BPL")
         if (path / "BP_Extract.bpa").exists():
             os.remove(path / "BP_Extract.bpa")
-        if (path / "BP_Extract.md5").exists():
-            os.remove(path / "BP_Extract.md5")
 
         # Run vspace
         print("Running vspace.")
@@ -46,8 +44,7 @@ def test_ExtractArchive():
         sys.stdout.flush()
         subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
-        # MD5 checksumming is not functioning correctly as of v3.0
-        file = bp.BPLFile(path / "BP_Extract.bpa", ignore_corrupt=True)
+        file = bp.BPLFile(path / "BP_Extract.bpa")
 
         earth_Instellation_final = bp.ExtractColumn(
             file, "earth:Instellation:final"
@@ -64,7 +61,6 @@ def test_ExtractArchive():
         os.remove(path / ".BP_Extract")
         os.remove(path / ".BP_Extract_BPL")
         os.remove(path / "BP_Extract.bpa")
-        os.remove(path / "BP_Extract.md5")
 
 if __name__ == "__main__":
     test_ExtractArchive()

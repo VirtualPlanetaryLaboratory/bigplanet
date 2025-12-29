@@ -14,8 +14,6 @@ def test_Stats():
     sys.path.insert(1, str(path.parents[0]))
 
     # up = os.path.normpath("../")
-    # if (up / "*.md5").exists:
-    #     os.remove(path / "*.md5")
 
 
     # gets the number of cores on the machine
@@ -32,10 +30,6 @@ def test_Stats():
             os.remove(path / ".BP_Stats_BPL")
         if (path / "BP_Stats.bpa").exists():
             os.remove(path / "BP_Stats.bpa")
-        if (path / "../BP_Stats.md5").exists():
-            os.remove(path / "../BP_Stats.md5")
-        if (path / "BP_Stats.md5").exists():
-            os.remove(path / "BP_Stats.md5")
 
         # Run vspace
         print("Running vspace")
@@ -52,8 +46,7 @@ def test_Stats():
         sys.stdout.flush()
         subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
-        # MD5 checksumming is not functioning correctly as of v3.0
-        file = bp.BPLFile(path / "BP_Stats.bpa", ignore_corrupt=True)
+        file = bp.BPLFile(path / "BP_Stats.bpa")
 
         earth_TMan_min = bp.ExtractColumn(file, "earth:TMan:min")
         earth_235UNumMan_max = bp.ExtractColumn(file, "earth:235UNumMan:max")
@@ -73,7 +66,6 @@ def test_Stats():
         os.remove(path / ".BP_Stats")
         os.remove(path / ".BP_Stats_BPL")
         os.remove(path / "BP_Stats.bpa")
-        os.remove(path / "BP_Stats.md5")
 
 if __name__ == "__main__":
     test_Stats()

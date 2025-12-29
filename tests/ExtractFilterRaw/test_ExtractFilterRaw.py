@@ -44,8 +44,7 @@ def test_ExtractFilterRaw():
         sys.stdout.flush()
         subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
 
-        # MD5 checksumming is not functioning correctly as of v3.0
-        file = bp.BPLFile(path / "Test.bpf", ignore_corrupt=True)
+        file = bp.BPLFile(path / "Test.bpf")
 
         earth_Instellation_final = bp.ExtractColumn(
             file, "earth:Instellation:final"

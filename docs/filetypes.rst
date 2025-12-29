@@ -9,12 +9,12 @@ Below each file type is explained in depth.
 Archives
 --------
 
-The BigPlanet archive ontains *everything* from
+The BigPlanet archive contains *everything* from
 the parameter sweep. The archive can require hours to build, depending on the size of the data set and number of cores
 employed to build it.
-When an archive is built, ``BigPlanet`` also performs an MD5 checksum and creates a file with the resultant hash,
-i.e. GDwarf.md5, which is examined every time the archive is accessed to ensure the 
-data are not corrupted. After building the BPA file, it is safe to remove the raw data. 
+When an archive is built, ``BigPlanet`` enables Fletcher32 checksums on all datasets within the HDF5 file,
+providing automatic data integrity verification. HDF5 validates these checksums whenever data is read,
+ensuring the data are not corrupted. After building the BPA file, it is safe to remove the raw data.
 To generate an archive, run ``BigPlanet`` with the :code:`-a` option.
 
 

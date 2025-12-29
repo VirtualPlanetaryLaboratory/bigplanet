@@ -28,8 +28,6 @@ def test_CreateHDF5():
             os.remove(path / ".BP_CreateHDF5_BPL")
         if (path / "BP_CreateHDF5.bpa").exists():
             os.remove(path / "BP_CreateHDF5.bpa")
-        if (path / "BP_CreateHDF5.md5").exists():
-            os.remove(path / "BP_CreateHDF5.md5")
 
         # Run vspace
         print("Running vspace.")
@@ -55,7 +53,6 @@ def test_CreateHDF5():
         os.remove(path / ".BP_CreateHDF5")
         os.remove(path / ".BP_CreateHDF5_BPL")
         os.remove(path / "BP_CreateHDF5.bpa")
-        os.remove(path / "BP_CreateHDF5.md5")
 
 if __name__ == "__main__":
     test_CreateHDF5()

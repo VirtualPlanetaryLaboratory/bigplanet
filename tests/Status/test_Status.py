@@ -26,10 +26,6 @@ def test_bpstatus():
             os.remove(path / ".BP_Status_BPL")
         if (path / "BP_Status.bpa").exists():
             os.remove(path / "BP_Status.bpa")
-        if (path / "../BP_Status.md5").exists():
-            os.remove(path / "../BP_Status.md5")
-        if (path / "BP_Status.md5").exists():
-            os.remove(path / "BP_Status.md5")
 
         # Run vspace
         subprocess.check_output(["vspace", "vspace.in"], cwd=path)
@@ -50,7 +46,6 @@ def test_bpstatus():
         os.remove(path / ".BP_Status")
         os.remove(path / ".BP_Status_BPL")
         os.remove(path / "BP_Status.bpa")
-        os.remove(path / "BP_Status.md5")
 
 if __name__ == "__main__":
     test_bpstatus()

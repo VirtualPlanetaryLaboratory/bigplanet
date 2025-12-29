@@ -11,7 +11,6 @@ import pandas as pd
 
 from .archive import Archive
 from .filter import Filter
-from .extract import Md5CheckSum
 from .read import ReadFile
 
 
@@ -47,7 +46,7 @@ def Main(
             simname,
         ) = ReadFile(bpInputFile, verbose, archive)
         if os.path.exists(bplArchive) == True:
-            Md5CheckSum(bplArchive, ignorecorrupt)
+            # Note: MD5 checksumming removed - using HDF5 Fletcher32 checksums instead
             reply = None
             question = (
                 "WARNING: This command will delete the "
