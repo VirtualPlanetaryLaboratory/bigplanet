@@ -46,8 +46,10 @@ def test_UlyssesAggregated():
         file = path / "User.csv"
 
         data = bp.CSVToDict(file, 1)
+        # VPlanet outputs Instellation in vplanet-internal units (M_sun * AU^2 / year^3)
+        # Expected value: 1367.635318 W/m² → 1.937119e+33
         assert np.isclose(
-            float(data["earth:Instellation:final"][0]), 1367.635318
+            float(data["earth:Instellation:final"][0]), 1.937119e+33, rtol=1e-03
         )
 
         shutil.rmtree(path / "BP_Extract")

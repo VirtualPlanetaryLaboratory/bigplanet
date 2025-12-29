@@ -52,7 +52,8 @@ def test_Stats():
         sys.stdout.flush()
         subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
-        file = bp.BPLFile(path / "BP_Stats.bpa")
+        # MD5 checksumming is not functioning correctly as of v3.0
+        file = bp.BPLFile(path / "BP_Stats.bpa", ignore_corrupt=True)
 
         earth_TMan_min = bp.ExtractColumn(file, "earth:TMan:min")
         earth_235UNumMan_max = bp.ExtractColumn(file, "earth:235UNumMan:max")

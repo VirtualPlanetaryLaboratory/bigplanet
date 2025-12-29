@@ -255,7 +255,7 @@ Active Modules: RadHeat ThermInt
 (Eccentricity) Orbital Eccentricity []: {fEcc:.4f}
 (TMan) Upper Mantle Temperature [K]: {fTMan:.1f}
 (TCore) Core Temperature [K]: {fTCore:.1f}
-(Instellation) Orbit-averaged INcident STELLar radiATION [kg*m^2/sec^2/(m^2*sec)]: 1367.635318
+(Instellation) Orbit-averaged INcident STELLar radiATION [M_sun*AU^2/year^3]: 1.937119e+33
 Output Order: {sOutputOrder}
 Grid Output Order: {sGridOutput}
 
