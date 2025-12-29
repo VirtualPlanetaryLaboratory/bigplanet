@@ -64,6 +64,7 @@ jobs:
         if: matrix.os == 'ubuntu-22.04' && matrix.python-version == '3.9'
         uses: codecov/codecov-action@v4
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
           flags: ${{ matrix.os }}-py${{ matrix.python-version }}
           name: ${{ matrix.os }}-py${{ matrix.python-version }}
