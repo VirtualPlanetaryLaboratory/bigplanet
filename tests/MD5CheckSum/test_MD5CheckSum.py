@@ -36,32 +36,32 @@ def test_MD5CheckSum():
 
         # Run multi-planet
         print("Running multiplanet")
-        # sys.stdout.flush()
-        # subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
+        sys.stdout.flush()
+        subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
         # Run bigplanet
         print("Running bigplanet")
         sys.stdout.flush()
-        # subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
+        subprocess.check_output(["bigplanet", "bpl.in", "-a"], cwd=path)
 
-        # bpa = path / "BP_Extract.bpa"
+        bpa = path / "BP_Extract.bpa"
 
-        # md5file = path / "BP_Extract.md5"
-        # with open(md5file, "r") as md5:
-        #     array = md5.read().splitlines()
-        #     md5_old = array[0]
-        #     with open(bpa, "rb") as f:
-        #         file_hash = hashlib.md5()
-        #         for chunk in iter(lambda: f.read(32768), b""):
-        #             file_hash.update(chunk)
-        #     new_md5 = file_hash.hexdigest()
-        # assert md5_old == new_md5
+        md5file = path / "BP_Extract.md5"
+        with open(md5file, "r") as md5:
+            array = md5.read().splitlines()
+            md5_old = array[0]
+            with open(bpa, "rb") as f:
+                file_hash = hashlib.md5()
+                for chunk in iter(lambda: f.read(32768), b""):
+                    file_hash.update(chunk)
+            new_md5 = file_hash.hexdigest()
+        assert md5_old == new_md5
 
-        # shutil.rmtree(path / "BP_Extract")
-        # os.remove(path / "BP_Extract.bpa")
-        # os.remove(path / ".BP_Extract")
-        # os.remove(path / ".BP_Extract_BPL")
-        # os.remove(path / "BP_Extract.md5")
+        shutil.rmtree(path / "BP_Extract")
+        os.remove(path / "BP_Extract.bpa")
+        os.remove(path / ".BP_Extract")
+        os.remove(path / ".BP_Extract_BPL")
+        os.remove(path / "BP_Extract.md5")
 
 if __name__ == "__main__":
     test_MD5CheckSum()

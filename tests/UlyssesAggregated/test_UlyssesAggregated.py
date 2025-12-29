@@ -36,23 +36,23 @@ def test_UlyssesAggregated():
         # Run multi-planet
         print("Running multiplanet")
         sys.stdout.flush()
-        # subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
+        subprocess.check_output(["multiplanet", "vspace.in"], cwd=path)
 
-        # # Run bigplanet
-        # print("Running bigplanet")
-        # sys.stdout.flush()
-        # subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
+        # Run bigplanet
+        print("Running bigplanet")
+        sys.stdout.flush()
+        subprocess.check_output(["bigplanet", "bpl.in"], cwd=path)
 
-        # file = path / "User.csv"
+        file = path / "User.csv"
 
-        # data = bp.CSVToDict(file, 1)
-        # assert np.isclose(
-        #     float(data["earth:Instellation:final"][0]), 1367.635318
-        # )
+        data = bp.CSVToDict(file, 1)
+        assert np.isclose(
+            float(data["earth:Instellation:final"][0]), 1367.635318
+        )
 
-        # shutil.rmtree(path / "BP_Extract")
-        # os.remove(path / ".BP_Extract")
-        # os.remove(path / "User.csv")
+        shutil.rmtree(path / "BP_Extract")
+        os.remove(path / ".BP_Extract")
+        os.remove(path / "User.csv")
 
 if __name__ == "__main__":
     test_UlyssesAggregated()
