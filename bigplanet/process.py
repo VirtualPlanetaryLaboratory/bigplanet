@@ -458,18 +458,9 @@ def GatherData(
 
             Outfile = body + ":sOutFile:option"
             if Outfile in data:
-                # data[Outfile] is a list: [units, value] or just [value]
-                # Extract the actual filename from the list
-                if verbose:
-                    print(f"DEBUG: Found {Outfile} in data: {data[Outfile]}")
-                if isinstance(data[Outfile], list) and len(data[Outfile]) >= 2:
-                    file_name = data[Outfile][1]
-                elif isinstance(data[Outfile], list) and len(data[Outfile]) == 1:
-                    file_name = data[Outfile][0]
-                else:
-                    file_name = data[Outfile]
-                if verbose:
-                    print(f"DEBUG: Using file_name: {file_name}, prefix: :forward")
+                # data[Outfile] is stored as [units, value] from ProcessInputfile
+                # Extract just the filename (second element)
+                file_name = data[Outfile][1]
                 # Assume forward if explicit outfile is specified
                 prefix = ":forward"
             else:
