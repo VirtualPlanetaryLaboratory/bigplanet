@@ -458,11 +458,7 @@ def GatherData(
 
             Outfile = body + ":sOutFile:option"
             if Outfile in data:
-                # data[Outfile] is stored as [units, value] from ProcessInputfile
-                # Extract just the filename (second element)
-                file_name = data[Outfile][1]
-                # Assume forward if explicit outfile is specified
-                prefix = ":forward"
+                file_name = data[Outfile]
             else:
                 # need to figure out if its forward file or backwards file
                 forwardOption = (
@@ -477,10 +473,6 @@ def GatherData(
                 elif backwardOption in data:
                     file_name = system_name + "." + body + ".backward"
                     prefix = ":backward"
-                else:
-                    # Default to forward if neither flag is set
-                    file_name = system_name + "." + body + ".forward"
-                    prefix = ":forward"
 
             data = ProcessOutputfile(
                 file_name, data, body, OutputOrder, prefix, folder, verbose
