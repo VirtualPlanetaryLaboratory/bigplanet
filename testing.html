@@ -1,0 +1,649 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Testing Strategy &mdash; Bigplanet 2020 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=939ec2ff"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Other Resources" href="examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bigplanet
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Running BigPlanet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html">Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filetypes.html">BigPlanet File Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Keys.html">Understanding Keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commandline.html">Command Line Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Script.html">Scripting with BigPlanet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Other Resources</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Testing Strategy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unit-tests-synthetic-data">Unit Tests: Synthetic Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#location">Location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-synthetic-data">Why Synthetic Data?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-synthetic-log-file">Example: Synthetic Log File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fixtures-and-test-data">Fixtures and Test Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-unit-tests">Running Unit Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-tests-real-vplanet">Integration Tests: Real VPLanet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#test-scenarios">Test Scenarios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-they-test">What They Test</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-createhdf5-integration-test">Example: CreateHDF5 Integration Test</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#vplanet-api-contract-verification">VPLanet API Contract Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-integration-tests">Running Integration Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#why-not-use-real-vplanet-in-unit-tests">Why Not Use Real VPLanet in Unit Tests?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#time-cost">Time Cost</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#environmental-dependencies">Environmental Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#platform-variability">Platform Variability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#test-isolation-violation">Test Isolation Violation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#non-determinism">Non-Determinism</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#coverage-strategy">Coverage Strategy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#current-coverage-by-module">Current Coverage by Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#coverage-goals">Coverage Goals</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#github-actions-ci-cd">GitHub Actions CI/CD</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#test-matrix">Test Matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unit-tests-in-ci">Unit Tests in CI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#integration-tests-in-ci">Integration Tests in CI</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#running-tests-locally">Running Tests Locally</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quick-development-feedback">Quick Development Feedback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pre-commit-verification">Pre-Commit Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pre-push-verification">Pre-Push Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#full-test-suite">Full Test Suite</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#test-development-guidelines">Test Development Guidelines</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-adding-a-new-test">Example: Adding a New Test</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/VirtualPlanetaryLaboratory/BigPlanet">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bigplanet</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Testing Strategy</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/testing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="testing-strategy">
+<h1>Testing Strategy<a class="headerlink" href="#testing-strategy" title="Link to this heading"></a></h1>
+<p>BigPlanet uses a comprehensive two-tier testing approach that balances speed, reliability, and API compatibility verification.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The BigPlanet test suite consists of:</p>
+<ul class="simple">
+<li><p><strong>133 unit tests</strong> using synthetic VPLanet data (~1 second total runtime)</p></li>
+<li><p><strong>12 integration tests</strong> using real VPLanet simulations (several minutes runtime)</p></li>
+<li><p><strong>74% code coverage</strong> and growing</p></li>
+</ul>
+<p>This hybrid approach provides:</p>
+<ol class="arabic simple">
+<li><p><strong>Fast feedback</strong> during development (unit tests complete in &lt;1 second)</p></li>
+<li><p><strong>Platform independence</strong> (unit tests work without VPLanet binary installed)</p></li>
+<li><p><strong>API compatibility verification</strong> (integration tests detect VPLanet format changes)</p></li>
+<li><p><strong>Comprehensive coverage</strong> (both synthetic edge cases and real-world scenarios)</p></li>
+</ol>
+</section>
+<section id="unit-tests-synthetic-data">
+<h2>Unit Tests: Synthetic Data<a class="headerlink" href="#unit-tests-synthetic-data" title="Link to this heading"></a></h2>
+<section id="location">
+<h3>Location<a class="headerlink" href="#location" title="Link to this heading"></a></h3>
+<p>All unit tests are in <code class="docutils literal notranslate"><span class="pre">tests/unit/</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test_read.py</span></code> - Configuration file parsing (22 tests)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_process.py</span></code> - Log file and output file processing (31 tests)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_extract.py</span></code> - Data extraction and statistics (42 tests)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_filter.py</span></code> - Key categorization (25 tests)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_bigplanet.py</span></code> - CLI argument parsing (15 tests)</p></li>
+</ul>
+</section>
+<section id="why-synthetic-data">
+<h3>Why Synthetic Data?<a class="headerlink" href="#why-synthetic-data" title="Link to this heading"></a></h3>
+<p>Unit tests use hand-crafted VPLanet output files created in test fixtures. This approach provides:</p>
+<dl class="simple">
+<dt><strong>Speed</strong></dt><dd><ul class="simple">
+<li><p>Unit test suite completes in &lt;1 second</p></li>
+<li><p>No VPLanet binary execution required</p></li>
+<li><p>Ideal for rapid development iteration</p></li>
+</ul>
+</dd>
+<dt><strong>Platform Independence</strong></dt><dd><ul class="simple">
+<li><p>Tests pass without VPLanet installation</p></li>
+<li><p>Works on fresh developer machines</p></li>
+<li><p>Compatible with minimal CI environments</p></li>
+<li><p>No dependency on VPLanet version or build configuration</p></li>
+</ul>
+</dd>
+<dt><strong>Test Isolation</strong></dt><dd><ul class="simple">
+<li><p>Tests verify BigPlanet code only, not VPLanet correctness</p></li>
+<li><p>Clear failure attribution (BigPlanet bug vs VPLanet bug)</p></li>
+<li><p>Deterministic results across all platforms</p></li>
+</ul>
+</dd>
+<dt><strong>Edge Case Coverage</strong></dt><dd><ul class="simple">
+<li><p>Easy to create malformed files for error handling tests</p></li>
+<li><p>Can test extreme values without long simulations</p></li>
+<li><p>Complete control over input structure</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="example-synthetic-log-file">
+<h3>Example: Synthetic Log File<a class="headerlink" href="#example-synthetic-log-file" title="Link to this heading"></a></h3>
+<p>Unit tests use fixtures like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">minimal_vplanet_log</span><span class="p">(</span><span class="n">tempdir</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Hand-crafted VPLanet log file for testing.&quot;&quot;&quot;</span>
+    <span class="n">log_content</span> <span class="o">=</span> \<span class="s2">&quot;</span><span class="se">\&quot;\&quot;</span>
+<span class="o">----</span> <span class="n">FINAL</span> <span class="n">SYSTEM</span> <span class="n">PROPERTIES</span> <span class="o">----</span>
+<span class="n">System</span> <span class="n">Age</span><span class="p">:</span> <span class="mf">4.500000e+09</span> <span class="n">years</span>
+
+<span class="o">-----</span> <span class="n">BODY</span><span class="p">:</span> <span class="n">earth</span> <span class="o">------</span>
+<span class="n">Mass</span> <span class="p">(</span><span class="n">Mearth</span><span class="p">):</span> <span class="mf">1.000000e+00</span>
+<span class="n">Radius</span> <span class="p">(</span><span class="n">Rearth</span><span class="p">):</span> <span class="mf">1.000000e+00</span>
+\<span class="s2">&quot;</span><span class="se">\&quot;\&quot;</span>
+    <span class="n">log_file</span> <span class="o">=</span> <span class="n">tempdir</span> <span class="o">/</span> <span class="s2">&quot;earth.log&quot;</span>
+    <span class="n">log_file</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">log_content</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">log_file</span>
+</pre></div>
+</div>
+<p>This synthetic approach means:</p>
+<ul class="simple">
+<li><p><strong>No VPLanet execution</strong> - file created instantly</p></li>
+<li><p><strong>Controlled values</strong> - test exactly what you need</p></li>
+<li><p><strong>Portable</strong> - works on any system</p></li>
+</ul>
+</section>
+<section id="fixtures-and-test-data">
+<h3>Fixtures and Test Data<a class="headerlink" href="#fixtures-and-test-data" title="Link to this heading"></a></h3>
+<p>All synthetic test data is created using pytest fixtures in:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code> - Shared fixtures for all tests</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/fixtures/generators.py</span></code> - Helper functions to create simulation structures</p></li>
+</ul>
+<p>Key fixtures include:</p>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">tempdir</span></code></dt><dd><p>Temporary directory (pathlib.Path) automatically cleaned up after each test</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">minimal_simulation_dir</span></code></dt><dd><p>Complete simulation directory structure with synthetic VPLanet files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>test_sims/sim_00/
+├── vpl.in          # Primary input file
+├── earth.in        # Body input file
+├── earth.log       # Synthetic log file
+└── earth.earth.forward  # Synthetic forward evolution file
+</pre></div>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">sample_vplanet_help_dict</span></code></dt><dd><p>Mock VPLanet parameter dictionary (replaces <code class="docutils literal notranslate"><span class="pre">vplanet</span> <span class="pre">-H</span></code> output):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;dMass&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;Double&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Dimension(s)&quot;</span><span class="p">:</span> <span class="s2">&quot;mass&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Default value&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0&quot;</span>
+    <span class="p">},</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">mock_vplanet_help</span></code></dt><dd><p>Monkeypatch fixture that mocks <code class="docutils literal notranslate"><span class="pre">GetVplanetHelp()</span></code> across all modules</p>
+</dd>
+</dl>
+</section>
+<section id="running-unit-tests">
+<h3>Running Unit Tests<a class="headerlink" href="#running-unit-tests" title="Link to this heading"></a></h3>
+<p>Run all unit tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">unit</span><span class="o">/</span> <span class="o">-</span><span class="n">v</span>
+</pre></div>
+</div>
+<p>Run with coverage report:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">unit</span><span class="o">/</span> <span class="o">--</span><span class="n">cov</span><span class="o">=</span><span class="n">bigplanet</span> <span class="o">--</span><span class="n">cov</span><span class="o">-</span><span class="n">report</span><span class="o">=</span><span class="n">term</span><span class="o">-</span><span class="n">missing</span>
+</pre></div>
+</div>
+<p>Run specific test file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">unit</span><span class="o">/</span><span class="n">test_read</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">v</span>
+</pre></div>
+</div>
+<p>Run specific test:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">unit</span><span class="o">/</span><span class="n">test_read</span><span class="o">.</span><span class="n">py</span><span class="p">::</span><span class="n">TestReadFile</span><span class="p">::</span><span class="n">test_read_file_basic</span> <span class="o">-</span><span class="n">v</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="integration-tests-real-vplanet">
+<h2>Integration Tests: Real VPLanet<a class="headerlink" href="#integration-tests-real-vplanet" title="Link to this heading"></a></h2>
+<section id="test-scenarios">
+<h3>Test Scenarios<a class="headerlink" href="#test-scenarios" title="Link to this heading"></a></h3>
+<p>Integration tests are in scenario-specific directories:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tests</span><span class="o">/</span><span class="n">CreateHDF5</span><span class="o">/</span>           <span class="c1"># Archive creation</span>
+<span class="n">tests</span><span class="o">/</span><span class="n">SingleSim</span><span class="o">/</span>            <span class="c1"># Single simulation archive</span>
+<span class="n">tests</span><span class="o">/</span><span class="n">ExtractArchive</span><span class="o">/</span>       <span class="c1"># Archive extraction</span>
+<span class="n">tests</span><span class="o">/</span><span class="n">ExtractFilterArchive</span><span class="o">/</span> <span class="c1"># Filtered archive extraction</span>
+<span class="n">tests</span><span class="o">/</span><span class="n">ExtractFilterRawData</span><span class="o">/</span> <span class="c1"># Raw data filtering</span>
+<span class="n">tests</span><span class="o">/</span><span class="n">Stats</span><span class="o">/</span>                <span class="c1"># Statistical aggregations</span>
+<span class="n">tests</span><span class="o">/</span><span class="n">UlyssesAggregated</span><span class="o">/</span>    <span class="c1"># Ulysses MCMC format</span>
+<span class="n">tests</span><span class="o">/</span><span class="n">UlyssesForward</span><span class="o">/</span>       <span class="c1"># Ulysses forward mode</span>
+<span class="n">tests</span><span class="o">/</span><span class="n">MD5CheckSum</span><span class="o">/</span>          <span class="c1"># Deprecated MD5 tests</span>
+<span class="n">tests</span><span class="o">/</span><span class="n">Bpstatus</span><span class="o">/</span>             <span class="c1"># Status checking</span>
+<span class="n">tests</span><span class="o">/</span><span class="n">Fletcher32CheckSum</span><span class="o">/</span>   <span class="c1"># HDF5 checksum verification</span>
+</pre></div>
+</div>
+</section>
+<section id="what-they-test">
+<h3>What They Test<a class="headerlink" href="#what-they-test" title="Link to this heading"></a></h3>
+<p>Integration tests run the complete BigPlanet pipeline:</p>
+<ol class="arabic simple">
+<li><p><strong>vspace</strong> - Generate VPLanet input parameter space</p></li>
+<li><p><strong>multiplanet</strong> - Run VPLanet simulations (real binary execution)</p></li>
+<li><p><strong>bigplanet</strong> - Create archive or filtered files</p></li>
+<li><p><strong>Verification</strong> - Check output correctness</p></li>
+</ol>
+</section>
+<section id="example-createhdf5-integration-test">
+<h3>Example: CreateHDF5 Integration Test<a class="headerlink" href="#example-createhdf5-integration-test" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">tests/CreateHDF5/test_CreateHDF5.py</span></code> test:</p>
+<ol class="arabic simple">
+<li><p>Runs <code class="docutils literal notranslate"><span class="pre">vspace</span> <span class="pre">vspace.in</span></code> to generate 3 simulation directories</p></li>
+<li><p>Runs <code class="docutils literal notranslate"><span class="pre">multiplanet</span> <span class="pre">vspace.in</span></code> to execute 3 VPLanet simulations</p></li>
+<li><p>Runs <code class="docutils literal notranslate"><span class="pre">bigplanet</span> <span class="pre">bpl.in</span> <span class="pre">-a</span></code> to create archive</p></li>
+<li><p>Verifies archive contains all expected data</p></li>
+</ol>
+<p><strong>VPLanet Configuration:</strong></p>
+<ul class="simple">
+<li><p>Modules: <code class="docutils literal notranslate"><span class="pre">radheat</span></code> + <code class="docutils literal notranslate"><span class="pre">thermint</span></code> (thermal evolution)</p></li>
+<li><p>Duration: 4.5 billion years</p></li>
+<li><p>Runtime per simulation: ~1.1 seconds</p></li>
+<li><p>Total test time: ~5 seconds (3 sims + overhead)</p></li>
+</ul>
+</section>
+<section id="vplanet-api-contract-verification">
+<h3>VPLanet API Contract Verification<a class="headerlink" href="#vplanet-api-contract-verification" title="Link to this heading"></a></h3>
+<p>Integration tests <strong>automatically detect VPLanet API changes</strong>:</p>
+<dl class="simple">
+<dt><strong>Log File Format Changes</strong></dt><dd><p>If VPLanet changes how it writes log files (e.g., different parameter names,
+different formatting), BigPlanet’s <code class="docutils literal notranslate"><span class="pre">ProcessLogFile()</span></code> will fail to parse
+the output, causing integration tests to fail.</p>
+</dd>
+<dt><strong>Forward File Format Changes</strong></dt><dd><p>If VPLanet changes time series output formats, <code class="docutils literal notranslate"><span class="pre">ProcessOutputfile()</span></code> will
+fail to read forward evolution data.</p>
+</dd>
+<dt><strong>Help Output Changes</strong></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">vplanet</span> <span class="pre">-H</span></code> output format changes, <code class="docutils literal notranslate"><span class="pre">GetVplanetHelp()</span></code> will fail to
+parse parameter metadata.</p>
+</dd>
+</dl>
+<p>This provides <strong>implicit API contract testing</strong> - any breaking change in VPLanet’s
+output format is immediately detected by integration test failures.</p>
+</section>
+<section id="requirements">
+<h3>Requirements<a class="headerlink" href="#requirements" title="Link to this heading"></a></h3>
+<p>Integration tests require:</p>
+<ul class="simple">
+<li><p>VPLanet binary in <code class="docutils literal notranslate"><span class="pre">PATH</span></code> or <code class="docutils literal notranslate"><span class="pre">/Users/rory/src/vplanet/bin/vplanet</span></code></p></li>
+<li><p>vspace installed (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">vspace</span></code>)</p></li>
+<li><p>multiplanet installed (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">multi-planet</span></code>)</p></li>
+</ul>
+</section>
+<section id="running-integration-tests">
+<h3>Running Integration Tests<a class="headerlink" href="#running-integration-tests" title="Link to this heading"></a></h3>
+<p>Run all integration tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">CreateHDF5</span><span class="o">/</span> <span class="n">tests</span><span class="o">/</span><span class="n">SingleSim</span><span class="o">/</span> <span class="n">tests</span><span class="o">/</span><span class="n">ExtractArchive</span><span class="o">/</span> <span class="o">-</span><span class="n">v</span>
+</pre></div>
+</div>
+<p>Run specific scenario:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">CreateHDF5</span><span class="o">/</span><span class="n">test_CreateHDF5</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">v</span>
+</pre></div>
+</div>
+<p><strong>Warning:</strong> Integration tests take several minutes due to VPLanet simulation time.</p>
+</section>
+</section>
+<section id="why-not-use-real-vplanet-in-unit-tests">
+<h2>Why Not Use Real VPLanet in Unit Tests?<a class="headerlink" href="#why-not-use-real-vplanet-in-unit-tests" title="Link to this heading"></a></h2>
+<p>We <strong>intentionally avoid</strong> using real VPLanet in unit tests because:</p>
+<section id="time-cost">
+<h3>Time Cost<a class="headerlink" href="#time-cost" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Current unit tests:</strong> &lt;1 second</p></li>
+<li><p><strong>With real VPLanet (best case):</strong> 22 seconds (20 VPLanet runs × 1.1 sec)</p></li>
+<li><p><strong>With real VPLanet (worst case):</strong> 146 seconds (133 tests × 1.1 sec)</p></li>
+<li><p><strong>CI/CD pipeline:</strong> 12 test matrix cells → 4-29 minutes vs &lt;12 seconds</p></li>
+</ul>
+</section>
+<section id="environmental-dependencies">
+<h3>Environmental Dependencies<a class="headerlink" href="#environmental-dependencies" title="Link to this heading"></a></h3>
+<p>Unit tests would fail on:</p>
+<ul class="simple">
+<li><p>Fresh developer machines before VPLanet installation</p></li>
+<li><p>CI environments without VPLanet pre-installed</p></li>
+<li><p>Systems with incompatible VPLanet versions</p></li>
+<li><p>Platforms with different VPLanet compilation flags</p></li>
+</ul>
+</section>
+<section id="platform-variability">
+<h3>Platform Variability<a class="headerlink" href="#platform-variability" title="Link to this heading"></a></h3>
+<p>VPLanet behavior can vary across:</p>
+<ul class="simple">
+<li><p>Python versions (3.9 vs 3.13 subprocess differences)</p></li>
+<li><p>Operating systems (macOS Intel vs ARM vs Ubuntu 22.04 vs 24.04)</p></li>
+<li><p>VPLanet versions (development branch vs release)</p></li>
+<li><p>Numerical precision (floating point rounding differences)</p></li>
+</ul>
+<p>This creates <strong>flaky tests</strong> that pass sometimes and fail other times.</p>
+</section>
+<section id="test-isolation-violation">
+<h3>Test Isolation Violation<a class="headerlink" href="#test-isolation-violation" title="Link to this heading"></a></h3>
+<p>Unit tests should test <strong>BigPlanet code</strong>, not VPLanet correctness.</p>
+<dl class="simple">
+<dt><strong>Current approach:</strong></dt><dd><p>Tests verify BigPlanet can parse <em>any</em> valid VPLanet output format</p>
+</dd>
+<dt><strong>With real VPLanet:</strong></dt><dd><p>Test failures could indicate VPLanet bugs, BigPlanet bugs, or both - making
+debugging difficult</p>
+</dd>
+</dl>
+</section>
+<section id="non-determinism">
+<h3>Non-Determinism<a class="headerlink" href="#non-determinism" title="Link to this heading"></a></h3>
+<p>Real VPLanet may have:</p>
+<ul class="simple">
+<li><p>Floating point rounding variations across platforms</p></li>
+<li><p>Different numerical integration behavior</p></li>
+<li><p>Platform-specific SIMD optimizations</p></li>
+<li><p>Build-specific configurations</p></li>
+</ul>
+<p>This makes tests <strong>unreliable</strong> and hard to debug.</p>
+</section>
+</section>
+<section id="coverage-strategy">
+<h2>Coverage Strategy<a class="headerlink" href="#coverage-strategy" title="Link to this heading"></a></h2>
+<section id="current-coverage-by-module">
+<h3>Current Coverage by Module<a class="headerlink" href="#current-coverage-by-module" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Module</span>              <span class="n">Coverage</span>    <span class="n">Lines</span>    <span class="n">Tests</span>    <span class="n">Uncovered</span> <span class="n">Lines</span>
+<span class="o">================================================================</span>
+<span class="n">read</span><span class="o">.</span><span class="n">py</span>                <span class="mi">92</span><span class="o">%</span>      <span class="mi">179</span>       <span class="mi">22</span>      <span class="n">Lines</span> <span class="mi">66</span><span class="o">-</span><span class="mi">67</span><span class="p">,</span> <span class="mi">77</span><span class="o">-</span><span class="mi">80</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span>
+<span class="n">process</span><span class="o">.</span><span class="n">py</span>             <span class="mi">83</span><span class="o">%</span>      <span class="mi">322</span>       <span class="mi">31</span>      <span class="n">Lines</span> <span class="mi">241</span><span class="o">-</span><span class="mi">270</span><span class="p">,</span> <span class="mi">346</span><span class="o">-</span><span class="mi">423</span>
+<span class="n">extract</span><span class="o">.</span><span class="n">py</span>             <span class="mi">73</span><span class="o">%</span>      <span class="mi">242</span>       <span class="mi">42</span>      <span class="n">Lines</span> <span class="mi">416</span><span class="o">-</span><span class="mi">451</span>
+<span class="n">archive</span><span class="o">.</span><span class="n">py</span>             <span class="mi">67</span><span class="o">%</span>      <span class="mi">117</span>       <span class="mi">30</span>      <span class="n">Lines</span> <span class="mi">61</span><span class="o">-</span><span class="mi">88</span> <span class="p">(</span><span class="n">multiprocessing</span><span class="p">)</span>
+<span class="nb">filter</span><span class="o">.</span><span class="n">py</span>              <span class="mi">40</span><span class="o">%</span>      <span class="mi">121</span>       <span class="mi">25</span>      <span class="n">Lines</span> <span class="mi">208</span><span class="o">-</span><span class="mi">271</span> <span class="p">(</span><span class="n">orchestration</span><span class="p">)</span>
+<span class="n">bigplanet</span><span class="o">.</span><span class="n">py</span>           <span class="mi">24</span><span class="o">%</span>       <span class="mi">49</span>       <span class="mi">15</span>      <span class="n">Lines</span> <span class="mi">35</span><span class="o">-</span><span class="mi">73</span> <span class="p">(</span><span class="n">deleterawdata</span><span class="p">)</span>
+<span class="n">bpstatus</span><span class="o">.</span><span class="n">py</span>             <span class="mi">0</span><span class="o">%</span>       <span class="mi">35</span>        <span class="mi">0</span>      <span class="n">Not</span> <span class="n">yet</span> <span class="n">tested</span>
+<span class="o">================================================================</span>
+<span class="n">TOTAL</span>                  <span class="mi">74</span><span class="o">%</span>     <span class="mi">1107</span>      <span class="mi">133</span>
+</pre></div>
+</div>
+</section>
+<section id="coverage-goals">
+<h3>Coverage Goals<a class="headerlink" href="#coverage-goals" title="Link to this heading"></a></h3>
+<p><strong>Target: 90% coverage</strong> through:</p>
+<ol class="arabic simple">
+<li><p><strong>Unit test expansion</strong> (in progress)</p>
+<ul class="simple">
+<li><p>filter.py refactoring and testing</p></li>
+<li><p>archive.py multiprocessing tests</p></li>
+<li><p>bpstatus.py basic tests</p></li>
+<li><p>Edge case coverage in process.py</p></li>
+</ul>
+</li>
+<li><p><strong>Integration test maintenance</strong> (complete)</p>
+<ul class="simple">
+<li><p>Already covers all major workflows</p></li>
+<li><p>Provides VPLanet API compatibility verification</p></li>
+<li><p>No additional integration tests needed</p></li>
+</ul>
+</li>
+<li><p><strong>Synthetic fixtures</strong> (ongoing)</p>
+<ul class="simple">
+<li><p>Expand fixtures in conftest.py</p></li>
+<li><p>Add edge case generators</p></li>
+<li><p>Mock multiprocessing where possible</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+<section id="github-actions-ci-cd">
+<h2>GitHub Actions CI/CD<a class="headerlink" href="#github-actions-ci-cd" title="Link to this heading"></a></h2>
+<p>BigPlanet uses GitHub Actions to test across multiple environments:</p>
+<section id="test-matrix">
+<h3>Test Matrix<a class="headerlink" href="#test-matrix" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Python Versions: 3.9, 3.10, 3.11, 3.12
+Operating Systems: Ubuntu 22.04, Ubuntu 24.04, macOS-13 (Intel), macOS-14 (ARM)
+
+Total combinations: 4 × 4 = 16 test matrix cells
+</pre></div>
+</div>
+</section>
+<section id="unit-tests-in-ci">
+<h3>Unit Tests in CI<a class="headerlink" href="#unit-tests-in-ci" title="Link to this heading"></a></h3>
+<p><strong>Always run</strong> on every commit:</p>
+<ul class="simple">
+<li><p>Fast (&lt;1 second per matrix cell)</p></li>
+<li><p>Platform independent (synthetic data)</p></li>
+<li><p>No VPLanet installation required</p></li>
+<li><p>Catches BigPlanet regressions immediately</p></li>
+</ul>
+</section>
+<section id="integration-tests-in-ci">
+<h3>Integration Tests in CI<a class="headerlink" href="#integration-tests-in-ci" title="Link to this heading"></a></h3>
+<p><strong>Run selectively</strong> (comprehensive CI only):</p>
+<ul class="simple">
+<li><p>Require VPLanet binary installation</p></li>
+<li><p>Take several minutes per matrix cell</p></li>
+<li><p>Verify VPLanet API compatibility</p></li>
+<li><p>Run before releases or major merges</p></li>
+</ul>
+</section>
+</section>
+<section id="running-tests-locally">
+<h2>Running Tests Locally<a class="headerlink" href="#running-tests-locally" title="Link to this heading"></a></h2>
+<section id="quick-development-feedback">
+<h3>Quick Development Feedback<a class="headerlink" href="#quick-development-feedback" title="Link to this heading"></a></h3>
+<p>During active development, run unit tests only:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">unit</span><span class="o">/</span> <span class="o">-</span><span class="n">v</span>
+</pre></div>
+</div>
+<p>This provides sub-second feedback for BigPlanet code changes.</p>
+</section>
+<section id="pre-commit-verification">
+<h3>Pre-Commit Verification<a class="headerlink" href="#pre-commit-verification" title="Link to this heading"></a></h3>
+<p>Before committing, run unit tests with coverage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">unit</span><span class="o">/</span> <span class="o">--</span><span class="n">cov</span><span class="o">=</span><span class="n">bigplanet</span> <span class="o">--</span><span class="n">cov</span><span class="o">-</span><span class="n">report</span><span class="o">=</span><span class="n">term</span><span class="o">-</span><span class="n">missing</span>
+</pre></div>
+</div>
+<p>Verify coverage hasn’t decreased and new code is tested.</p>
+</section>
+<section id="pre-push-verification">
+<h3>Pre-Push Verification<a class="headerlink" href="#pre-push-verification" title="Link to this heading"></a></h3>
+<p>Before pushing to GitHub, run integration tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">CreateHDF5</span><span class="o">/</span> <span class="n">tests</span><span class="o">/</span><span class="n">SingleSim</span><span class="o">/</span> <span class="n">tests</span><span class="o">/</span><span class="n">ExtractArchive</span><span class="o">/</span> <span class="o">-</span><span class="n">v</span>
+</pre></div>
+</div>
+<p>This catches any VPLanet API incompatibilities.</p>
+</section>
+<section id="full-test-suite">
+<h3>Full Test Suite<a class="headerlink" href="#full-test-suite" title="Link to this heading"></a></h3>
+<p>To run everything (takes several minutes):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span> <span class="o">-</span><span class="n">v</span>
+</pre></div>
+</div>
+<p>This runs all 133 unit tests + 12 integration tests.</p>
+</section>
+</section>
+<section id="test-development-guidelines">
+<h2>Test Development Guidelines<a class="headerlink" href="#test-development-guidelines" title="Link to this heading"></a></h2>
+<p>When writing new tests, follow these principles:</p>
+<ol class="arabic simple">
+<li><p><strong>Unit tests use synthetic data</strong></p>
+<ul class="simple">
+<li><p>Create fixtures in conftest.py</p></li>
+<li><p>Hand-craft minimal VPLanet output files</p></li>
+<li><p>Mock external dependencies (GetVplanetHelp, subprocess calls)</p></li>
+</ul>
+</li>
+<li><p><strong>Integration tests use real VPLanet</strong></p>
+<ul class="simple">
+<li><p>Create new test scenario directory</p></li>
+<li><p>Include VPLanet input files (vpl.in, body.in)</p></li>
+<li><p>Run full vspace → multiplanet → bigplanet pipeline</p></li>
+</ul>
+</li>
+<li><p><strong>Test one thing at a time</strong></p>
+<ul class="simple">
+<li><p>Unit tests should test a single function or behavior</p></li>
+<li><p>Use Given-When-Then documentation format</p></li>
+<li><p>Assert specific expected outcomes</p></li>
+</ul>
+</li>
+<li><p><strong>Keep functions testable</strong></p>
+<ul class="simple">
+<li><p>Functions &lt;20 lines are easier to test</p></li>
+<li><p>Pure functions (no side effects) are easiest to test</p></li>
+<li><p>Extract complex logic into separate testable functions</p></li>
+</ul>
+</li>
+<li><p><strong>Use descriptive test names</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test_process_log_file_with_grid_output_order()</span></code> is better than <code class="docutils literal notranslate"><span class="pre">test_log()</span></code></p></li>
+<li><p>Name should describe the scenario being tested</p></li>
+<li><p>Someone should understand what’s tested without reading the code</p></li>
+</ul>
+</li>
+</ol>
+<section id="example-adding-a-new-test">
+<h3>Example: Adding a New Test<a class="headerlink" href="#example-adding-a-new-test" title="Link to this heading"></a></h3>
+<p><strong>Good - Unit test with synthetic data:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_process_log_file_missing_body_section</span><span class="p">(</span><span class="n">tempdir</span><span class="p">):</span>
+    \<span class="s2">&quot;</span><span class="se">\&quot;\&quot;</span>
+    <span class="n">Given</span><span class="p">:</span> <span class="n">Log</span> <span class="n">file</span> <span class="n">without</span> <span class="n">a</span> <span class="n">body</span> <span class="n">section</span>
+    <span class="n">When</span><span class="p">:</span> <span class="n">ProcessLogFile</span> <span class="ow">is</span> <span class="n">called</span>
+    <span class="n">Then</span><span class="p">:</span> <span class="n">Returns</span> <span class="n">empty</span> <span class="n">data</span> <span class="n">dictionary</span>
+    \<span class="s2">&quot;</span><span class="se">\&quot;\&quot;</span>
+    <span class="n">log_content</span> <span class="o">=</span> \<span class="s2">&quot;</span><span class="se">\&quot;\&quot;</span>
+<span class="o">----</span> <span class="n">FINAL</span> <span class="n">SYSTEM</span> <span class="n">PROPERTIES</span> <span class="o">----</span>
+<span class="n">System</span> <span class="n">Age</span><span class="p">:</span> <span class="mf">0.0</span> <span class="n">sec</span>
+\<span class="s2">&quot;</span><span class="se">\&quot;\&quot;</span>
+    <span class="n">log_file</span> <span class="o">=</span> <span class="n">tempdir</span> <span class="o">/</span> <span class="s2">&quot;test.log&quot;</span>
+    <span class="n">log_file</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">log_content</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">ProcessLogFile</span><span class="p">(</span><span class="s2">&quot;test.log&quot;</span><span class="p">,</span> <span class="p">{},</span> <span class="nb">str</span><span class="p">(</span><span class="n">tempdir</span><span class="p">))</span>
+
+    <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">{}</span>
+</pre></div>
+</div>
+<p><strong>Bad - Unit test calling real VPLanet:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_process_log_file_real_vplanet</span><span class="p">(</span><span class="n">tempdir</span><span class="p">):</span>
+    <span class="c1"># DON&#39;T DO THIS in unit tests</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;vplanet&quot;</span><span class="p">,</span> <span class="s2">&quot;vpl.in&quot;</span><span class="p">],</span> <span class="n">cwd</span><span class="o">=</span><span class="n">tempdir</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">ProcessLogFile</span><span class="p">(</span><span class="s2">&quot;earth.log&quot;</span><span class="p">,</span> <span class="p">{},</span> <span class="nb">str</span><span class="p">(</span><span class="n">tempdir</span><span class="p">))</span>
+    <span class="c1"># This belongs in integration tests, not unit tests</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>BigPlanet’s testing strategy provides:</p>
+<p>✅ <strong>Fast development iteration</strong> (&lt;1 second unit tests)</p>
+<p>✅ <strong>Platform independence</strong> (synthetic data works everywhere)</p>
+<p>✅ <strong>VPLanet API verification</strong> (integration tests catch format changes)</p>
+<p>✅ <strong>Comprehensive coverage</strong> (74% → 90% goal)</p>
+<p>✅ <strong>Reliable CI/CD</strong> (deterministic test results)</p>
+<p>The two-tier approach (synthetic unit tests + real integration tests) balances
+speed, reliability, and API compatibility verification without sacrificing any
+of these critical goals.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="examples.html" class="btn btn-neutral float-left" title="Other Resources" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, The VPLanet Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
