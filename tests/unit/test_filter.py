@@ -228,6 +228,97 @@ class TestSplitsaKey:
         assert len(backwardlist) == 0
 
 
+class TestCheckOutputExists:
+    def test_check_output_ulysses_mode(self):
+        """
+        Given: Ulysses mode enabled
+        When: fbCheckOutputExists is called
+        Then: Returns True (always proceed in Ulysses mode)
+        """
+        result = filter.fbCheckOutputExists("/tmp/output.csv", 1, False)
+        assert result == True
+
+    def test_check_output_file_not_exists(self, tempdir):
+        """
+        Given: Output file doesn't exist
+        When: fbCheckOutputExists is called
+        Then: Returns True (proceed with creation)
+        """
+        pathOutput = tempdir / "new_output.bpf"
+        result = filter.fbCheckOutputExists(str(pathOutput), 0, False)
+        assert result == True
+
+    def test_check_output_exists_no_override(self, tempdir):
+        """
+        Given: Output file exists and override=False
+        When: fbCheckOutputExists is called
+        Then: Returns False (do not proceed)
+        """
+        pathOutput = tempdir / "existing.bpf"
+        pathOutput.write_text("existing data")
+
+        result = filter.fbCheckOutputExists(str(pathOutput), 0, False)
+        assert result == False
+
+    def test_check_output_exists_with_override(self, tempdir):
+        """
+        Given: Output file exists and override=True
+        When: fbCheckOutputExists is called
+        Then: Returns True (proceed with override)
+        """
+        pathOutput = tempdir / "existing.bpf"
+        pathOutput.write_text("existing data")
+
+        result = filter.fbCheckOutputExists(str(pathOutput), 0, True)
+        assert result == True
+
+
+class TestGetOutputFilename:
+    def test_get_filename_custom_outfile(self):
+        """
+        Given: Data dict contains sOutFile for body
+        When: fsGetOutputFilename is called
+        Then: Returns custom filename from dict
+        """
+        dictData = {"earth:sOutFile:option": "custom_earth.forward"}
+
+        result = filter.fsGetOutputFilename("earth", "system", dictData, "forward")
+        assert result == "custom_earth.forward"
+
+    def test_get_filename_default(self):
+        """
+        Given: Data dict does NOT contain sOutFile
+        When: fsGetOutputFilename is called
+        Then: Returns default filename pattern
+        """
+        dictData = {}
+
+        result = filter.fsGetOutputFilename("earth", "system", dictData, "forward")
+        assert result == "system.earth.forward"
+
+    def test_get_filename_backward(self):
+        """
+        Given: Backward file type
+        When: fsGetOutputFilename is called
+        Then: Returns correct backward filename
+        """
+        dictData = {}
+
+        result = filter.fsGetOutputFilename("mars", "solarsystem", dictData, "backward")
+        assert result == "solarsystem.mars.backward"
+
+    def test_get_filename_climate(self):
+        """
+        Given: Climate file type
+        When: fsGetOutputFilename is called
+        Then: Returns correct climate filename
+        """
+        dictData = {}
+
+        result = filter.fsGetOutputFilename("venus", "system", dictData, "Climate")
+        assert result == "system.venus.Climate"
+
+
 # TODO: Add integration tests for Filter() function
 # These require more complex setup with proper BPL input files, simulation directories,
 # and archive files. The SplitsaKey function is well-tested above, and Filter()'s
