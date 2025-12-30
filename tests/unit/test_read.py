@@ -218,6 +218,282 @@ class TestDollarSign:
         assert result[2] == "third line"
 
 
+class TestReadFileAdvanced:
+    """Advanced tests for ReadFile validation logic."""
+
+    def test_read_file_both_include_exclude_error(self, tempdir):
+        """
+        Given: BPL file with both saKeyInclude and saKeyExclude
+        When: ReadFile is called
+        Then: Error is raised (mutually exclusive)
+        """
+        sim_dir = tempdir / "test_sims"
+        sim_dir.mkdir()
+
+        bpl_content = """sDestFolder test_sims
+saBodyFiles  earth.in
+sPrimaryFile vpl.in
+saKeyInclude earth:Mass:final
+saKeyExclude sun:Luminosity:initial
+"""
+        bpl_file = tempdir / "bpl.in"
+        bpl_file.write_text(bpl_content)
+
+        with pytest.raises(SystemExit):
+            read.ReadFile(str(bpl_file), verbose=False, archive=False)
+
+    def test_read_file_custom_archive_name(self, tempdir):
+        """
+        Given: BPL file with custom sArchiveFile
+        When: ReadFile is called
+        Then: Custom archive name is used
+        """
+        sim_dir = tempdir / "test_sims"
+        sim_dir.mkdir()
+
+        bpl_content = """sDestFolder test_sims
+sArchiveFile custom_archive.bpa
+saBodyFiles  earth.in
+sPrimaryFile vpl.in
+"""
+        bpl_file = tempdir / "bpl.in"
+        bpl_file.write_text(bpl_content)
+
+        result = read.ReadFile(str(bpl_file), verbose=False, archive=True)
+        _, bpl_archive, _, _, _, _, _, _, _ = result
+
+        assert bpl_archive == "custom_archive.bpa"
+
+    def test_read_file_custom_output_name(self, tempdir):
+        """
+        Given: BPL file with custom sOutputFile
+        When: ReadFile is called
+        Then: Custom output name is used
+        """
+        sim_dir = tempdir / "test_sims"
+        sim_dir.mkdir()
+
+        bpl_content = """sDestFolder test_sims
+sOutputFile my_output.bpf
+saBodyFiles  earth.in
+sPrimaryFile vpl.in
+saKeyInclude earth:Mass:final
+"""
+        bpl_file = tempdir / "bpl.in"
+        bpl_file.write_text(bpl_content)
+
+        result = read.ReadFile(str(bpl_file), verbose=False, archive=False)
+        _, _, output, _, _, _, _, _, _ = result
+
+        assert output == "my_output.bpf"
+
+    def test_read_file_ulysses_mode(self, tempdir):
+        """
+        Given: BPL file with bUlysses flag
+        When: ReadFile is called
+        Then: Output file is User.csv and Ulysses=1
+        """
+        sim_dir = tempdir / "test_sims"
+        sim_dir.mkdir()
+
+        bpl_content = """sDestFolder test_sims
+saBodyFiles  earth.in
+sPrimaryFile vpl.in
+bUlysses
+saKeyInclude earth:Mass:final
+"""
+        bpl_file = tempdir / "bpl.in"
+        bpl_file.write_text(bpl_content)
+
+        result = read.ReadFile(str(bpl_file), verbose=False, archive=False)
+        _, _, output, _, _, _, _, ulysses, _ = result
+
+        assert output == "User.csv"
+        assert ulysses == 1
+
+    def test_read_file_ulysses_with_simname_forward(self, tempdir, capsys):
+        """
+        Given: BPL with Ulysses=True, SimName, and forward keys
+        When: ReadFile is called
+        Then: Succeeds (valid configuration)
+        """
+        sim_dir = tempdir / "test_sims"
+        sim_dir.mkdir()
+
+        bpl_content = """sDestFolder test_sims
+saBodyFiles  earth.in
+sPrimaryFile vpl.in
+bUlysses
+sSimName sim_00
+saKeyInclude earth:Temp:forward
+"""
+        bpl_file = tempdir / "bpl.in"
+        bpl_file.write_text(bpl_content)
+
+        result = read.ReadFile(str(bpl_file), verbose=False, archive=False)
+        _, _, _, _, _, include, _, ulysses, simname = result
+
+        assert ulysses == 1
+        assert simname == "sim_00"
+        assert "earth:Temp:forward" in include
+
+    def test_read_file_ulysses_simname_non_forward_error(self, tempdir):
+        """
+        Given: BPL with Ulysses, SimName, but non-forward keys in include
+        When: ReadFile is called
+        Then: Error is raised (SimName requires forward data)
+        """
+        sim_dir = tempdir / "test_sims"
+        sim_dir.mkdir()
+
+        bpl_content = """sDestFolder test_sims
+saBodyFiles  earth.in
+sPrimaryFile vpl.in
+bUlysses
+sSimName sim_00
+saKeyInclude earth:Mass:final
+"""
+        bpl_file = tempdir / "bpl.in"
+        bpl_file.write_text(bpl_content)
+
+        with pytest.raises(SystemExit):
+            read.ReadFile(str(bpl_file), verbose=False, archive=False)
+
+    def test_read_file_ulysses_forward_without_simname_error(self, tempdir):
+        """
+        Given: BPL with Ulysses=True, forward keys, but no SimName
+        When: ReadFile is called
+        Then: Error is raised (forward requires SimName)
+        """
+        sim_dir = tempdir / "test_sims"
+        sim_dir.mkdir()
+
+        bpl_content = """sDestFolder test_sims
+saBodyFiles  earth.in
+sPrimaryFile vpl.in
+bUlysses
+saKeyInclude earth:Temp:forward
+"""
+        bpl_file = tempdir / "bpl.in"
+        bpl_file.write_text(bpl_content)
+
+        with pytest.raises(SystemExit):
+            read.ReadFile(str(bpl_file), verbose=False, archive=False)
+
+    def test_read_file_verbose_output(self, tempdir, capsys):
+        """
+        Given: BPL file with verbose=True
+        When: ReadFile is called
+        Then: Diagnostic information is printed
+        """
+        sim_dir = tempdir / "test_sims"
+        sim_dir.mkdir()
+
+        bpl_content = """sDestFolder test_sims
+saBodyFiles  earth.in
+sPrimaryFile vpl.in
+saKeyInclude earth:Mass:final
+"""
+        bpl_file = tempdir / "bpl.in"
+        bpl_file.write_text(bpl_content)
+
+        read.ReadFile(str(bpl_file), verbose=True, archive=False)
+
+        captured = capsys.readouterr()
+        assert "Folder Name:" in captured.out
+        assert "BPL Archive File:" in captured.out
+        assert "Include List:" in captured.out
+
+
+class TestGetDir:
+    """Tests for GetDir function."""
+
+    def test_get_dir_basic(self, tempdir):
+        """
+        Given: vspace.in file with sDestFolder
+        When: GetDir is called
+        Then: Returns folder name and infiles list
+        """
+        import os
+        original_cwd = os.getcwd()
+        os.chdir(tempdir)
+
+        try:
+            sim_dir = tempdir / "test_sims"
+            sim_dir.mkdir()
+
+            vspace_content = """sDestFolder test_sims
+sBodyFile earth.in
+sPrimaryFile vpl.in
+"""
+            vspace_file = tempdir / "vspace.in"
+            vspace_file.write_text(vspace_content)
+
+            folder, infiles = read.GetDir(str(vspace_file))
+
+            assert folder == "test_sims"
+            assert "earth.in" in infiles
+            assert "vpl.in" in infiles
+        finally:
+            os.chdir(original_cwd)
+
+    def test_get_dir_folder_not_exists(self, tempdir):
+        """
+        Given: vspace.in pointing to non-existent folder
+        When: GetDir is called
+        Then: Error is raised
+        """
+        vspace_content = """sDestFolder nonexistent_folder
+sBodyFile earth.in
+"""
+        vspace_file = tempdir / "vspace.in"
+        vspace_file.write_text(vspace_content)
+
+        with pytest.raises(SystemExit):
+            read.GetDir(str(vspace_file))
+
+
+class TestGetLogName:
+    """Tests for GetLogName function."""
+
+    def test_get_log_name_default(self, minimal_simulation_dir):
+        """
+        Given: Input files without custom sLogfile
+        When: GetLogName is called
+        Then: Returns system_name.log
+        """
+        infiles = ["earth.in", "vpl.in"]
+        sims = [str(minimal_simulation_dir)]
+        system_name = "earth"
+
+        result = read.GetLogName(infiles, sims, system_name)
+
+        assert result == "earth.log"
+
+    def test_get_log_name_custom(self, tempdir):
+        """
+        Given: Input file with custom sLogfile parameter
+        When: GetLogName is called
+        Then: Returns custom log name
+        """
+        sim_dir = tempdir / "sim_00"
+        sim_dir.mkdir()
+
+        # Create vpl.in with custom log name
+        vpl_content = """sSystemName test_system
+sLogfile custom_log
+"""
+        (sim_dir / "vpl.in").write_text(vpl_content)
+
+        infiles = ["vpl.in"]
+        sims = [str(sim_dir)]
+        system_name = "test_system"
+
+        result = read.GetLogName(infiles, sims, system_name)
+
+        assert result == "custom_log.log"
+
+
 class TestGetVplanetHelp:
     """Tests for GetVplanetHelp function."""
 

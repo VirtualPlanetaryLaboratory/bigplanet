@@ -602,6 +602,194 @@ class TestProcessSeasonalClimatefile:
         assert result["earth:SeasonalTemp"][0] == "deg C"
 
 
+class TestProcessLogFileAdvanced:
+    """Advanced tests for ProcessLogFile edge cases."""
+
+    def test_process_log_file_grid_output_order(self, tempdir, sample_vplanet_help_dict):
+        """
+        Given: Log file with Grid Output Order (climate data)
+        When: ProcessLogFile is called
+        Then: Grid output parameters are extracted with climate suffix
+        """
+        # Create log file with GridOutputOrder
+        log_content = """
+---- FINAL SYSTEM PROPERTIES ----
+System Age: 0.000000e+00 sec
+
+----- BODY: earth ------
+Grid Output Order: TempLandLat[Kelvin] TempWaterLat[Kelvin]
+"""
+        log_file = tempdir / "earth.log"
+        log_file.write_text(log_content)
+
+        data = {}
+        result = process.ProcessLogFile("earth.log", data, str(tempdir), verbose=False)
+
+        # Check that GridOutputOrder is extracted
+        assert "earth:GridOutputOrder" in result
+        grid_order = result["earth:GridOutputOrder"]
+        assert isinstance(grid_order, list)
+        assert len(grid_order) == 2
+        assert grid_order[0] == ["TempLandLat", "Kelvin"]
+        assert grid_order[1] == ["TempWaterLat", "Kelvin"]
+
+    def test_process_log_file_grid_output_with_include(self, tempdir):
+        """
+        Given: Log file with GridOutputOrder and include list
+        When: ProcessLogFile is called with climate include keys
+        Then: Only included climate keys are extracted
+        """
+        log_content = """
+---- FINAL SYSTEM PROPERTIES ----
+System Age: 0.000000e+00 sec
+
+----- BODY: earth ------
+Grid Output Order: TempLandLat[Kelvin] TempWaterLat[Kelvin] AlbedoLand[ND]
+"""
+        log_file = tempdir / "earth.log"
+        log_file.write_text(log_content)
+
+        data = {}
+        include_list = ["earth:TempLandLat:climate", "earth:GridOutputOrder"]
+
+        result = process.ProcessLogFile("earth.log", data, str(tempdir), verbose=False, incl=include_list)
+
+        # GridOutputOrder itself should be included
+        assert "earth:GridOutputOrder" in result
+
+        # Only TempLandLat:climate should be in data (with units)
+        assert "earth:TempLandLat:climate" in result
+        assert result["earth:TempLandLat:climate"][0] == "Kelvin"
+
+        # TempWaterLat and AlbedoLand should be filtered out
+        assert "earth:TempWaterLat:climate" not in result
+        assert "earth:AlbedoLand:climate" not in result
+
+    def test_process_log_file_grid_output_no_units(self, tempdir):
+        """
+        Given: Grid output parameter with missing units
+        When: ProcessLogFile is called
+        Then: Units default to 'nd' (non-dimensional)
+        """
+        log_content = """
+----- BODY: earth ------
+Grid Output Order: TempLandLat[] AlbedoLand[ND]
+"""
+        log_file = tempdir / "earth.log"
+        log_file.write_text(log_content)
+
+        data = {}
+        result = process.ProcessLogFile("earth.log", data, str(tempdir), verbose=False)
+
+        grid_order = result["earth:GridOutputOrder"]
+        # Empty units should become "nd"
+        assert grid_order[0] == ["TempLandLat", "nd"]
+        assert grid_order[1] == ["AlbedoLand", "ND"]
+
+
+class TestProcessOutputfileAdvanced:
+    """Advanced tests for ProcessOutputfile edge cases."""
+
+    def test_process_output_file_existing_data_append(self, tempdir):
+        """
+        Given: Data dictionary with existing key
+        When: ProcessOutputfile processes same key again
+        Then: Data is appended to existing list
+        """
+        # Create forward output file
+        output_content = """0.0 1.0 2.0
+1.0 2.0 3.0
+2.0 3.0 4.0"""
+        output_file = tempdir / "earth.earth.forward"
+        output_file.write_text(output_content)
+
+        # Pre-populate data with existing values
+        data = {
+            "earth:Time:forward": ["sec", [0.0, 0.5, 1.0]]
+        }
+
+        Output = {
+            "earth:OutputOrder": [
+                ["Time", "sec"],
+                ["Mass", "kg"],
+                ["Eccentricity", "ND"]
+            ]
+        }
+
+        result = process.ProcessOutputfile(
+            "earth.earth.forward", data, "earth", Output, ":forward",
+            str(tempdir), verbose=False
+        )
+
+        # Check that new data was appended
+        assert "earth:Time:forward" in result
+        assert len(result["earth:Time:forward"]) == 3  # units + 2 data arrays
+        assert result["earth:Time:forward"][0] == "sec"  # units
+        assert result["earth:Time:forward"][1] == [0.0, 0.5, 1.0]  # original
+        assert result["earth:Time:forward"][2] == [0.0, 1.0, 2.0]  # new
+
+    def test_process_output_file_include_filtering(self, tempdir):
+        """
+        Given: ProcessOutputfile with include list
+        When: Only certain keys are in include list
+        Then: Only those keys are added to data
+        """
+        output_content = """0.0 1.0
+1.0 2.0"""
+        output_file = tempdir / "earth.earth.forward"
+        output_file.write_text(output_content)
+
+        data = {}
+        Output = {
+            "earth:OutputOrder": [
+                ["Time", "sec"],
+                ["Mass", "kg"]
+            ]
+        }
+
+        # Use include list to test filtering
+        include_list = ["earth:Time:forward"]
+
+        result = process.ProcessOutputfile(
+            "earth.earth.forward", data, "earth", Output, ":forward",
+            str(tempdir), verbose=False, incl=include_list
+        )
+
+        # Only Time should be included
+        assert "earth:Time:forward" in result
+        assert "earth:Mass:forward" not in result
+
+
+
+
+class TestDictToBPAdvanced:
+    """Advanced tests for DictToBP verbose and edge cases."""
+
+    def test_dict_to_bp_verbose_output(self, tempdir, sample_vplanet_help_dict, capsys):
+        """
+        Given: DictToBP with verbose=True
+        When: Data is written to HDF5
+        Then: Diagnostic output is printed
+        """
+        data = {
+            "earth:Mass:final": ["kg", 5.972e24],
+            "earth:Obliquity:final": ["deg", 23.4]
+        }
+
+        output_file = tempdir / "test.bpa"
+        with h5py.File(output_file, "w") as hf:
+            process.DictToBP(
+                data, sample_vplanet_help_dict, hf, verbose=True,
+                group_name="sim_00", archive=True
+            )
+
+        captured = capsys.readouterr()
+        assert "Dataset:" in captured.out
+        assert "Type:" in captured.out
+        assert "Units:" in captured.out
+        assert "Value:" in captured.out
+
+
 # Integration test for full processing pipeline
 class TestProcessingPipeline:
     """Integration tests for complete data processing workflow."""

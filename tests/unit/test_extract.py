@@ -167,3 +167,326 @@ class TestCreateMatrix:
 
         with pytest.raises(SystemExit):
             extract.CreateMatrix(xaxis, yaxis, zarray)
+
+
+class TestForwardData:
+    """Tests for ForwardData function."""
+
+    def test_forward_data_archive(self, tempdir):
+        """
+        Given: Archive file with forward data
+        When: ForwardData is called
+        Then: Returns forward time series arrays
+        """
+        # Create archive with forward data
+        pathArchive = tempdir / "test.bpa"
+        with h5py.File(pathArchive, "w") as hf:
+            grp = hf.create_group("sim_00")
+            daForward = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+            grp.create_dataset("earth:Temperature:forward", data=daForward)
+
+        with h5py.File(pathArchive, "r") as hf:
+            result = extract.ForwardData(hf, "earth:Temperature:mean")
+
+            assert len(result) == 2
+            assert len(result[0]) == 3
+
+    def test_forward_data_filtered(self, tempdir):
+        """
+        Given: Filtered file with forward data
+        When: ForwardData is called
+        Then: Returns forward time series arrays
+        """
+        # Create filtered file (no groups)
+        pathFiltered = tempdir / "filtered.bpf"
+        with h5py.File(pathFiltered, "w") as hf:
+            daForward = np.array([[1.0, 2.0], [3.0, 4.0]])
+            hf.create_dataset("earth:Temperature:forward", data=daForward)
+
+        with h5py.File(pathFiltered, "r") as hf:
+            result = extract.ForwardData(hf, "earth:Temperature:mean")
+
+            assert len(result) == 2
+
+
+class TestExtractColumnStatistics:
+    """Tests for ExtractColumn statistical aggregations."""
+
+    def test_extract_column_mean(self, tempdir):
+        """
+        Given: Archive with forward data
+        When: ExtractColumn is called with :mean
+        Then: Returns mean of each forward array
+        """
+        pathArchive = tempdir / "test.bpa"
+        with h5py.File(pathArchive, "w") as hf:
+            grp = hf.create_group("sim_00")
+            daForward = np.array([[2.0, 4.0, 6.0]])  # mean = 4.0
+            grp.create_dataset("earth:Temp:forward", data=daForward)
+
+        with h5py.File(pathArchive, "r") as hf:
+            result = extract.ExtractColumn(hf, "earth:Temp:mean")
+
+            assert len(result) == 1
+            assert np.isclose(result[0], 4.0)
+
+    def test_extract_column_stddev(self, tempdir):
+        """
+        Given: Archive with forward data
+        When: ExtractColumn is called with :stddev
+        Then: Returns standard deviation of each forward array
+        """
+        pathArchive = tempdir / "test.bpa"
+        with h5py.File(pathArchive, "w") as hf:
+            grp = hf.create_group("sim_00")
+            daForward = np.array([[2.0, 4.0, 6.0, 8.0]])
+            grp.create_dataset("earth:Temp:forward", data=daForward)
+
+        with h5py.File(pathArchive, "r") as hf:
+            result = extract.ExtractColumn(hf, "earth:Temp:stddev")
+
+            assert len(result) == 1
+            # Verify it's a reasonable stddev (not testing exact value)
+            assert result[0] > 0
+
+    def test_extract_column_min(self, tempdir):
+        """
+        Given: Archive with forward data
+        When: ExtractColumn is called with :min
+        Then: Returns minimum of each forward array
+        """
+        pathArchive = tempdir / "test.bpa"
+        with h5py.File(pathArchive, "w") as hf:
+            grp = hf.create_group("sim_00")
+            daForward = np.array([[5.0, 2.0, 8.0]])
+            grp.create_dataset("earth:Temp:forward", data=daForward)
+
+        with h5py.File(pathArchive, "r") as hf:
+            result = extract.ExtractColumn(hf, "earth:Temp:min")
+
+            assert len(result) == 1
+            assert result[0] == 2.0
+
+    def test_extract_column_max(self, tempdir):
+        """
+        Given: Archive with forward data
+        When: ExtractColumn is called with :max
+        Then: Returns maximum of each forward array
+        """
+        pathArchive = tempdir / "test.bpa"
+        with h5py.File(pathArchive, "w") as hf:
+            grp = hf.create_group("sim_00")
+            daForward = np.array([[5.0, 2.0, 8.0]])
+            grp.create_dataset("earth:Temp:forward", data=daForward)
+
+        with h5py.File(pathArchive, "r") as hf:
+            result = extract.ExtractColumn(hf, "earth:Temp:max")
+
+            assert len(result) == 1
+            assert result[0] == 8.0
+
+    def test_extract_column_filtered_forward(self, tempdir):
+        """
+        Given: Filtered file with forward data
+        When: ExtractColumn is called for forward
+        Then: Returns time series data
+        """
+        pathFiltered = tempdir / "filtered.bpf"
+        with h5py.File(pathFiltered, "w") as hf:
+            daForward = np.array([[1.0, 2.0], [3.0, 4.0]])
+            hf.create_dataset("earth:Temp:forward", data=daForward)
+
+        with h5py.File(pathFiltered, "r") as hf:
+            result = extract.ExtractColumn(hf, "earth:Temp:forward")
+
+            assert len(result) == 2
+
+    def test_extract_column_initial_filtered(self, tempdir):
+        """
+        Given: Filtered file with initial value
+        When: ExtractColumn is called for initial
+        Then: Returns initial values
+        """
+        pathFiltered = tempdir / "filtered.bpf"
+        with h5py.File(pathFiltered, "w") as hf:
+            hf.create_dataset("earth:Mass:initial", data=np.array([5.972e24]))
+
+        with h5py.File(pathFiltered, "r") as hf:
+            result = extract.ExtractColumn(hf, "earth:Mass:initial")
+
+            assert len(result) == 1
+            assert np.isclose(result[0], 5.972e24)
+
+
+class TestExtractUniqueValues:
+    """Tests for ExtractUniqueValues function."""
+
+    def test_extract_unique_archive(self, tempdir):
+        """
+        Given: Archive with duplicate values
+        When: ExtractUniqueValues is called
+        Then: Returns unique values only
+        """
+        pathArchive = tempdir / "test.bpa"
+        with h5py.File(pathArchive, "w") as hf:
+            grp1 = hf.create_group("sim_00")
+            grp1.create_dataset("earth:Mass:final", data=[b"1.0"])
+            grp2 = hf.create_group("sim_01")
+            grp2.create_dataset("earth:Mass:final", data=[b"2.0"])
+            grp3 = hf.create_group("sim_02")
+            grp3.create_dataset("earth:Mass:final", data=[b"1.0"])  # Duplicate
+
+        with h5py.File(pathArchive, "r") as hf:
+            result = extract.ExtractUniqueValues(hf, "earth:Mass:final")
+
+            assert len(result) == 2
+            assert 1.0 in result
+            assert 2.0 in result
+
+    def test_extract_unique_filtered(self, tempdir):
+        """
+        Given: Filtered file with duplicate values
+        When: ExtractUniqueValues is called
+        Then: Returns unique values only
+        """
+        pathFiltered = tempdir / "filtered.bpf"
+        with h5py.File(pathFiltered, "w") as hf:
+            hf.create_dataset("earth:Mass:final", data=[b"3.0", b"3.0", b"5.0"])
+
+        with h5py.File(pathFiltered, "r") as hf:
+            result = extract.ExtractUniqueValues(hf, "earth:Mass:final")
+
+            assert len(result) == 2
+            assert 3.0 in result
+            assert 5.0 in result
+
+
+class TestRotate90Clockwise:
+    """Tests for rotate90Clockwise function."""
+
+    def test_rotate_2x2_matrix(self):
+        """
+        Given: 2x2 matrix
+        When: rotate90Clockwise is called
+        Then: Matrix is rotated 90 degrees clockwise
+        """
+        matrix = [[1, 2], [3, 4]]
+        result = extract.rotate90Clockwise(matrix)
+
+        assert result == [[3, 1], [4, 2]]
+
+    def test_rotate_3x3_matrix(self):
+        """
+        Given: 3x3 matrix
+        When: rotate90Clockwise is called
+        Then: Matrix is rotated 90 degrees clockwise
+        """
+        matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+        result = extract.rotate90Clockwise(matrix)
+
+        assert result == [[7, 4, 1], [8, 5, 2], [9, 6, 3]]
+
+
+class TestArchiveToFiltered:
+    """Tests for ArchiveToFiltered function."""
+
+    def test_archive_to_filtered_basic(self, tempdir):
+        """
+        Given: Archive file with data
+        When: ArchiveToFiltered is called
+        Then: Creates filtered HDF5 file with requested columns
+        """
+        pathArchive = tempdir / "test.bpa"
+        pathFiltered = tempdir / "filtered.bpf"
+
+        # Create archive
+        with h5py.File(pathArchive, "w") as hf:
+            grp = hf.create_group("sim_00")
+            grp.create_dataset("earth:Mass:final", data=np.array([1.0]))
+            grp["earth:Mass:final"].attrs["Units"] = "Mearth"
+            grp.create_dataset("earth:Ecc:final", data=np.array([0.01]))
+            grp["earth:Ecc:final"].attrs["Units"] = "nd"
+
+        # Extract columns
+        with h5py.File(pathArchive, "r") as hf:
+            extract.ArchiveToFiltered(hf, ["earth:Mass:final"], str(pathFiltered))
+
+        # Verify filtered file created
+        assert pathFiltered.exists()
+
+        with h5py.File(pathFiltered, "r") as hf:
+            assert "earth:Mass:final" in hf
+            assert hf["earth:Mass:final"].attrs["Units"] == "Mearth"
+
+
+class TestDictToCSV:
+    """Tests for DictToCSV function."""
+
+    def test_dict_to_csv_basic(self, tempdir):
+        """
+        Given: Data dictionary
+        When: DictToCSV is called
+        Then: Creates CSV file
+        """
+        dictData = {
+            "earth:Mass:initial": [None, 1.0],
+            "earth:Ecc:initial": [None, 0.01]
+        }
+
+        pathCSV = tempdir / "output.csv"
+        extract.DictToCSV(dictData, str(pathCSV), delim=",", header=True)
+
+        assert pathCSV.exists()
+        # Verify file has content
+        assert pathCSV.stat().st_size > 0
+
+    def test_dict_to_csv_ulysses(self, tempdir):
+        """
+        Given: Data dictionary with forward data
+        When: DictToCSV is called with ulysses=1
+        Then: Creates User.csv in Ulysses format
+        """
+        dictData = {
+            "earth:Temp:forward": [[1.0, 2.0, 3.0]],
+            "earth:Mass:forward": [[4.0, 5.0, 6.0]]
+        }
+
+        # Change to tempdir so User.csv is created there
+        import os
+        original_cwd = os.getcwd()
+        os.chdir(tempdir)
+
+        try:
+            extract.DictToCSV(dictData, ulysses=1)
+
+            pathCSV = tempdir / "User.csv"
+            assert pathCSV.exists()
+
+            # Verify Ulysses format (first column should be empty with comma)
+            with open(pathCSV) as f:
+                first_line = f.readline()
+                assert first_line.startswith(",")
+        finally:
+            os.chdir(original_cwd)
+
+
+class TestCSVToDict:
+    """Tests for CSVToDict function."""
+
+    def test_csv_to_dict_basic(self, tempdir):
+        """
+        Given: CSV file
+        When: CSVToDict is called
+        Then: Returns dictionary
+        """
+        pathCSV = tempdir / "test.csv"
+        pathCSV.write_text("col1,col2\n1,2\n3,4\n")
+
+        result = extract.CSVToDict(str(pathCSV))
+
+        assert isinstance(result, dict)
+        assert "col1" in result
+        assert "col2" in result
+
+    # TODO: Add test for CSVToDict with ulysses=1
+    # Requires compatible pandas version for df.shift() operation

@@ -47,6 +47,7 @@ The following links provide more in-depth explanations on how to get the most ou
    commandline
    Script
    examples
+   testing
    GitHub <https://github.com/VirtualPlanetaryLaboratory/BigPlanet>
 
 .. note::

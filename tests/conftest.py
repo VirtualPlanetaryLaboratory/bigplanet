@@ -362,3 +362,90 @@ def fbArraysClose(daArray1: np.ndarray, daArray2: np.ndarray,
         True if all elements are close within tolerance
     """
     return np.allclose(daArray1, daArray2, rtol=fTolerance)
+
+
+# Checkpoint file fixtures for testing bpstatus and archive functionality
+
+@pytest.fixture
+def checkpoint_file_all_done(tempdir):
+    """
+    Create a checkpoint file with all simulations complete (status=1).
+
+    Returns
+    -------
+    pathlib.Path
+        Path to checkpoint file
+    """
+    pathCheckpoint = tempdir / ".test_sims_BPL"
+    with open(pathCheckpoint, "w") as f:
+        f.write(f"Vspace File: {tempdir}/bpl.in\n")
+        f.write("Total Number of Simulations: 3\n")
+        f.write("sim_00 1\n")
+        f.write("sim_01 1\n")
+        f.write("sim_02 1\n")
+        f.write("THE END\n")
+    return pathCheckpoint
+
+
+@pytest.fixture
+def checkpoint_file_in_progress(tempdir):
+    """
+    Create a checkpoint file with mixed statuses (-1, 0, 1).
+
+    Status breakdown: 2 done, 1 in-progress, 2 remaining
+
+    Returns
+    -------
+    pathlib.Path
+        Path to checkpoint file
+    """
+    pathCheckpoint = tempdir / ".test_sims_BPL"
+    with open(pathCheckpoint, "w") as f:
+        f.write(f"Vspace File: {tempdir}/bpl.in\n")
+        f.write("Total Number of Simulations: 5\n")
+        f.write("sim_00 1\n")   # Done
+        f.write("sim_01 0\n")   # In progress
+        f.write("sim_02 -1\n")  # To do
+        f.write("sim_03 1\n")   # Done
+        f.write("sim_04 -1\n")  # To do
+        f.write("THE END\n")
+    return pathCheckpoint
+
+
+@pytest.fixture
+def checkpoint_file_none_started(tempdir):
+    """
+    Create a checkpoint file with all simulations not started (status=-1).
+
+    Returns
+    -------
+    pathlib.Path
+        Path to checkpoint file
+    """
+    pathCheckpoint = tempdir / ".test_sims_BPL"
+    with open(pathCheckpoint, "w") as f:
+        f.write(f"Vspace File: {tempdir}/bpl.in\n")
+        f.write("Total Number of Simulations: 3\n")
+        f.write("sim_00 -1\n")
+        f.write("sim_01 -1\n")
+        f.write("sim_02 -1\n")
+        f.write("THE END\n")
+    return pathCheckpoint
+
+
+@pytest.fixture
+def checkpoint_file_empty(tempdir):
+    """
+    Create an empty checkpoint file for edge case testing.
+
+    Returns
+    -------
+    pathlib.Path
+        Path to empty checkpoint file
+    """
+    pathCheckpoint = tempdir / ".test_sims_BPL"
+    with open(pathCheckpoint, "w") as f:
+        f.write(f"Vspace File: {tempdir}/bpl.in\n")
+        f.write("Total Number of Simulations: 0\n")
+        f.write("THE END\n")
+    return pathCheckpoint

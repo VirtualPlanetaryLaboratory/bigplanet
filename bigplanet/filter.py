@@ -17,6 +17,139 @@ from .read import *
 from .process import *
 
 
+def fbCheckOutputExists(sOutputPath, iUlysses, bOverride):
+    """Check if output file exists and determine if should proceed."""
+    if iUlysses == 1:
+        return True
+    if os.path.isfile(sOutputPath) and not bOverride:
+        print(f"ERROR: {sOutputPath} already exists. Use -o to override.")
+        return False
+    return True
+
+
+def fnProcessLogKeys(listInclude, dictData, sSystemName, listBodyNames,
+                     sLogFile, sFolder, bVerbose):
+    """Process log file keys (initial/final values)."""
+    if bVerbose:
+        print("Processing Log file", sLogFile)
+    return ProcessLogFile(
+        sLogFile, dictData, sFolder, bVerbose, incl=listInclude
+    )
+
+
+def fnProcessOptionKeys(listInclude, listInfiles, dictData, sFolder,
+                        dictVplanetHelp, bVerbose):
+    """Process option/input file keys."""
+    for sInfile in listInfiles:
+        if bVerbose:
+            print("Processing input file", sInfile)
+        dictData = ProcessInputfile(
+            dictData, sInfile, sFolder, dictVplanetHelp, bVerbose, incl=listInclude
+        )
+    return dictData
+
+
+def fsGetOutputFilename(sBody, sSystemName, dictData, sFileType):
+    """Determine output filename based on sOutFile or defaults."""
+    sOutfileKey = sBody + ":sOutFile:option"
+    if sOutfileKey in dictData:
+        return dictData[sOutfileKey]
+    return f"{sSystemName}.{sBody}.{sFileType}"
+
+
+def fnProcessForwardKeys(listInclude, listBodyNames, dictData, sSystemName,
+                         sLogFile, sFolder, bVerbose):
+    """Process forward evolution file keys."""
+    print("Forward file data requested")
+    for sBody in listBodyNames:
+        print(sBody)
+        if not any(sBody in s for s in listInclude):
+            continue
+
+        sForwardName = fsGetOutputFilename(sBody, sSystemName, dictData, "forward")
+
+        listHeader = [sBody + ":" + "OutputOrder"]
+        dictHeading = {}
+        print("Obtaining Header for Logfile...")
+        dictHeading = ProcessLogFile(
+            sLogFile, dictHeading, sFolder, bVerbose, incl=listHeader
+        )
+
+        print("Processing Forward File", sForwardName)
+        dictData = ProcessOutputfile(
+            sForwardName, dictData, sBody, dictHeading, ":forward",
+            sFolder, bVerbose, incl=listInclude,
+        )
+    return dictData
+
+
+def fnProcessBackwardKeys(listInclude, listBodyNames, dictData, sSystemName,
+                          sLogFile, sFolder, bVerbose):
+    """Process backward evolution file keys."""
+    print("Processing Backwards File")
+    for sBody in listBodyNames:
+        if not any(sBody in s for s in listInclude):
+            continue
+
+        sBackwardName = fsGetOutputFilename(sBody, sSystemName, dictData, "backward")
+
+        listHeader = [sBody + ":" + "OutputOrder"]
+        dictHeading = {}
+        dictHeading = ProcessLogFile(
+            sLogFile, dictHeading, sFolder, bVerbose, incl=listHeader
+        )
+        dictData = ProcessOutputfile(
+            sBackwardName, dictData, sBody, dictHeading, ":backward",
+            sFolder, bVerbose, incl=listInclude,
+        )
+    return dictData
+
+
+def fnProcessClimateKeys(listInclude, listBodyNames, dictData, sSystemName,
+                         sLogFile, sFolder, bVerbose):
+    """Process climate file keys."""
+    for sBody in listBodyNames:
+        if not any(sBody in s for s in listInclude):
+            continue
+
+        listHeader = [sBody + ":" + "GridOutputOrder"]
+        sClimateName = f"{sSystemName}.{sBody}.Climate"
+
+        dictHeading = {}
+        dictHeading = ProcessLogFile(
+            sLogFile, dictHeading, sFolder, bVerbose, incl=listHeader
+        )
+        dictData = ProcessOutputfile(
+            sClimateName, dictData, sBody, dictHeading, ":climate",
+            sFolder, bVerbose, incl=listInclude,
+        )
+    return dictData
+
+
+def fnWriteFilteredOutput(dictData, sOutput, iUlysses, dictVplanetHelp, bVerbose):
+    """Write filtered data to HDF5 or CSV."""
+    if iUlysses == 1:
+        DictToCSV(dictData, ulysses=True)
+    else:
+        with h5py.File(sOutput, "w") as hFilter:
+            DictToBP(
+                dictData, dictVplanetHelp, hFilter, bVerbose,
+                group_name=None, archive=False,
+            )
+
+
+def fnExtractFromArchive(hArchive, listInclude, sOutput, iUlysses, sSimName):
+    """Extract filtered data from existing archive."""
+    print("Extracting data from BPA File. Please wait...")
+    if iUlysses == 1:
+        if sSimName:
+            ArchiveToCSV(hArchive, listInclude, sOutput, ulysses=1, group=sSimName)
+        else:
+            ArchiveToCSV(hArchive, listInclude, sOutput, ulysses=1)
+    else:
+        ArchiveToFiltered(hArchive, listInclude, sOutput)
+
+
 def SplitsaKey(saKeylist, verbose):
     # create empty lists to store the keys in
     loglist = []
@@ -66,200 +199,73 @@ def SplitsaKey(saKeylist, verbose):
 
 
 def Filter(file, quiet, verbose, ignorecorrupt, override):
-    (
-        folder,
-        bplArchive,
-        output,
-        bodyFileList,
-        primaryFile,
-        IncludeList,
-        ExcludeList,
-        Ulysses,
-        SimName,
-    ) = ReadFile(file, verbose=True, archive=False)
+    """
+    Create filtered BigPlanet file from archive or raw data.
 
-    vplHelp = GetVplanetHelp()
+    Orchestrates filtering by reading configuration, checking if archive
+    exists (fast path) or processing raw simulation data (slow path).
+    """
+    (folder, bplArchive, output, bodyFileList, primaryFile, IncludeList,
+     ExcludeList, Ulysses, SimName) = ReadFile(file, verbose, archive=False)
 
-    infile_list = []
-    for i in bodyFileList:
-        infile_list.append(i)
-    infile_list = bodyFileList
-    infile_list.append(primaryFile)
+    if not fbCheckOutputExists(output, Ulysses, override):
+        if Ulysses == 0:
+            return
 
-    if os.path.exists(output) and Ulysses == 0:
-        print(
-            "ERROR:",
-            output,
-            "already exists. Please delete",
-            output,
-            "and try again",
-        )
-    elif os.path.exists(output) and override == True:
+    if override and os.path.exists(output):
         print("Overriding output file...")
         sub.run(["rm", output])
 
-    # if the bpl archive file does NOT exist, we have to get the data manually
-    if os.path.isfile(bplArchive) == False:
-        print(
-            "WARNING: BPA File does not exist. Obtaining data from source folder. This make take some time..."
-        )
-        # first we need to see what keys go to what vplanet file (ie body file or log file or forward file)
-        if IncludeList:
+    # Fast path: extract from archive if exists
+    if os.path.isfile(bplArchive):
+        hArchive = BPLFile(bplArchive, ignorecorrupt)
+        fnExtractFromArchive(hArchive, IncludeList, output, Ulysses, SimName)
+        return
 
-            (
-                loglist,
-                optionList,
-                forwardlist,
-                climatelist,
-                backwardlist,
-            ) = SplitsaKey(IncludeList, verbose)
-            # now that we have the list of which keys to look for in which files, we can process the files and grab the data
-            if SimName:
-                simList = GetSims(folder, simname=SimName)
-            else:
-                simList = GetSims(folder)
+    # Slow path: process from raw simulation data
+    print("WARNING: BPA File does not exist. Obtaining data from source folder. This make take some time...")
 
-            system_name, body_names = GetSNames(infile_list, simList)
+    if not IncludeList:
+        return
 
-            log_file = GetLogName(infile_list, simList, system_name)
-            data = {}
+    vplHelp = GetVplanetHelp()
+    infile_list = bodyFileList + [primaryFile]
 
-            for sim in simList:
-                if loglist:
-                    if verbose:
-                        print("Processing Log file", log_file)
-                    # we need to get the system name to get the name of the logfile
-                    data = ProcessLogFile(
-                        log_file, data, sim, verbose, incl=IncludeList
-                    )
-                    print(data)
+    loglist, optionList, forwardlist, climatelist, backwardlist = SplitsaKey(
+        IncludeList, verbose
+    )
 
-                if optionList:
-                    # we need to get the vplanet help and process the particular log file it came in
-                    for k in infile_list:
-                        if verbose:
-                            print("Processing input file", k)
-                        data = ProcessInputfile(
-                            data, k, sim, vplHelp, verbose, incl=IncludeList
-                        )
-                if forwardlist:
-                    print("Forward file data requested")
-                    for body in body_names:
-                        print(body)
-                        if any(body in s for s in forwardlist) == False:
-                            continue
-                        else:
-                            outfile = body + ":sOutFile:option"
-                            # check bodyfile for sOutfile to see if the name is set for the forward file otherwise
-                            # its the same as default
-
-                            if outfile in data:
-                                forward_name = data[outfile]
-                            else:
-                                forward_name = (
-                                    system_name + "." + body + ".forward"
-                                )
-
-                            header = [body + ":" + "OutputOrder"]
-                            heading = {}
-                            print("Obtaining Header for Logfile...")
-                            heading = ProcessLogFile(
-                                log_file, heading, sim, verbose, incl=header
-                            )
-
-                            print("Processing Forward File", forward_name)
-                            data = ProcessOutputfile(
-                                forward_name,
-                                data,
-                                body,
-                                heading,
-                                ":forward",
-                                sim,
-                                verbose,
-                                incl=IncludeList,
-                            )
-
-                if backwardlist:
-                    print("Processing Backwards File")
-                    for body in body_names:
-                        if any(body in s for s in backwardlist) == False:
-                            continue
-                        outfile = body + ":sOutFile:option"
-                        # check bodyfile for sOutfile to see if the name is set for the forward file otherwise
-                        # its the same as default
-
-                        if outfile in data:
-                            backward_name = data[outfile]
-                        else:
-                            backward_name = (
-                                system_name + "." + body + ".backward"
-                            )
-
-                        header = [body + ":" + "OutputOrder"]
-                        heading = {}
-                        heading = ProcessLogFile(
-                            log_file, heading, sim, verbose, incl=header
-                        )
-                        data = ProcessOutputfile(
-                            backward_name,
-                            data,
-                            body,
-                            heading,
-                            ":backward",
-                            sim,
-                            verbose,
-                            incl=IncludeList,
-                        )
-                if climatelist:
-                    for body in body_names:
-                        if any(body in s for s in climatelist) == False:
-                            continue
-                        else:
-                            header = [body + ":" + "GridOutputOrder"]
-                            climate_name = (
-                                system_name + "." + body + ".Climate"
-                            )
-
-                            heading = {}
-                            heading = ProcessLogFile(
-                                log_file, heading, sim, verbose, incl=header
-                            )
-                            data = ProcessOutputfile(
-                                climate_name,
-                                data,
-                                body,
-                                heading,
-                                ":climate",
-                                sim,
-                                verbose,
-                                incl=IncludeList,
-                            )
-
-            if Ulysses == 1:
-                DictToCSV(data, ulysses=True)
-            else:
-                with h5py.File(output, "w") as filter:
-                    # Change this to DictToBP <- this reads from Dict to Bigplanet File
-                    DictToBP(
-                        data,
-                        vplHelp,
-                        filter,
-                        verbose,
-                        group_name=None,
-                        archive=False,
-                    )
-    # if the bpl file DOES exist, we just need to open it and extract the data to put it in the filter file
+    if SimName:
+        simList = GetSims(folder, simname=SimName)
+    elif os.path.isfile(primaryFile):
+        simList = GetSims(folder)
     else:
-        print("Extracting data from BPA File. Please wait...")
-        archive = BPLFile(bplArchive, ignorecorrupt)
-        if Ulysses == 1:
-            if SimName:
-                ArchiveToCSV(
-                    archive, IncludeList, output, ulysses=1, group=SimName
-                )
-            else:
-                # Change this to ArchiveToCSV <- this reads from archive file and exports a CSV
-                ArchiveToCSV(archive, IncludeList, output, ulysses=1)
-        else:
-            # Change this to ArchiveToBPF <- this reads from Archive to Filterd File
-            ArchiveToFiltered(archive, IncludeList, output)
+        simList = GetSims(folder)
+
+    system_name, body_names = GetSNames(infile_list, simList)
+    log_file = GetLogName(infile_list, simList, system_name)
+    data = {}
+
+    for sim in simList:
+        if loglist:
+            data = fnProcessLogKeys(IncludeList, data, system_name, body_names,
+                                   log_file, sim, verbose)
+            print(data)
+
+        if optionList:
+            data = fnProcessOptionKeys(IncludeList, infile_list, data, sim,
+                                      vplHelp, verbose)
+
+        if forwardlist:
+            data = fnProcessForwardKeys(forwardlist, body_names, data,
+                                       system_name, log_file, sim, verbose)
+
+        if backwardlist:
+            data = fnProcessBackwardKeys(backwardlist, body_names, data,
+                                        system_name, log_file, sim, verbose)
+
+        if climatelist:
+            data = fnProcessClimateKeys(climatelist, body_names, data,
+                                       system_name, log_file, sim, verbose)
+
+    fnWriteFilteredOutput(data, output, Ulysses, vplHelp, verbose)

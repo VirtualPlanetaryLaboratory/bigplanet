@@ -144,6 +144,180 @@ def ReCreateCP(checkpoint_file, input_file, quiet, sims, folder_name, force):
             print("Continuing from Checkpoint...")
 
 
+def fnGetNextSimulation(sCheckpointFile, lockFile):
+    """
+    Find and mark the next simulation to process from checkpoint file.
+
+    Thread-safe with file locking. Reads checkpoint, finds first simulation
+    with status -1, marks it as 0 (in-progress), and returns the folder path.
+
+    Parameters
+    ----------
+    sCheckpointFile : str
+        Path to checkpoint file
+    lockFile : multiprocessing.Lock
+        Lock for thread-safe file access
+
+    Returns
+    -------
+    str or None
+        Absolute path to simulation folder, or None if all done
+    """
+    lockFile.acquire()
+    listData = []
+
+    with open(sCheckpointFile, "r") as f:
+        for sLine in f:
+            listData.append(sLine.strip().split())
+
+    sFolder = ""
+    for listLine in listData:
+        if listLine[1] == "-1":
+            sFolder = listLine[0]
+            listLine[1] = "0"
+            break
+
+    if not sFolder:
+        lockFile.release()
+        return None
+
+    with open(sCheckpointFile, "w") as f:
+        for listLine in listData:
+            f.writelines(" ".join(listLine) + "\n")
+
+    lockFile.release()
+    return os.path.abspath(sFolder)
+
+
+def fnMarkSimulationComplete(sCheckpointFile, sFolder, lockFile):
+    """
+    Mark simulation as complete in checkpoint file.
+
+    Thread-safe with file locking. Updates status from 0 or -1 to 1.
+
+    Parameters
+    ----------
+    sCheckpointFile : str
+        Path to checkpoint file
+    sFolder : str
+        Folder path to mark as complete
+    lockFile : multiprocessing.Lock
+        Lock for thread-safe file access
+
+    Returns
+    -------
+    None
+    """
+    lockFile.acquire()
+    listData = []
+
+    with open(sCheckpointFile, "r") as f:
+        for sLine in f:
+            listData.append(sLine.strip().split())
+
+    for listLine in listData:
+        if listLine[0] == sFolder:
+            listLine[1] = "1"
+            break
+
+    with open(sCheckpointFile, "w") as f:
+        for listLine in listData:
+            f.writelines(" ".join(listLine) + "\n")
+
+    lockFile.release()
+
+
+def fbCheckGroupExists(hMaster, sGroupName):
+    """
+    Check if HDF5 group already exists in archive.
+
+    Parameters
+    ----------
+    hMaster : h5py.File
+        Opened HDF5 file handle
+    sGroupName : str
+        Group name to check (with leading /)
+
+    Returns
+    -------
+    bool
+        True if group exists
+    """
+    return sGroupName in hMaster
+
+
+def fnProcessSimulationData(sFolder, sSystemName, listBodies, sLogFile,
+                           listInfiles, dictVplanetHelp, bVerbose):
+    """
+    Gather all data for a single simulation.
+
+    Parameters
+    ----------
+    sFolder : str
+        Path to simulation folder
+    sSystemName : str
+        System name
+    listBodies : list
+        List of body names
+    sLogFile : str
+        Log file name
+    listInfiles : list
+        List of input file names
+    dictVplanetHelp : dict
+        VPLanet help dictionary
+    bVerbose : bool
+        Verbose output flag
+
+    Returns
+    -------
+    dict
+        Complete data dictionary for simulation
+    """
+    dictData = {}
+    return GatherData(
+        dictData,
+        sSystemName,
+        listBodies,
+        sLogFile,
+        listInfiles,
+        dictVplanetHelp,
+        sFolder,
+        bVerbose,
+    )
+
+
+def fnWriteSimulationToArchive(hMaster, dictData, sGroupName,
+                              dictVplanetHelp, bVerbose):
+    """
+    Write simulation data dictionary to HDF5 archive.
+
+    Parameters
+    ----------
+    hMaster : h5py.File
+        Opened HDF5 file handle
+    dictData : dict
+        Data dictionary to write
+    sGroupName : str
+        Group name (with leading /)
+    dictVplanetHelp : dict
+        VPLanet help dictionary
+    bVerbose : bool
+        Verbose output flag
+
+    Returns
+    -------
+    None
+    """
+    DictToBP(
+        dictData,
+        dictVplanetHelp,
+        hMaster,
+        bVerbose,
+        sGroupName,
+        archive=True,
+    )
+
+
 def par_worker(
     checkpoint_file,
     system_name,
@@ -156,83 +330,64 @@ def par_worker(
     h5_file,
     verbose,
 ):
+    """
+    Parallel worker process for archive creation.
 
+    Continuously processes simulations until checkpoint is complete.
+    Uses helper functions for modular, testable code.
+
+    Parameters
+    ----------
+    checkpoint_file : str
+        Path to checkpoint file
+    system_name : str
+        System name
+    body_list : list
+        List of body names
+    log_file : str
+        Log file name
+    in_files : list
+        List of input files
+    quiet : bool
+        Quiet mode flag
+    lock : multiprocessing.Lock
+        Lock for thread-safe operations
+    vplanet_help : dict
+        VPLanet help dictionary
+    h5_file : str
+        Path to HDF5 archive file
+    verbose : bool
+        Verbose output flag
+
+    Returns
+    -------
+    None
+    """
     while True:
+        # Get next simulation to process
+        sFolder = fnGetNextSimulation(checkpoint_file, lock)
+        if sFolder is None:
+            return  # All done
 
+        sGroupName = "/" + sFolder.split("/")[-1]
+
+        # Process and write simulation data
         lock.acquire()
-        datalist = []
-        data = {}
+        with h5py.File(h5_file, "a") as hMaster:
+            if not fbCheckGroupExists(hMaster, sGroupName):
+                if not quiet:
+                    print("Creating", sGroupName, "...")
 
-        with open(checkpoint_file, "r") as f:
-            for newline in f:
-                datalist.append(newline.strip().split())
+                dictData = fnProcessSimulationData(
+                    sFolder, system_name, body_list, log_file,
+                    in_files, vplanet_help, verbose
+                )
 
-        folder = ""
-
-        for l in datalist:
-            if l[1] == "-1":
-                folder = l[0]
-                l[1] = "0"
-                break
-
-        if not folder:
-            lock.release()
-            return
-
-        with open(checkpoint_file, "w") as f:
-            for newline in datalist:
-                f.writelines(" ".join(newline) + "\n")
+                fnWriteSimulationToArchive(
+                    hMaster, dictData, sGroupName, vplanet_help, verbose
+                )
 
         lock.release()
 
-        folder = os.path.abspath(folder)
-
-        lock.acquire()
-        datalist = []
-
-        with open(checkpoint_file, "r") as f:
-            for newline in f:
-                datalist.append(newline.strip().split())
-
-        group_name = "/" + folder.split("/")[-1]
-
-        # creates the bpl file and reads to make sure the group name is in the file
-        with h5py.File(h5_file, "a") as Master:
-            # if not then add it
-            if group_name not in Master:
-                if quiet == False:
-                    print("Creating", group_name, "...")
-                data = GatherData(
-                    data,
-                    system_name,
-                    body_list,
-                    log_file,
-                    in_files,
-                    vplanet_help,
-                    folder,
-                    verbose,
-                )
-                DictToBP(
-                    data,
-                    vplanet_help,
-                    Master,
-                    verbose,
-                    group_name,
-                    archive=True,
-                )
-
-                for l in datalist:
-                    if l[0] == folder:
-                        l[1] = "1"
-                        break
-            else:
-                for l in datalist:
-                    if l[0] == folder:
-                        l[1] = "1"
-                        break
-
-        with open(checkpoint_file, "w") as f:
-            for newline in datalist:
-                f.writelines(" ".join(newline) + "\n")
-
-        lock.release()
+        # Mark complete
+        fnMarkSimulationComplete(checkpoint_file, sFolder, lock)
