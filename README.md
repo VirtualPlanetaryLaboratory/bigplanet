@@ -22,7 +22,7 @@
     <img src="https://github.com/VirtualPlanetaryLaboratory/bigplanet/actions/workflows/tests.yml/badge.svg">
   </a>
   <img src="https://img.shields.io/badge/Python-3.9--3.13-orange.svg">
-  [![codecov](https://codecov.io/github/VirtualPlanetaryLaboratory/bigplanet/graph/badge.svg?token=FQEJBL185K)](https://codecov.io/github/VirtualPlanetaryLaboratory/bigplanet)
+  <a href="https://codecov.io/github/VirtualPlanetaryLaboratory/bigplanet"><img src="https://codecov.io/github/VirtualPlanetaryLaboratory/bigplanet/graph/badge.svg?token=FQEJBL185K">
   <br>
 
   <a href="https://github.com/VirtualPlanetaryLaboratory/bigplanet/actions/workflows/pip-install.yml">
