@@ -17,7 +17,7 @@
   </a>
   
   <br>
-  <img src="https://img.shields.io/badge/Unit%20Tests-55-darkblue.svg">
+  <img src="https://img.shields.io/badge/Unit%20Tests-143-darkblue.svg">
   <a href="https://github.com/VirtualPlanetaryLaboratory/bigplanet/actions/workflows/tests.yml">
     <img src="https://github.com/VirtualPlanetaryLaboratory/bigplanet/actions/workflows/tests.yml/badge.svg">
   </a>
