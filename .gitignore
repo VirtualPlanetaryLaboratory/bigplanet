@@ -72,3 +72,6 @@ htmlcov/
 # Test output directories (generated during test runs)
 tests/*/BP_*/
 tests/*/.BP_*/
+
+# Docs files
+docs/_build/
